@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.eggspress.controllers.LoginController"
+      alignment="CENTER"
+      spacing="15.0"
+      prefHeight="400.0" prefWidth="600.0">
+    
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+    </padding>
+
+    <Label text="Chicken Eggspress Login" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    
+    <VBox spacing="5.0" maxWidth="300.0">
+        <Label text="Username:"/>
+        <TextField fx:id="usernameField" promptText="Enter username"/>
+    </VBox>
+    
+    <VBox spacing="5.0" maxWidth="300.0">
+        <Label text="Password:"/>
+        <PasswordField fx:id="passwordField" promptText="Enter password"/>
+    </VBox>
+    
+    <Button text="Login" onAction="#handleLogin" prefWidth="100.0"/>
+    
+    <Label fx:id="messageLabel" textFill="red"/>
+</VBox>
