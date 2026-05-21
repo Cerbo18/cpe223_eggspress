@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
@@ -16,4 +17,12 @@
     </padding>
 
     <Label text="welcome to dashboard" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    
+    <Button text="Account Management" onAction="#handleAccountManagement"/>
+    
+    <Button text="Inventory Management" onAction="#handleInventoryManagement"/>
+    
+    <Button text="Automation &amp; Schedules" onAction="#handleAutomationManagement"/>
+    
+    <Button text="Logout" onAction="#handleLogout"/>
 </VBox>

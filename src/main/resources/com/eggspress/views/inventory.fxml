@@ -1,10 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.eggspress.controllers.InventoryController"
+      alignment="CENTER"
+      spacing="15.0"
       prefHeight="600.0" prefWidth="800.0">
-    <!-- [todo] -->
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+    </padding>
+
+    <Label text="Inventory Management" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <!-- Versatile Inventory Table -->
+    <TableView fx:id="inventoryTable" prefHeight="250.0" maxWidth="700.0">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="100.0"/>
+            <TableColumn fx:id="nameColumn" text="Name" prefWidth="200.0"/>
+            <TableColumn fx:id="categoryColumn" text="Category" prefWidth="120.0"/>
+            <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="130.0"/>
+            <TableColumn fx:id="unitColumn" text="Unit" prefWidth="130.0"/>
+        </columns>
+    </TableView>
+
+    <!-- Versatile Add Item Section -->
+    <VBox spacing="10.0" alignment="CENTER" maxWidth="700.0">
+        <Label text="Create New Inventory Item" style="-fx-font-weight: bold;"/>
+        <HBox spacing="10.0" alignment="CENTER">
+            <TextField fx:id="nameField" promptText="Item Name (e.g. Water Tank A)"/>
+            <ComboBox fx:id="categoryComboBox" promptText="Category"/>
+            <TextField fx:id="quantityField" promptText="Initial Qty"/>
+            <TextField fx:id="unitField" promptText="Unit (e.g. Liters, kg)"/>
+            <Button text="Add Item" onAction="#handleAddItem"/>
+        </HBox>
+    </VBox>
+
+    <Separator maxWidth="700.0"/>
+
+    <!-- Versatile Stock Control Section -->
+    <HBox spacing="15.0" alignment="CENTER" maxWidth="700.0">
+        <Label text="Selected Item Stock Control:" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="adjustmentField" promptText="Amount" prefWidth="100.0"/>
+        <Button text="Add Stock" onAction="#handleAddStock"/>
+        <Button text="Consume Stock" onAction="#handleConsumeStock"/>
+        <Button text="Delete Item" onAction="#handleDeleteItem" style="-fx-text-fill: red;"/>
+    </HBox>
+
+    <!-- UI Feedback Message -->
+    <Label fx:id="feedbackLabel" textFill="green"/>
+
+    <Button text="Back to Dashboard" onAction="#handleBackToDashboard"/>
 </VBox>

@@ -1,6 +1,8 @@
 package com.eggspress.controllers;
 
 import com.eggspress.Main;
+import com.eggspress.models.User;
+import com.eggspress.repository.UserRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -24,7 +26,15 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        if ("admin".equals(username) && "123".equals(password)) {
+        boolean isAuthenticated = false;
+        for (User user : UserRepository.getStaticUsers()) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                isAuthenticated = true;
+                break;
+            }
+        }
+
+        if (isAuthenticated) {
             try {
                 Main.setRoot("dashboard");
             } catch (IOException e) {

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.eggspress.controllers.AcountMgmtController"
+      alignment="CENTER"
+      spacing="15.0"
+      prefHeight="600.0" prefWidth="800.0">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+    </padding>
+
+    <Label text="Account Management" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <TableView fx:id="accountsTable" prefHeight="250.0" maxWidth="500.0">
+        <columns>
+            <TableColumn fx:id="usernameColumn" text="Username" prefWidth="250.0"/>
+            <TableColumn fx:id="passwordColumn" text="Password" prefWidth="250.0"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10.0" alignment="CENTER" maxWidth="500.0">
+        <TextField fx:id="newUsernameField" promptText="New Username"/>
+        <TextField fx:id="newPasswordField" promptText="New Password"/>
+        <Button text="Create Account" onAction="#handleCreateAccount"/>
+    </HBox>
+
+    <Label fx:id="feedbackLabel" textFill="green"/>
+
+    <Button text="Back to Dashboard" onAction="#handleBackToDashboard"/>
+</VBox>
