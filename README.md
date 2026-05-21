@@ -1,7 +1,7 @@
 # Chicken Eggspress - Farm Management System
 
 > [!WARNING]
-> **<span style="color: #d9534f;">This repository is created for educational use only.</span>**
+> This repository is created for educational use only.
 
 Welcome to Chicken Eggspress. For coding simplicity in packages, directories, and Maven configuration, the project utilizes the identifier "eggspress". This application is a modular, high-performance farm management platform utilizing JavaFX for its interactive graphical user interface and SQLite for secure, lightweight local data persistence.
 
@@ -96,7 +96,8 @@ eggspress/
 │       │           │   ├── User.java
 │       │           │   ├── ChickenHouse.java
 │       │           │   ├── FeedingSchedule.java
-│       │           │   └── InventoryItem.java
+│       │           │   ├── InventoryItem.java
+│       │           │   └── Automation.java
 │       │           │
 │       │           ├── repository/  # Data Access Object (DAO) CRUD interactions
 │       │           │   ├── BaseRepository.java
@@ -107,7 +108,9 @@ eggspress/
 │       │           │   ├── LoginController.java
 │       │           │   ├── DashboardController.java
 │       │           │   ├── LayoutController.java
-│       │           │   └── InventoryController.java
+│       │           │   ├── InventoryController.java
+│       │           │   ├── AcountMgmtController.java
+│       │           │   └── AutomationController.java
 │       │           │
 │       │           └── utils/       # Empty for now
 │       │
@@ -117,7 +120,9 @@ eggspress/
 │                   ├── views/       # JavaFX FXML screen templates
 │                   │   ├── login.fxml
 │                   │   ├── dashboard.fxml
-│                   │   └── inventory.fxml
+│                   │   ├── inventory.fxml
+│                   │   ├── acountMgmt.fxml
+│                   │   └── automation.fxml
 │                   └── css/         # Global stylesheets for custom skinning
 │                       └── styles.css
 │
