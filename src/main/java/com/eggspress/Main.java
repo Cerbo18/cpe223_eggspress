@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -14,6 +15,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("login"), 640, 480);
+        Image icon = new Image(getClass().getResourceAsStream("/com/eggspress/icons/icon.png"));
+        stage.getIcons().add(icon);
         stage.setTitle("Chicken Eggspress");
         stage.setScene(scene);
         stage.show();
