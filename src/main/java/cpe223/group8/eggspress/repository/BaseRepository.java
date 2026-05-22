@@ -1,4 +1,4 @@
-package com.eggspress.repository;
+package cpe223.group8.eggspress.repository;
 
 import java.util.List;
 

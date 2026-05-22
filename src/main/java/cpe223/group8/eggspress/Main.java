@@ -1,4 +1,4 @@
-package com.eggspress;
+package cpe223.group8.eggspress;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +15,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("login"), 640, 480);
-        Image icon = new Image(getClass().getResourceAsStream("/com/eggspress/icons/icon.png"));
+        Image icon = new Image(getClass().getResourceAsStream("/cpe223/group8/eggspress/icons/icon.png"));
         stage.getIcons().add(icon);
         stage.setTitle("Chicken Eggspress");
         stage.setScene(scene);

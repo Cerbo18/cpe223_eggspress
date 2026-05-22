@@ -1,8 +1,8 @@
-package com.eggspress.controllers;
+package cpe223.group8.eggspress.controllers;
 
-import com.eggspress.Main;
-import com.eggspress.models.User;
-import com.eggspress.repository.UserRepository;
+import cpe223.group8.eggspress.Main;
+import cpe223.group8.eggspress.models.User;
+import cpe223.group8.eggspress.repository.UserRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;

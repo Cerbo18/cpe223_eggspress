@@ -1,8 +1,8 @@
-package com.eggspress.repository;
+package cpe223.group8.eggspress.repository;
 
-import com.eggspress.models.InventoryItem;
-import com.eggspress.models.FeedingSchedule;
-import com.eggspress.models.Automation;
+import cpe223.group8.eggspress.models.InventoryItem;
+import cpe223.group8.eggspress.models.FeedingSchedule;
+import cpe223.group8.eggspress.models.Automation;
 import java.util.ArrayList;
 import java.util.List;
 

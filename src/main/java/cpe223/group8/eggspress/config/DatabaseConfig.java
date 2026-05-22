@@ -1,4 +1,4 @@
-package com.eggspress.config;
+package cpe223.group8.eggspress.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
