@@ -1,10 +1,10 @@
-package com.eggspress.controllers;
+package cpe223.group8.eggspress.controllers;
 
-import com.eggspress.Main;
-import com.eggspress.models.FeedingSchedule;
-import com.eggspress.models.InventoryItem;
-import com.eggspress.models.Automation;
-import com.eggspress.repository.FarmRepository;
+import cpe223.group8.eggspress.Main;
+import cpe223.group8.eggspress.models.FeedingSchedule;
+import cpe223.group8.eggspress.models.InventoryItem;
+import cpe223.group8.eggspress.models.Automation;
+import cpe223.group8.eggspress.repository.FarmRepository;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

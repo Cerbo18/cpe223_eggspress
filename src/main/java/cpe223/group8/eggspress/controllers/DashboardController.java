@@ -1,6 +1,6 @@
-package com.eggspress.controllers;
+package cpe223.group8.eggspress.controllers;
 
-import com.eggspress.Main;
+import cpe223.group8.eggspress.Main;
 import javafx.fxml.FXML;
 import java.io.IOException;
 

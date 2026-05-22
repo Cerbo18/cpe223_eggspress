@@ -1,6 +1,6 @@
-package com.eggspress.repository;
+package cpe223.group8.eggspress.repository;
 
-import com.eggspress.models.User;
+import cpe223.group8.eggspress.models.User;
 import java.util.ArrayList;
 import java.util.List;
 

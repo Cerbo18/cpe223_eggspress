@@ -85,46 +85,48 @@ eggspress/
 ├── src/
 │   └── main/
 │       ├── java/
-│       │   └── com/
-│       │       └── eggspress/
-│       │           ├── Main.java    # Application entry point (JavaFX Starter)
-│       │           │
-│       │           ├── config/      # Database driver connections
-│       │           │   └── DatabaseConfig.java
-│       │           │
-│       │           ├── models/      # Domain Logic / Entity models
-│       │           │   ├── User.java
-│       │           │   ├── ChickenHouse.java
-│       │           │   ├── FeedingSchedule.java
-│       │           │   ├── InventoryItem.java
-│       │           │   └── Automation.java
-│       │           │
-│       │           ├── repository/  # Data Access Object (DAO) CRUD interactions
-│       │           │   ├── BaseRepository.java
-│       │           │   ├── UserRepository.java
-│       │           │   └── FarmRepository.java
-│       │           │
-│       │           ├── controllers/ # Glue layer between views and models
-│       │           │   ├── LoginController.java
-│       │           │   ├── DashboardController.java
-│       │           │   ├── LayoutController.java
-│       │           │   ├── InventoryController.java
-│       │           │   ├── AcountMgmtController.java
-│       │           │   └── AutomationController.java
-│       │           │
-│       │           └── utils/       # Empty for now
+│       │   └── cpe223/
+│       │       └── group8/
+│       │           └── eggspress/
+│       │               ├── Main.java    # Application entry point (JavaFX Starter)
+│       │               │
+│       │               ├── config/      # Database driver connections
+│       │               │   └── DatabaseConfig.java
+│       │               │
+│       │               ├── models/      # Domain Logic / Entity models
+│       │               │   ├── User.java
+│       │               │   ├── ChickenHouse.java
+│       │               │   ├── FeedingSchedule.java
+│       │               │   ├── InventoryItem.java
+│       │               │   └── Automation.java
+│       │               │
+│       │               ├── repository/  # Data Access Object (DAO) CRUD interactions
+│       │               │   ├── BaseRepository.java
+│       │               │   ├── UserRepository.java
+│       │               │   └── FarmRepository.java
+│       │               │
+│       │               ├── controllers/ # Glue layer between views and models
+│       │               │   ├── LoginController.java
+│       │               │   ├── DashboardController.java
+│       │               │   ├── LayoutController.java
+│       │               │   ├── InventoryController.java
+│       │               │   ├── AcountMgmtController.java
+│       │               │   └── AutomationController.java
+│       │               │
+│       │               └── utils/       # Empty for now
 │       │
 │       └── resources/               # Static markup layouts and UI styles
-│           └── com/
-│               └── eggspress/
-│                   ├── views/       # JavaFX FXML screen templates
-│                   │   ├── login.fxml
-│                   │   ├── dashboard.fxml
-│                   │   ├── inventory.fxml
-│                   │   ├── acountMgmt.fxml
-│                   │   └── automation.fxml
-│                   └── css/         # Global stylesheets for custom skinning
-│                       └── styles.css
+│           └── cpe223/
+│               └── group8/
+│                   └── eggspress/
+│                       ├── views/       # JavaFX FXML screen templates
+│                       │   ├── login.fxml
+│                       │   ├── dashboard.fxml
+│                       │   ├── inventory.fxml
+│                       │   ├── acountMgmt.fxml
+│                       │   └── automation.fxml
+│                       └── css/         # Global stylesheets for custom skinning
+│                           └── styles.css
 │
 ├── database/                        # Dedicated directory for database files
 │   └── eggspress.db
@@ -203,6 +205,6 @@ git push origin feature/your-feature-name
 
 ## Guidelines for Collaborative Development
 
-1. **Namespace and Package Consistency**: Always keep the "package com.eggspress;" namespace in all new Java files.
+1. **Namespace and Package Consistency**: Always keep the "package cpe223.group8.eggspress;" namespace in all new Java files.
 2. **Database Management**: Connection logic is centralized inside DatabaseConfig.java. Do not write raw JDBC connection strings inside your views or controllers.
 3. **JavaFX Integration**: Assign FXML views under views/ to their corresponding controllers under controllers/ using the "fx:controller" declaration.

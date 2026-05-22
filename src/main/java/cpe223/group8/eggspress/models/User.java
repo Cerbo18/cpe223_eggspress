@@ -1,4 +1,4 @@
-package com.eggspress.models;
+package cpe223.group8.eggspress.models;
 
 public class User {
     private String username;

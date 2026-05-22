@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.eggspress.controllers.AcountMgmtController"
+      fx:controller="cpe223.group8.eggspress.controllers.AcountMgmtController"
       alignment="CENTER"
       spacing="15.0"
       prefHeight="600.0" prefWidth="800.0">
