@@ -1,48 +1,56 @@
 package cpe223.group8.eggspress.repository;
 
+import cpe223.group8.eggspress.config.DatabaseConfig;
 import cpe223.group8.eggspress.models.User;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository implements BaseRepository<User> {
-    private static final List<User> users = new ArrayList<>();
 
-    static {
-        // Balhin ang acc details dri
-        users.add(new User("admin", "123"));
-    }
-
+    // Replaces the old in-memory array list with a direct DB query
     public static List<User> getStaticUsers() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                users.add(new User(rs.getString("username"), rs.getString("password")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return users;
     }
 
+    // Replaces the local array append with a direct DB insertion
     public static void addStaticUser(User user) {
-        users.add(user);
+        String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void save(User entity) {
-        users.add(entity);
+        addStaticUser(entity);
     }
 
     @Override
-    public User findById(int id) {
-        // [todo]
-        return null;
-    }
+    public User findById(int id) { return null; }
 
     @Override
-    public List<User> findAll() {
-        return users;
-    }
+    public List<User> findAll() { return getStaticUsers(); }
 
     @Override
-    public void update(User entity) {
-        // [todo]
-    }
+    public void update(User entity) {}
 
     @Override
-    public void delete(int id) {
-        // [todo]
-    }
+    public void delete(int id) {}
 }

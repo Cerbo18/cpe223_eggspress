@@ -1,22 +1,101 @@
 package cpe223.group8.eggspress.config;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DatabaseConfig {
-    // [todo]
 
-    private static Connection getConnection() throws SQLException {
-        // [todo]
-        final String DB_URL = "jdbc:sqlite:database/eggspress.db";
+    // Using the user home path configuration that resolved the path issue
+    private static final String DB_URL = "jdbc:sqlite:" + System.getProperty("user.home") + "/eggspress.db";
 
+    public static Connection getConnection() throws SQLException {
         try {
             return DriverManager.getConnection(DB_URL);
         } catch (SQLException e) {
             System.err.println("Failed to connect to the SQLite database at: " + DB_URL);
             throw e;
         }
-        
+    }
+
+    public static void initializeDatabase() {
+        String createUserTable = """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL
+            );
+        """;
+
+        String createInventoryTable = """
+            CREATE TABLE IF NOT EXISTS inventory (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                category TEXT NOT NULL,
+                quantity REAL NOT NULL,
+                unit TEXT NOT NULL
+            );
+        """;
+
+        String createSchedulesTable = """
+            CREATE TABLE IF NOT EXISTS schedules (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                category TEXT NOT NULL,
+                time TEXT NOT NULL,
+                feeding_type TEXT NOT NULL,
+                status TEXT NOT NULL
+            );
+        """;
+
+        String createAutomationsTable = """
+            CREATE TABLE IF NOT EXISTS automations (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                location TEXT NOT NULL,
+                amount REAL NOT NULL,
+                status TEXT NOT NULL
+            );
+        """;
+
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            
+            // 1. Ensure all structural tables exist
+            stmt.execute(createUserTable);
+            stmt.execute(createInventoryTable);
+            stmt.execute(createSchedulesTable);
+            stmt.execute(createAutomationsTable);
+            
+            // 2. Check and seed standard admin user
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    stmt.execute("INSERT INTO users (username, password) VALUES ('admin', '123');");
+                    System.out.println("Default 'admin' user successfully seeded.");
+                }
+            }
+
+            // 3. NEW: Check and seed default starting inventory stocks
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM inventory")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    String seedInventory = """
+                        INSERT INTO inventory (id, name, category, quantity, unit) VALUES 
+                        ('INV001', 'Grains', 'Feed', 500.0, 'kg'),
+                        ('INV002', 'Water', 'Hydration', 1200.0, 'L'),
+                        ('INV003', 'Layers Feed', 'Feed', 250.0, 'kg'),
+                        ('INV004', 'Vitamins', 'Medical', 15.0, 'L');
+                    """;
+                    stmt.execute(seedInventory);
+                    System.out.println("Default chicken inventory stocks successfully seeded.");
+                }
+            }
+            
+            System.out.println("Database tables checked and initialized successfully.");
+        } catch (SQLException e) {
+            System.err.println("CRITICAL Error initializing database tables: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

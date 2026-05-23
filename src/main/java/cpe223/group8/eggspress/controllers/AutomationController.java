@@ -18,14 +18,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
+import java.util.List;
 
 public class AutomationController {
 
     @FXML
-    private ComboBox<InventoryItem> waterSourceComboBox;
+    private ComboBox<String> locationComboBox;
 
     @FXML
-    private ComboBox<String> locationComboBox;
+    private ComboBox<InventoryItem> waterSourceComboBox;
 
     @FXML
     private TextField waterAmountField;
@@ -67,15 +68,25 @@ public class AutomationController {
 
     @FXML
     public void initialize() {
-        // Setup Location dropdown with only "Not Available" per prompt instructions
-        locationComboBox.setItems(FXCollections.observableArrayList("Not Available"));
+        // 1. Force Location Selection Setup (Avoid FXML parsing duplication bugs)
+        locationComboBox.getItems().clear();
+        locationComboBox.setItems(FXCollections.observableArrayList("Main Coop A", "Breeding Barn B", "Chicks Facility"));
         locationComboBox.getSelectionModel().selectFirst();
 
-        // Setup Schedule Category dropdown
+        // 2. Setup Schedule Category Dropdown Options
         scheduleCategoryComboBox.setItems(FXCollections.observableArrayList("Water", "Grains", "Feed", "Others"));
         scheduleCategoryComboBox.getSelectionModel().selectFirst();
 
-        // Populate and convert Water Source dropdown
+        // 3. Configure Table Column mappings FIRST
+        categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
+        timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
+        feedingTypeCol.setCellValueFactory(new PropertyValueFactory<>("feedingType"));
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        // 4. Force-Seed fresh simulations if no manual items exist
+        seedSimulatedSchedules();
+
+        // 5. Populate and convert Water Source elements from active database
         refreshWaterSources();
         waterSourceComboBox.setConverter(new StringConverter<InventoryItem>() {
             @Override
@@ -90,23 +101,46 @@ public class AutomationController {
             }
         });
 
-        // Configure Table Columns
-        categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
-        timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
-        feedingTypeCol.setCellValueFactory(new PropertyValueFactory<>("feedingType"));
-        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-        // Populate Table
+        // 6. Finally, fetch and render everything to the table view
         refreshScheduleTable();
     }
 
-    private void refreshWaterSources() {
-        ObservableList<InventoryItem> waterItems = FXCollections.observableArrayList();
-        for (InventoryItem item : FarmRepository.getStaticInventory()) {
-            if ("Water".equalsIgnoreCase(item.getCategory())) {
-                waterItems.add(item);
-            }
+    private void seedSimulatedSchedules() {
+        List<FeedingSchedule> existingSchedules = FarmRepository.getAllSchedules();
+        
+        // If it only contains your 1 manual schedule or is empty, seed the rest!
+        if (existingSchedules.size() <= 1) {
+            System.out.println("Seeding fresh automated simulations into SQLite...");
+            
+            // Optional: You can clear old stale rows here if needed via a repository method
+            FarmRepository.addSchedule(new FeedingSchedule("Water", "06:00 AM", "Automated Refill", "Completed"));
+            FarmRepository.addSchedule(new FeedingSchedule("Grains", "08:30 AM", "Standard Broiler Feed", "Completed"));
+            FarmRepository.addSchedule(new FeedingSchedule("Feed", "12:00 PM", "High-Protein Mix", "Pending"));
+            FarmRepository.addSchedule(new FeedingSchedule("Water", "04:30 PM", "Hydration Top-Up", "Scheduled"));
         }
+    }
+    /**
+     * Checks if the schedules table has existing entries. 
+     * If empty, it pushes a simulated automated timeline into the SQLite DB.
+     */
+    private void checkForSimulatedSchedules() {
+        List<FeedingSchedule> existingSchedules = FarmRepository.getAllSchedules();
+        
+        if (existingSchedules.isEmpty()) {
+            System.out.println("No schedules detected. Seeding automated simulations into Database...");
+            
+            FarmRepository.addSchedule(new FeedingSchedule("Water", "06:00 AM", "Automated Refill", "Completed"));
+            FarmRepository.addSchedule(new FeedingSchedule("Grains", "08:30 AM", "Standard Broiler Feed", "Completed"));
+            FarmRepository.addSchedule(new FeedingSchedule("Feed", "12:00 PM", "High-Protein Mix", "Pending"));
+            FarmRepository.addSchedule(new FeedingSchedule("Water", "04:30 PM", "Hydration Top-Up", "Scheduled"));
+        }
+    }
+
+    private void refreshWaterSources() {
+        ObservableList<InventoryItem> waterItems = FXCollections.observableArrayList(
+            FarmRepository.getInventoryByCategory("Hydration")
+        );
+        
         waterSourceComboBox.setItems(waterItems);
         if (!waterItems.isEmpty()) {
             waterSourceComboBox.getSelectionModel().selectFirst();
@@ -114,7 +148,7 @@ public class AutomationController {
     }
 
     private void refreshScheduleTable() {
-        scheduleTable.setItems(FXCollections.observableArrayList(FarmRepository.getStaticSchedules()));
+        scheduleTable.setItems(FXCollections.observableArrayList(FarmRepository.getAllSchedules()));
     }
 
     @FXML
@@ -152,24 +186,28 @@ public class AutomationController {
 
         if (selectedWater.getQuantity() < amount) {
             waterFeedbackLabel.setStyle("-fx-text-fill: red;");
-            waterFeedbackLabel.setText("Error: Insufficient stock. Available: " + selectedWater.getQuantity() + " Liters.");
+            waterFeedbackLabel.setText("Error: Insufficient stock. Available: " + selectedWater.getQuantity() + " " + selectedWater.getUnit());
             return;
         }
 
-        // Deduct water quantity from the selected inventory item in static repository
-        selectedWater.setQuantity(selectedWater.getQuantity() - amount);
-        
-        // Log automation run
-        String autoId = "AUTO-" + (FarmRepository.getStaticAutomations().size() + 1);
-        String location = locationComboBox.getSelectionModel().getSelectedItem();
-        FarmRepository.addStaticAutomation(new Automation(autoId, selectedWater.getName(), location, amount, "Success"));
+        double updatedQuantity = selectedWater.getQuantity() - amount;
+        boolean updateSuccess = FarmRepository.updateInventoryQuantity(selectedWater.getId(), updatedQuantity);
 
-        // Feedback to user
+        if (!updateSuccess) {
+            waterFeedbackLabel.setStyle("-fx-text-fill: red;");
+            waterFeedbackLabel.setText("Error: Failed to update inventory database records.");
+            return;
+        }
+        
+        String autoId = "AUTO-" + (FarmRepository.getAutomationCount() + 1);
+        String location = locationComboBox.getSelectionModel().getSelectedItem();
+        Automation log = new Automation(autoId, selectedWater.getName(), location, amount, "Success");
+        FarmRepository.addAutomationLog(log);
+
         waterFeedbackLabel.setStyle("-fx-text-fill: green;");
-        waterFeedbackLabel.setText("Success: Dispatched " + amount + " Liters to " + location + ". Stock updated.");
+        waterFeedbackLabel.setText("Success: Dispatched " + amount + " " + selectedWater.getUnit() + " to " + location + ".");
         waterAmountField.clear();
 
-        // Refresh dropdown to reflect updated quantity
         refreshWaterSources();
     }
 
@@ -190,13 +228,11 @@ public class AutomationController {
             return;
         }
 
-        // Add to static list in FarmRepository
         FeedingSchedule newSchedule = new FeedingSchedule(category, time, feedingType, status);
-        FarmRepository.addStaticSchedule(newSchedule);
+        FarmRepository.addSchedule(newSchedule);
 
-        // Feedback and refresh
         scheduleFeedbackLabel.setStyle("-fx-text-fill: green;");
-        scheduleFeedbackLabel.setText("Success: Added schedule successfully.");
+        scheduleFeedbackLabel.setText("Success: Added schedule to database successfully.");
         
         scheduleTimeField.clear();
         scheduleFeedingTypeField.clear();
