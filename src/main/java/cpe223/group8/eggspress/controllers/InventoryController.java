@@ -97,7 +97,7 @@ public class InventoryController {
         }
 
         // Generate a new ID based on current items count
-        int nextIdNum = FarmRepository.getStaticInventory().size() + 1;
+        int nextIdNum = FarmRepository.getInventoryCount() + 1;
         String id = String.format("INV-%03d", nextIdNum);
 
         // Save new item
@@ -142,8 +142,10 @@ public class InventoryController {
 
         // Update quantity
         selectedItem.setQuantity(selectedItem.getQuantity() + adjustment);
+        // Inside handleAddStock() and handleConsumeStock() right below selectedItem.setQuantity(...)
+        FarmRepository.updateItemQuantity(selectedItem);
         adjustmentField.clear();
-        refreshTable();
+        inventoryTable.refresh();
         showSuccess(String.format("Added %.2f %s to %s.", adjustment, selectedItem.getUnit(), selectedItem.getName()));
     }
 
@@ -181,8 +183,10 @@ public class InventoryController {
 
         // Update quantity
         selectedItem.setQuantity(selectedItem.getQuantity() - adjustment);
+        // Inside handleAddStock() and handleConsumeStock() right below selectedItem.setQuantity(...)
+        FarmRepository.updateItemQuantity(selectedItem);
         adjustmentField.clear();
-        refreshTable();
+        inventoryTable.refresh();
         showSuccess(String.format("Consumed %.2f %s from %s.", adjustment, selectedItem.getUnit(), selectedItem.getName()));
     }
 
@@ -209,7 +213,7 @@ public class InventoryController {
     }
 
     private void refreshTable() {
-        ObservableList<InventoryItem> list = FXCollections.observableArrayList(FarmRepository.getStaticInventory());
+        ObservableList<InventoryItem> list = FXCollections.observableArrayList(FarmRepository.getAllInventory());
         inventoryTable.setItems(list);
     }
 
