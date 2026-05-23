@@ -21,13 +21,20 @@ public class Main extends Application {
 
         scene = new Scene(loadFXML("login"), 640, 480);
         
-        // 2. Modified icon loader with a null check to prevent app crashes if icon path is misconfigured
-        InputStream iconStream = getClass().getResourceAsStream("/cpe223.group8.eggspress/icons/icon.png");
-        if (iconStream != null) {
-            Image icon = new Image(iconStream);
-            stage.getIcons().add(icon);
-        } else {
-            System.out.println("Warning: Window icon path not found. Proceeding with default OS decoration.");
+        // Icon Loader
+        try {
+            InputStream stream = Main.class.getResourceAsStream("icons/icon.png");
+            if (stream == null) {
+                stream = Main.class.getResourceAsStream("/cpe223/group8/eggspress/icons/icon.png");
+            }
+            if (stream != null) {
+                stage.getIcons().add(new Image(stream));
+                stream.close();
+            } else {
+                System.out.println("Warning: Window icon path not found. Proceeding with default OS decoration.");
+            }
+        } catch (Exception e) {
+            System.out.println("Warning: Failed to load window icon: " + e.getMessage());
         }
 
         stage.setTitle("Chicken Eggspress");
