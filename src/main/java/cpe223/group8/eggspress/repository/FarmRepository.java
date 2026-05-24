@@ -162,9 +162,14 @@ public class FarmRepository {
         return items;
     }
     
-    // Keep this so your old InventoryController code compiles without errors
+    // Modified to ensure your items write directly to SQLite instead of a temporary static list
     public static void addStaticItem(InventoryItem item) {
-        getStaticInventory().add(item);
+        boolean success = addInventoryItem(item);
+        if (success) {
+            System.out.println("Item successfully persisted to SQLite database: " + item.getName());
+        } else {
+            System.err.println("Failed to persist item to SQLite database: " + item.getName());
+        }
     }
 
     // 8. LIVE DATABASE METHOD: Save a newly created item straight into SQLite
@@ -228,4 +233,21 @@ public class FarmRepository {
         }
         return 0;
     }
+    
+    public static boolean removeSchedule(FeedingSchedule schedule) {
+    String sql = "DELETE FROM schedules WHERE time = ? AND feeding_type = ? AND category = ?";
+    try (Connection conn = DatabaseConfig.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setString(1, schedule.getTime());
+        pstmt.setString(2, schedule.getFeedingType());
+        pstmt.setString(3, schedule.getCategory());
+        
+        return pstmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.err.println("Error deleting schedule from database: " + e.getMessage());
+        e.printStackTrace();
+        return false;
+    }
+}
 }

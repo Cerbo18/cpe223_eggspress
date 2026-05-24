@@ -4,6 +4,7 @@ module cpe223.group8.eggspress {
     requires javafx.fxml;
     
     requires java.sql;
+    requires java.base;
 
     opens cpe223.group8.eggspress to javafx.fxml;
     opens cpe223.group8.eggspress.controllers to javafx.fxml;
