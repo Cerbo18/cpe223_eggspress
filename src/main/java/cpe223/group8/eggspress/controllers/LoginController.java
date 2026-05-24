@@ -9,7 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.HeaderBar;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -44,6 +46,12 @@ public class LoginController {
     private HBox errorContainer;
 
     @FXML
+    private HeaderBar headerBar;
+
+    private double xOffset = 0;
+    private double yOffset = 0;
+
+    @FXML
     public void initialize() {
         // Automatically clear error states when typing
         usernameField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -57,6 +65,39 @@ public class LoginController {
             errorContainer.setVisible(false);
             errorContainer.setManaged(false);
         });
+
+        // Attach window drag listeners at the scene level after layout to avoid
+        // conflicting with HeaderBar's internal gesture state machine
+        if (headerBar != null) {
+            headerBar.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    newScene.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
+                        if (event.getY() <= headerBar.getHeight()) {
+                            Stage stage = (Stage) newScene.getWindow();
+                            if (!Double.isNaN(stage.getX())) {
+                                xOffset = event.getScreenX() - stage.getX();
+                                yOffset = event.getScreenY() - stage.getY();
+                            }
+                        }
+                    });
+
+                    newScene.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, event -> {
+                        if (event.getY() <= headerBar.getHeight()) {
+                            Stage stage = (Stage) newScene.getWindow();
+                            if (!stage.isMaximized() && xOffset != 0 && yOffset != 0) {
+                                stage.setX(event.getScreenX() - xOffset);
+                                stage.setY(event.getScreenY() - yOffset);
+                            }
+                        }
+                    });
+
+                    newScene.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, event -> {
+                        xOffset = 0;
+                        yOffset = 0;
+                    });
+                }
+            });
+        }
     }
 
     @FXML

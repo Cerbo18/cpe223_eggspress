@@ -5,7 +5,7 @@
 
 .root {
     /* Colors */
-    -fx-background-color: linear-gradient(to bottom, #161617, #1e1e1f);
+    -fx-background-color: #161617;
     -fx-text-primary-color: #f5f5f7;
     -fx-text-secondary-color: #86868b;
     
@@ -48,7 +48,18 @@
 
 /* Footer styling */
 .login-footer {
-    -fx-background-color: #1a1a1b;
-    -fx-border-color: rgba(255, 255, 255, 0.05) transparent transparent transparent;
-    -fx-border-width: 1px 0px 0px 0px;
+    -fx-background-color: #161617;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+}
+
+/* HeaderBar styling */
+.login-headerbar {
+    -fx-background-color: #161617;
+}
+
+.app-headerbar {
+    -fx-background-color: #161617;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.05) transparent;
+    -fx-border-width: 0px 0px 1px 0px;
 }
