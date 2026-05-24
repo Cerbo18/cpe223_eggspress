@@ -1,0 +1,54 @@
+/*
+   Eggspress Light Theme Stylesheet
+   Contains theme colors, card, and typography settings
+*/
+
+.root {
+    /* Colors */
+    -fx-background-color: linear-gradient(to bottom, #fcfcfc, #f5f5f7);
+    -fx-text-primary-color: #1d1d1f;
+    -fx-text-secondary-color: #86868b;
+    
+    /* Inputs */
+    -fx-input-bg-color: #ffffff;
+    -fx-input-border-color: #d2d2d7;
+    
+    /* Cards */
+    -fx-card-bg-color: #ffffff;
+    -fx-card-border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Card container */
+.login-card {
+    -fx-background-color: -fx-card-bg-color;
+    -fx-background-radius: 24px;
+    -fx-border-radius: 24px;
+    -fx-border-color: -fx-card-border-color;
+    -fx-border-width: 1px;
+    -fx-padding: 40px 36px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 64, 0, 0, 16);
+}
+
+/* Headings and labels */
+.welcome-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.welcome-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+.error-message {
+    -fx-font-size: 13px;
+    -fx-text-fill: #e03b24; /* Warning red */
+}
+
+/* Footer styling */
+.login-footer {
+    -fx-background-color: #f2f2f3;
+    -fx-border-color: rgba(0, 0, 0, 0.05) transparent transparent transparent;
+    -fx-border-width: 1px 0px 0px 0px;
+}

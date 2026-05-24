@@ -19,7 +19,9 @@ public class Main extends Application {
         // 1. Initialize the SQLite database tables before loading the login view
         DatabaseConfig.initializeDatabase();
 
-        scene = new Scene(loadFXML("login"), 640, 480);
+        scene = new Scene(loadFXML("login"), 760, 520);
+        stage.setMinWidth(720);
+        stage.setMinHeight(500);
         
         // Icon Loader
         try {
@@ -42,6 +44,7 @@ public class Main extends Application {
 
         stage.setTitle("Eggspress Chicken Farm Manager");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 
