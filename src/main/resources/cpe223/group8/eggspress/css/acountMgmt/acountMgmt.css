@@ -1,3 +1,8 @@
 /*
    Eggspress Account Management Screen Structural Stylesheet
 */
+
+.view-root-container {
+    -fx-background-color: transparent;
+}
+

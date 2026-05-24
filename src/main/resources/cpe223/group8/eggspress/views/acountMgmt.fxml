@@ -8,7 +8,8 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="cpe223.group8.eggspress.controllers.AcountMgmtController"
-      prefHeight="600.0" prefWidth="800.0">
+      prefHeight="600.0" prefWidth="800.0"
+      styleClass="view-root-container">
     <stylesheets>
         <URL value="@../css/global.css" />
         <URL value="@../css/light.css" />
@@ -16,28 +17,41 @@
         <URL value="@../css/acountMgmt/light.css" />
     </stylesheets>
 
-    <VBox alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">
+    <VBox spacing="24.0" VBox.vgrow="ALWAYS" styleClass="view-content-pane">
         <padding>
-            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+            <Insets top="28.0" right="28.0" bottom="28.0" left="28.0"/>
         </padding>
 
-        <Label text="Account Management" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <VBox spacing="6.0">
+            <Label text="Account Management" styleClass="view-title"/>
+            <Label text="Manage and create user credentials for the Eggspress Chicken Farm Management platform." styleClass="view-desc"/>
+        </VBox>
 
-        <TableView fx:id="accountsTable" prefHeight="250.0" maxWidth="500.0">
-            <columns>
-                <TableColumn fx:id="usernameColumn" text="Username" prefWidth="250.0"/>
-                <TableColumn fx:id="passwordColumn" text="Password" prefWidth="250.0"/>
-            </columns>
-        </TableView>
+        <VBox spacing="16.0" styleClass="content-card" VBox.vgrow="ALWAYS">
+            <Label text="System Accounts" styleClass="card-title"/>
+            <TableView fx:id="accountsTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="usernameColumn" text="Username" prefWidth="250.0"/>
+                    <TableColumn fx:id="passwordColumn" text="Password" prefWidth="250.0"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+            </TableView>
+        </VBox>
 
-        <HBox spacing="10.0" alignment="CENTER" maxWidth="500.0">
-            <TextField fx:id="newUsernameField" promptText="New Username"/>
-            <TextField fx:id="newPasswordField" promptText="New Password"/>
-            <Button text="Create Account" onAction="#handleCreateAccount"/>
+        <VBox spacing="16.0" styleClass="content-card">
+            <Label text="Create New Account" styleClass="card-title"/>
+            <HBox spacing="12.0" alignment="CENTER_LEFT">
+                <TextField fx:id="newUsernameField" promptText="New Username" styleClass="text-input-modern" HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="newPasswordField" promptText="New Password" styleClass="text-input-modern" HBox.hgrow="ALWAYS"/>
+                <Button text="Create Account" onAction="#handleCreateAccount" styleClass="button-primary" prefHeight="44.0"/>
+            </HBox>
+        </VBox>
+
+        <HBox alignment="CENTER_RIGHT">
+            <Label fx:id="feedbackLabel" styleClass="feedback-message"/>
         </HBox>
-
-        <Label fx:id="feedbackLabel" textFill="green"/>
-
-        <Button text="Back to Dashboard" onAction="#handleBackToDashboard"/>
     </VBox>
 </VBox>
+

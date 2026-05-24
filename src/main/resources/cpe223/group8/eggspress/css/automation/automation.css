@@ -1,3 +1,8 @@
 /*
    Eggspress Automation Screen Structural Stylesheet
 */
+
+.view-root-container {
+    -fx-background-color: transparent;
+}
+

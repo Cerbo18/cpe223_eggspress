@@ -2,17 +2,10 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HeaderBar?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cpe223.group8.eggspress.controllers.AutomationController">
+<VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cpe223.group8.eggspress.controllers.AutomationController" styleClass="view-root-container">
     <stylesheets>
         <URL value="@../css/global.css" />
         <URL value="@../css/light.css" />
@@ -20,76 +13,98 @@
         <URL value="@../css/automation/light.css" />
     </stylesheets>
 
-    <VBox spacing="15.0" VBox.vgrow="ALWAYS">
+    <VBox spacing="24.0" VBox.vgrow="ALWAYS" styleClass="view-content-pane">
         <padding>
-            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
         </padding>
 
-        <!-- Navigation Header -->
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <Button onAction="#handleBackToDashboard" text="Back to Dashboard" />
-            <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Automation &amp; Feeding Schedules" />
-        </HBox>
+        <VBox spacing="6.0">
+            <Label text="Automation &amp; Feeding Schedules" styleClass="view-title" />
+            <Label text="Schedule chicken feeding sequences and dispatch automated hydration controls." styleClass="view-desc" />
+        </VBox>
 
-        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Water Dispatch Automation" />
-        
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <VBox spacing="5.0">
-                <Label text="Water Source:" />
-                <ComboBox fx:id="waterSourceComboBox" prefWidth="180.0" />
-            </VBox>
-            <VBox spacing="5.0">
-                <Label text="Location:" />
-                <ComboBox fx:id="locationComboBox" prefWidth="150.0" />
-            </VBox>
-            <VBox spacing="5.0">
-                <Label text="Amount (Liters):" />
-                <TextField fx:id="waterAmountField" prefWidth="100.0" />
-            </VBox>
-            <VBox spacing="5.0">
-                <Label text="" />
-                <Button onAction="#handleSendWater" text="Send Water" />
-            </VBox>
-        </HBox>
-        
-        <Label fx:id="waterFeedbackLabel" style="-fx-text-fill: green;" />
+        <!-- Split into Columns or Cards -->
+        <GridPane hgap="20.0" vgap="20.0" VBox.vgrow="ALWAYS">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="40.0"/>
+                <ColumnConstraints percentWidth="60.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints percentHeight="100.0"/>
+            </rowConstraints>
+            <children>
+                <!-- Hydration Dispatcher Card -->
+                <VBox spacing="16.0" styleClass="content-card" GridPane.columnIndex="0">
+                    <Label text="Water Dispatch Automation" styleClass="card-title" />
+                    <VBox spacing="16.0" VBox.vgrow="ALWAYS">
+                        <VBox spacing="6.0">
+                            <Label text="Water Source" styleClass="form-label" />
+                            <ComboBox fx:id="waterSourceComboBox" maxWidth="Infinity" styleClass="combo-box-modern" promptText="Select Source"/>
+                        </VBox>
+                        <VBox spacing="6.0">
+                            <Label text="Location Target" styleClass="form-label" />
+                            <ComboBox fx:id="locationComboBox" maxWidth="Infinity" styleClass="combo-box-modern" promptText="Select Destination"/>
+                        </VBox>
+                        <VBox spacing="6.0">
+                            <Label text="Amount (Liters)" styleClass="form-label" />
+                            <TextField fx:id="waterAmountField" styleClass="text-input-modern" promptText="e.g. 50"/>
+                        </VBox>
+                    </VBox>
+                    <HBox alignment="BOTTOM_RIGHT" spacing="10.0" style="-fx-padding: 8px 0px 0px 0px;">
+                        <Label fx:id="waterFeedbackLabel" styleClass="feedback-message" wrapText="true" HBox.hgrow="ALWAYS" maxWidth="180.0"/>
+                        <Button onAction="#handleSendWater" text="Send Water" styleClass="button-primary" prefHeight="40.0" prefWidth="120.0" />
+                    </HBox>
+                </VBox>
 
-        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Feeding Schedule Board" />
-        
-        <TableView fx:id="scheduleTable" prefHeight="200.0">
-            <columns>
-                <TableColumn fx:id="categoryCol" prefWidth="150.0" text="Category" />
-                <TableColumn fx:id="timeCol" prefWidth="120.0" text="Time" />
-                <TableColumn fx:id="feedingTypeCol" prefWidth="250.0" text="Feeding Type" />
-                <TableColumn fx:id="statusCol" prefWidth="150.0" text="Status" />
-            </columns>
-        </TableView>
+                <!-- Feeding Schedule Board Card -->
+                <VBox spacing="16.0" styleClass="content-card" GridPane.columnIndex="1">
+                    <Label text="Feeding Schedule Board" styleClass="card-title" />
+                    <TableView fx:id="scheduleTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="categoryCol" prefWidth="120.0" text="Category" />
+                            <TableColumn fx:id="timeCol" prefWidth="100.0" text="Time" />
+                            <TableColumn fx:id="feedingTypeCol" prefWidth="180.0" text="Feeding Type" />
+                            <TableColumn fx:id="statusCol" prefWidth="120.0" text="Status" />
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </children>
+        </GridPane>
 
-        <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Add New Feeding Schedule" />
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <VBox spacing="5.0">
-                <Label text="Category:" />
-                <ComboBox fx:id="scheduleCategoryComboBox" prefWidth="120.0" />
-            </VBox>
-            <VBox spacing="5.0">
-                <Label text="Time:" />
-                <TextField fx:id="scheduleTimeField" prefWidth="100.0" promptText="e.g. 08:00 AM" />
-            </VBox>
-            <VBox spacing="5.0">
-                <Label text="Feeding Type:" />
-                <TextField fx:id="scheduleFeedingTypeField" prefWidth="180.0" promptText="e.g. Layer Feed" />
-            </VBox>
-            <VBox spacing="5.0">
-                <Label text="Status:" />
-                <TextField fx:id="scheduleStatusField" prefWidth="120.0" promptText="e.g. Scheduled" />
-            </VBox>
-            <VBox spacing="5.0">
-                <Label text="" />
-                <Button onAction="#handleCreateSchedule" text="Add Schedule" />
-            </VBox>
-            <Button mnemonicParsing="false" onAction="#handleDeleteButton" text="Delete Schedule" />
+        <!-- New Schedule Card -->
+        <VBox spacing="16.0" styleClass="content-card">
+            <Label text="Add New Feeding Schedule" styleClass="card-title" />
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Category" styleClass="form-label" />
+                    <ComboBox fx:id="scheduleCategoryComboBox" maxWidth="Infinity" styleClass="combo-box-modern" promptText="Select Category"/>
+                </VBox>
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Time" styleClass="form-label" />
+                    <TextField fx:id="scheduleTimeField" styleClass="text-input-modern" promptText="e.g. 08:00 AM" />
+                </VBox>
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Feeding Type" styleClass="form-label" />
+                    <TextField fx:id="scheduleFeedingTypeField" styleClass="text-input-modern" promptText="e.g. Layer Feed" />
+                </VBox>
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Status" styleClass="form-label" />
+                    <TextField fx:id="scheduleStatusField" styleClass="text-input-modern" promptText="e.g. Scheduled" />
+                </VBox>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" spacing="10.0" style="-fx-padding: 8px 0px 0px 0px;">
+                <Button onAction="#handleCreateSchedule" text="Add Schedule" styleClass="button-primary" prefHeight="40.0" prefWidth="140.0" />
+                <Button onAction="#handleDeleteButton" text="Delete Schedule" styleClass="button-danger" prefHeight="40.0" prefWidth="140.0" />
+            </HBox>
+        </VBox>
+
+        <!-- Footer -->
+        <HBox alignment="CENTER_RIGHT">
+            <Label fx:id="scheduleFeedbackLabel" styleClass="feedback-message" />
         </HBox>
-        
-        <Label fx:id="scheduleFeedbackLabel" style="-fx-text-fill: green;" />
     </VBox>
 </VBox>
+
