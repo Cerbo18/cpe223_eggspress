@@ -115,7 +115,7 @@
                                 </children>
                             </HBox>
 
-                            <Button text="Overview" styleClass="sidebar-menu-btn" onAction="#handleOverview">
+                            <Button fx:id="overviewBtn" text="Overview" styleClass="sidebar-menu-btn" onAction="#handleOverview">
                                 <graphic>
                                     <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
                                         <Group>
@@ -127,7 +127,7 @@
                                     </StackPane>
                                 </graphic>
                             </Button>
-                            <Button text="Account Management" styleClass="sidebar-menu-btn" onAction="#handleAccountManagement">
+                            <Button fx:id="accountMgmtBtn" text="Account Management" styleClass="sidebar-menu-btn" onAction="#handleAccountManagement">
                                 <graphic>
                                     <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
                                         <Group>
@@ -144,7 +144,7 @@
                                     </StackPane>
                                 </graphic>
                             </Button>
-                            <Button text="Inventory Management" styleClass="sidebar-menu-btn" onAction="#handleInventoryManagement">
+                            <Button fx:id="inventoryBtn" text="Inventory Management" styleClass="sidebar-menu-btn" onAction="#handleInventoryManagement">
                                 <graphic>
                                     <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
                                         <Group>
@@ -155,7 +155,7 @@
                                     </StackPane>
                                 </graphic>
                             </Button>
-                            <Button text="Automation &amp; Schedules" styleClass="sidebar-menu-btn" onAction="#handleAutomationManagement">
+                            <Button fx:id="automationBtn" text="Automation &amp; Schedules" styleClass="sidebar-menu-btn" onAction="#handleAutomationManagement">
                                 <graphic>
                                     <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
                                         <Group>
@@ -166,7 +166,7 @@
                                     </StackPane>
                                 </graphic>
                             </Button>
-                            <Button text="Chicken Farm Layout" styleClass="sidebar-menu-btn" onAction="#handleViewLayout">
+                            <Button fx:id="layoutBtn" text="Chicken Farm Layout" styleClass="sidebar-menu-btn" onAction="#handleViewLayout">
                                 <graphic>
                                     <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
                                         <Group>

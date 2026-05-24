@@ -39,6 +39,21 @@ public class DashboardController {
     @FXML
     private ScrollPane overviewView;
 
+    @FXML
+    private Button overviewBtn;
+
+    @FXML
+    private Button accountMgmtBtn;
+
+    @FXML
+    private Button inventoryBtn;
+
+    @FXML
+    private Button automationBtn;
+
+    @FXML
+    private Button layoutBtn;
+
     private boolean sidebarExpanded = true;
     private double previousDividerPosition = 0.125; // Default expanded
 
@@ -46,8 +61,23 @@ public class DashboardController {
         instance = this;
     }
 
+    private void clearActiveStyle(Button btn) {
+        if (btn != null) {
+            while (btn.getStyleClass().remove("active"));
+        }
+    }
+
+    private void setActiveStyle(Button btn) {
+        if (btn != null) {
+            clearActiveStyle(btn); // Ensure no remnants first
+            btn.getStyleClass().add("active");
+        }
+    }
+
     @FXML
     public void initialize() {
+        // Set overview button as active by default on startup safely
+        setActiveStyle(overviewBtn);
         Platform.runLater(() -> {
             if (splitPane != null) {
                 splitPane.setDividerPosition(0, previousDividerPosition);
@@ -60,9 +90,28 @@ public class DashboardController {
      * If fxmlName is "overview", it restores the default dashboard overview.
      */
     public void loadView(String fxmlName) {
+        // Reset active style class safely for all sidebar buttons
+        clearActiveStyle(overviewBtn);
+        clearActiveStyle(accountMgmtBtn);
+        clearActiveStyle(inventoryBtn);
+        clearActiveStyle(automationBtn);
+        clearActiveStyle(layoutBtn);
+
+        // Set the current view button as active
         if ("overview".equals(fxmlName)) {
+            setActiveStyle(overviewBtn);
             contentArea.getChildren().setAll(overviewView);
             return;
+        }
+
+        if ("acountMgmt".equals(fxmlName)) {
+            setActiveStyle(accountMgmtBtn);
+        } else if ("inventory".equals(fxmlName)) {
+            setActiveStyle(inventoryBtn);
+        } else if ("automation".equals(fxmlName)) {
+            setActiveStyle(automationBtn);
+        } else if ("layout".equals(fxmlName)) {
+            setActiveStyle(layoutBtn);
         }
 
         try {

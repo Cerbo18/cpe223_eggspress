@@ -103,10 +103,32 @@
     -fx-stroke-line-join: round;
 }
 
+/* Hovering or interacting with a regular menu button changes the icon stroke color */
 .sidebar-menu-btn:hover .sidebar-menu-icon,
 .sidebar-menu-btn:pressed .sidebar-menu-icon,
 .sidebar-menu-btn:focused .sidebar-menu-icon {
     -fx-stroke: #1d1d1f;
+    -fx-stroke-width: 2; /* Keep standard thickness */
+}
+
+/* Active (selected) state for menu buttons */
+.sidebar-menu-btn.active {
+    -fx-background-color: rgba(0, 0, 0, 0.06);
+    -fx-text-fill: -fx-brand-primary;
+    -fx-font-weight: bold;
+}
+
+.sidebar-menu-btn.active .sidebar-menu-icon {
+    -fx-stroke: -fx-brand-primary;
+    -fx-stroke-width: 2; /* Keep regular thickness when selected */
+}
+
+/* Keep standard stroke width and brand color even when hovered, pressed, or focused if the button is active */
+.sidebar-menu-btn.active:hover .sidebar-menu-icon,
+.sidebar-menu-btn.active:pressed .sidebar-menu-icon,
+.sidebar-menu-btn.active:focused .sidebar-menu-icon {
+    -fx-stroke: -fx-brand-primary;
+    -fx-stroke-width: 2;
 }
 
 .sidebar-new-btn {
