@@ -1,9 +1,13 @@
-# Chicken Eggspress - Farm Management System
+# Egspress Chicken Farm Manager
+
+<p align="center">
+  <img src="src/main/resources/kaviyes/nhx/eggspress/1x/Eggspress-Combination-Mark-Full.png" alt="Egspress Chicken Farm Manager Logo" width="800" />
+</p>
 
 > [!WARNING]
 > This repository is created for educational use only.
 
-Welcome to Chicken Eggspress. For coding simplicity in packages, directories, and Maven configuration, the project utilizes the identifier "eggspress". This application is a modular, high-performance farm management platform utilizing JavaFX for its interactive graphical user interface and SQLite for secure, lightweight local data persistence.
+Welcome to Egspress Chicken Farm Manager. For coding simplicity in packages, directories, and Maven configuration, the project utilizes the identifier "eggspress". This application is a modular, high-performance farm management platform utilizing JavaFX for its interactive graphical user interface and SQLite for secure, lightweight local data persistence.
 
 ---
 
@@ -105,28 +109,46 @@ eggspress/
 │       │               │   ├── UserRepository.java
 │       │               │   └── FarmRepository.java
 │       │               │
-│       │               ├── controllers/ # Glue layer between views and models
-│       │               │   ├── LoginController.java
-│       │               │   ├── DashboardController.java
-│       │               │   ├── LayoutController.java
-│       │               │   ├── InventoryController.java
-│       │               │   ├── AcountMgmtController.java
-│       │               │   └── AutomationController.java
-│       │               │
-│       │               └── utils/       # Empty for now
+│       │               └── controllers/ # Glue layer between views and models
+│       │                   ├── LoginController.java
+│       │                   ├── DashboardController.java
+│       │                   ├── LayoutController.java
+│       │                   ├── InventoryController.java
+│       │                   ├── AcountMgmtController.java
+│       │                   └── AutomationController.java
 │       │
-│       └── resources/               # Static markup layouts and UI styles
-│           └── cpe223/
-│               └── group8/
+│       └── resources/               # Static markup layouts, UI styles, and brand assets
+│           ├── cpe223/
+│           │   └── group8/
+│           │       └── eggspress/
+│           │           ├── views/       # JavaFX FXML screen templates
+│           │           │   ├── login.fxml
+│           │           │   ├── dashboard.fxml
+│           │           │   ├── layout.fxml
+│           │           │   ├── inventory.fxml
+│           │           │   ├── acountMgmt.fxml
+│           │           │   └── automation.fxml
+│           │           ├── css/         # Global stylesheets for custom skinning
+│           │           │   └── styles.css
+│           │           └── icons/       # Application icons
+│           │               └── icon.png
+│           │
+│           └── kaviyes/                 # Brand and design assets
+│               └── nhx/
 │                   └── eggspress/
-│                       ├── views/       # JavaFX FXML screen templates
-│                       │   ├── login.fxml
-│                       │   ├── dashboard.fxml
-│                       │   ├── inventory.fxml
-│                       │   ├── acountMgmt.fxml
-│                       │   └── automation.fxml
-│                       └── css/         # Global stylesheets for custom skinning
-│                           └── styles.css
+│                       ├── 1x/          # 1x PNG branding assets
+│                       │   ├── Eggspress-App-Icon.png
+│                       │   ├── Eggspress-Combination-Mark-Full.png
+│                       │   ├── Eggspress-Combination-Mark.png
+│                       │   ├── Eggspress-Icon.png
+│                       │   └── Wordmark.png
+│                       ├── SVG/         # SVG Vector branding assets
+│                       │   ├── Eggspress App Icon.svg
+│                       │   ├── Eggspress Combination Mark Full.svg
+│                       │   ├── Eggspress Combination Mark.svg
+│                       │   ├── Eggspress Icon.svg
+│                       │   └── Wordmark.svg
+│                       └── ...          # Additional scaled assets (0.2x, 0.5x, etc.)
 │
 ├── database/                        # Dedicated directory for database files
 │   └── eggspress.db
@@ -139,7 +161,7 @@ eggspress/
 
 ## Execution and Compilation
 
-Follow these quick commands to build and test Chicken Eggspress:
+Follow these quick commands to build and test Egspress Chicken Farm Manager:
 
 ### 1. Build and Compile
 Fetches JavaFX and SQLite modules, resolves all libraries, and compiles the source code:
