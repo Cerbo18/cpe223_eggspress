@@ -80,6 +80,7 @@
         <trailing>
             <HBox alignment="CENTER_RIGHT" spacing="8.0" styleClass="header-profile-container">
                 <children>
+                    <!-- Profile Button -->
                     <Button styleClass="sidebar-action-btn" text="">
                         <graphic>
                             <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
@@ -87,6 +88,18 @@
                                     <SVGPath styleClass="sidebar-toggle-icon" content="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
                                     <SVGPath styleClass="sidebar-toggle-icon" content="M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
                                     <SVGPath styleClass="sidebar-toggle-icon" content="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                                </Group>
+                            </StackPane>
+                        </graphic>
+                    </Button>
+
+                    <!-- Settings Button -->
+                    <Button styleClass="sidebar-action-btn" text="" disable="true">
+                        <graphic>
+                            <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
+                                <Group scaleX="0.8" scaleY="0.8">
+                                    <SVGPath styleClass="sidebar-toggle-icon" content="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                                    <SVGPath styleClass="sidebar-toggle-icon" content="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
                                 </Group>
                             </StackPane>
                         </graphic>
@@ -189,16 +202,6 @@
                             <!-- Bottom controls -->
                             <VBox styleClass="sidebar-bottom">
                                 <children>
-                                    <Button text="Settings" styleClass="sidebar-menu-btn" disable="true">
-                                        <graphic>
-                                            <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
-                                                <Group>
-                                                    <SVGPath styleClass="sidebar-menu-icon" content="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
-                                                    <SVGPath styleClass="sidebar-menu-icon" content="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
-                                                </Group>
-                                            </StackPane>
-                                        </graphic>
-                                    </Button>
                                     <Button text="Logout" styleClass="sidebar-menu-btn" onAction="#handleLogout">
                                         <graphic>
                                             <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
@@ -218,60 +221,7 @@
             </VBox>
 
             <!-- Main Content Area Container -->
-            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
-                <children>
-                    <ScrollPane fx:id="overviewView" fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
-                        <content>
-                            <VBox styleClass="dashboard-content-pane">
-                                <children>
-                                    <!-- Welcome Banner -->
-                                    <VBox styleClass="welcome-banner">
-                                        <children>
-                                            <Label text="Welcome to Dashboard" styleClass="welcome-banner-title" />
-                                            <Label text="Manage coops, track inventory, and monitor automated schedules." styleClass="welcome-banner-desc" />
-                                        </children>
-                                    </VBox>
-        
-                                    <!-- Grid Title -->
-                                    <Label text="Quick Farm Overview" styleClass="stat-grid-title" />
-        
-                                    <!-- Stats Row -->
-                                    <HBox spacing="20.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                                        <children>
-                                            <!-- Card 1: Coops -->
-                                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
-                                                <children>
-                                                    <Label text="ACTIVE COOPS" styleClass="stat-title" />
-                                                    <Label text="4 Coops" styleClass="stat-value" />
-                                                    <Label text="● 100% Operational" styleClass="stat-indicator" />
-                                                </children>
-                                            </VBox>
-        
-                                            <!-- Card 2: Flock -->
-                                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
-                                                <children>
-                                                    <Label text="TOTAL FLOCK" styleClass="stat-title" />
-                                                    <Label text="1,420 Birds" styleClass="stat-value" />
-                                                    <Label text="▲ +12% this month" styleClass="stat-indicator" />
-                                                </children>
-                                            </VBox>
-        
-                                            <!-- Card 3: Stock -->
-                                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
-                                                <children>
-                                                    <Label text="FEED STOCK" styleClass="stat-title" />
-                                                    <Label text="84% Level" styleClass="stat-value" />
-                                                    <Label text="● Optimal Stock" styleClass="stat-indicator" />
-                                                </children>
-                                            </VBox>
-                                        </children>
-                                    </HBox>
-                                </children>
-                            </VBox>
-                        </content>
-                    </ScrollPane>
-                </children>
-            </StackPane>
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;" />
         </items>
     </SplitPane>
 </VBox>

@@ -1,0 +1,39 @@
+/*
+   Eggspress Overview View Light Theme Styling
+*/
+
+.welcome-banner {
+    -fx-background-color: -fx-card-bg-color;
+    -fx-border-color: -fx-card-border-color;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.015), 24, 0, 0, 4);
+}
+
+.welcome-banner-title {
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.welcome-banner-desc {
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+.stat-grid-title {
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.stat-card {
+    -fx-background-color: -fx-card-bg-color;
+    -fx-border-color: -fx-card-border-color;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.015), 16, 0, 0, 2);
+}
+
+.stat-title {
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+.stat-value {
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.stat-indicator {
+    -fx-text-fill: -fx-brand-primary;
+}

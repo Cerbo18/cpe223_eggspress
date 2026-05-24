@@ -37,9 +37,6 @@ public class DashboardController {
     private StackPane contentArea;
 
     @FXML
-    private ScrollPane overviewView;
-
-    @FXML
     private Button overviewBtn;
 
     @FXML
@@ -78,6 +75,7 @@ public class DashboardController {
     public void initialize() {
         // Set overview button as active by default on startup safely
         setActiveStyle(overviewBtn);
+        loadView("overview");
         Platform.runLater(() -> {
             if (splitPane != null) {
                 splitPane.setDividerPosition(0, previousDividerPosition);
@@ -100,11 +98,7 @@ public class DashboardController {
         // Set the current view button as active
         if ("overview".equals(fxmlName)) {
             setActiveStyle(overviewBtn);
-            contentArea.getChildren().setAll(overviewView);
-            return;
-        }
-
-        if ("acountMgmt".equals(fxmlName)) {
+        } else if ("acountMgmt".equals(fxmlName)) {
             setActiveStyle(accountMgmtBtn);
         } else if ("inventory".equals(fxmlName)) {
             setActiveStyle(inventoryBtn);

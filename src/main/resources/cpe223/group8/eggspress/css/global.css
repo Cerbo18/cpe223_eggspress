@@ -210,6 +210,35 @@
     -fx-fill: -fx-text-primary-color;
 }
 
+/* Eliminate cell borders and blue highlight bleed */
+.table-view .table-cell {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.table-view:focused .table-row-cell:focused .table-cell {
+    -fx-background-color: transparent;
+}
+
+.table-view:focused {
+    -fx-focus-color: transparent;
+    -fx-accent: transparent;
+}
+
+/* Maintain custom status colors under selection states */
+.table-view .table-row-cell:filled:selected .status-optimal .text,
+.status-optimal .text {
+    -fx-fill: -fx-brand-primary;
+}
+.table-view .table-row-cell:filled:selected .status-monitoring .text,
+.status-monitoring .text {
+    -fx-fill: #ff9500;
+}
+.table-view .table-row-cell:filled:selected .status-inactive .text,
+.status-inactive .text {
+    -fx-fill: #86868b;
+}
+
 .table-view .corner {
     -fx-background-color: transparent;
 }
