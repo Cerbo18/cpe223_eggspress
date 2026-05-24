@@ -4,6 +4,7 @@ import cpe223.group8.eggspress.config.DatabaseConfig;
 import cpe223.group8.eggspress.models.Automation;
 import cpe223.group8.eggspress.models.FeedingSchedule;
 import cpe223.group8.eggspress.models.InventoryItem;
+import cpe223.group8.eggspress.models.ChickenHouse;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -250,4 +251,26 @@ public class FarmRepository {
         return false;
     }
 }
+
+    // 9. Fetch all recorded active coops (ChickenHouses) inside SQLite
+    public static List<ChickenHouse> getAllCoops() {
+        List<ChickenHouse> coops = new ArrayList<>();
+        String sql = "SELECT * FROM coops";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                coops.add(new ChickenHouse(
+                    rs.getString("id"),
+                    rs.getString("name"),
+                    rs.getInt("flock_count"),
+                    rs.getString("status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching all coops from DB: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return coops;
+    }
 }

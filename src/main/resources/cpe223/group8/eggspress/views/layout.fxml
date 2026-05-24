@@ -1,50 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HeaderBar?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 
-<VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cpe223.group8.eggspress.controllers.LayoutController">
-   <HeaderBar styleClass="app-headerbar" />
+<VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cpe223.group8.eggspress.controllers.LayoutController" styleClass="view-root-container">
+    <stylesheets>
+        <URL value="@../css/global.css" />
+        <URL value="@../css/light.css" />
+        <URL value="@../css/layout/layout.css" />
+        <URL value="@../css/layout/light.css" />
+    </stylesheets>
 
-   <AnchorPane id="AnchorPane" VBox.vgrow="ALWAYS">
-      <children>
-         <TableView fx:id="ScheduleTable" layoutX="446.0" layoutY="36.0" prefHeight="234.0" prefWidth="342.0">
-           <columns>
-             <TableColumn fx:id="CategoryCol" prefWidth="92.00006103515625" text="Category" />
-             <TableColumn fx:id="TimeCol" prefWidth="74.39996337890625" text="Time" />
-               <TableColumn fx:id="FeedingCol" prefWidth="85.60003662109375" text="Feeding Type" />
-               <TableColumn fx:id="StatusCol" prefWidth="89.5999755859375" text="Status" />
-           </columns>
-         </TableView>
-         <BarChart fx:id="FeedChart" layoutX="288.0" layoutY="297.0" prefHeight="400.0" prefWidth="228.0">
-           <xAxis>
-             <CategoryAxis side="BOTTOM" />
-           </xAxis>
-           <yAxis>
-             <NumberAxis side="LEFT" />
-           </yAxis>
-         </BarChart>
-         <BarChart fx:id="WaterChart" layoutX="537.0" layoutY="297.0" prefHeight="400.0" prefWidth="239.0">
-           <xAxis>
-             <CategoryAxis side="BOTTOM" />
-           </xAxis>
-           <yAxis>
-             <NumberAxis side="LEFT" />
-           </yAxis>
-         </BarChart>
-         <Label layoutX="29.0" layoutY="47.0" text="Main Coop A" />
-         <Label layoutX="29.0" layoutY="120.0" text="Coop B" />
-         <Label layoutX="192.0" layoutY="47.0" text="Chicls Facility" />
-         <Label layoutX="186.0" layoutY="111.0" text="Breeeding Barn" />
-         <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleBack" text="Back to Dashboard" />
-      </children>
-   </AnchorPane>
+    <VBox spacing="24.0" VBox.vgrow="ALWAYS" styleClass="view-content-pane">
+        <padding>
+            <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
+        </padding>
+
+        <VBox spacing="6.0">
+            <Label text="Chicken Farm Layout &amp; Metrics" styleClass="view-title" />
+            <Label text="Interactive blueprint of coops and facilities, coupled with live stock metrics." styleClass="view-desc" />
+        </VBox>
+
+        <!-- Top Half: Map and Table Side-by-Side -->
+        <GridPane hgap="20.0" vgap="20.0" prefHeight="260.0">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50.0"/>
+                <ColumnConstraints percentWidth="50.0"/>
+            </columnConstraints>
+            <children>
+                <!-- Farm Layout Map Card -->
+                <VBox spacing="16.0" styleClass="content-card" GridPane.columnIndex="0">
+                    <Label text="Farm Facility Map" styleClass="card-title" />
+                    <GridPane hgap="12.0" vgap="12.0" VBox.vgrow="ALWAYS">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50.0"/>
+                            <ColumnConstraints percentWidth="50.0"/>
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints percentHeight="50.0"/>
+                            <RowConstraints percentHeight="50.0"/>
+                        </rowConstraints>
+                        <children>
+                            <!-- Building 1: Main Coop A -->
+                            <VBox styleClass="facility-badge" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label text="Main Coop A" styleClass="facility-name" />
+                                <Label text="Active • Optimal" styleClass="facility-status-optimal" />
+                            </VBox>
+                            
+                            <!-- Building 2: Chicls Facility -->
+                            <VBox styleClass="facility-badge" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label text="Chicls Facility" styleClass="facility-name" />
+                                <Label text="Active • Optimal" styleClass="facility-status-optimal" />
+                            </VBox>
+
+                            <!-- Building 3: Coop B -->
+                            <VBox styleClass="facility-badge" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <Label text="Coop B" styleClass="facility-name" />
+                                <Label text="Active • Monitoring" styleClass="facility-status-monitoring" />
+                            </VBox>
+
+                            <!-- Building 4: Breeding Barn -->
+                            <VBox styleClass="facility-badge" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <Label text="Breeeding Barn" styleClass="facility-name" />
+                                <Label text="Active • Optimal" styleClass="facility-status-optimal" />
+                            </VBox>
+                        </children>
+                    </GridPane>
+                </VBox>
+
+                <!-- Feeding Schedule Table Card -->
+                <VBox spacing="16.0" styleClass="content-card" GridPane.columnIndex="1">
+                    <Label text="Farm Feeding Schedule" styleClass="card-title" />
+                    <TableView fx:id="ScheduleTable" VBox.vgrow="ALWAYS">
+                       <columns>
+                            <TableColumn fx:id="CategoryCol" prefWidth="90.0" text="Category" />
+                            <TableColumn fx:id="TimeCol" prefWidth="70.0" text="Time" />
+                            <TableColumn fx:id="FeedingCol" prefWidth="100.0" text="Feeding Type" />
+                            <TableColumn fx:id="StatusCol" prefWidth="80.0" text="Status" />
+                       </columns>
+                       <columnResizePolicy>
+                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                       </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </children>
+        </GridPane>
+
+        <!-- Bottom Half: Two Charts Side-by-Side -->
+        <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+            <children>
+                <VBox spacing="10.0" styleClass="content-card" HBox.hgrow="ALWAYS">
+                    <Label text="Feed Inventory Stock (kg)" styleClass="card-title" />
+                    <BarChart fx:id="FeedChart" legendVisible="false" VBox.vgrow="ALWAYS">
+                       <xAxis>
+                         <CategoryAxis side="BOTTOM" />
+                       </xAxis>
+                       <yAxis>
+                         <NumberAxis side="LEFT" />
+                       </yAxis>
+                    </BarChart>
+                </VBox>
+
+                <VBox spacing="10.0" styleClass="content-card" HBox.hgrow="ALWAYS">
+                    <Label text="Water Inventory Stock (L)" styleClass="card-title" />
+                    <BarChart fx:id="WaterChart" legendVisible="false" VBox.vgrow="ALWAYS">
+                       <xAxis>
+                         <CategoryAxis side="BOTTOM" />
+                       </xAxis>
+                       <yAxis>
+                         <NumberAxis side="LEFT" />
+                       </yAxis>
+                    </BarChart>
+                </VBox>
+            </children>
+        </HBox>
+    </VBox>
 </VBox>

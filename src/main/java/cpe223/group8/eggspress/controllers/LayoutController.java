@@ -98,7 +98,12 @@ public class LayoutController implements Initializable {
     }
 
     @FXML
-    private void handleBack(ActionEvent event)throws IOException {
-        Main.setRoot("dashboard");
+    private void handleBack(ActionEvent event) throws IOException {
+        DashboardController dashboard = DashboardController.getInstance();
+        if (dashboard != null) {
+            dashboard.loadView("overview");
+        } else {
+            Main.setRoot("dashboard");
+        }
     }
 }

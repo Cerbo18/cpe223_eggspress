@@ -59,6 +59,15 @@ public class DatabaseConfig {
             );
         """;
 
+        String createCoopsTable = """
+            CREATE TABLE IF NOT EXISTS coops (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                flock_count INTEGER NOT NULL,
+                status TEXT NOT NULL
+            );
+        """;
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             
@@ -67,6 +76,7 @@ public class DatabaseConfig {
             stmt.execute(createInventoryTable);
             stmt.execute(createSchedulesTable);
             stmt.execute(createAutomationsTable);
+            stmt.execute(createCoopsTable);
             
             // 2. Check and seed standard admin user
             try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {
@@ -88,6 +98,21 @@ public class DatabaseConfig {
                     """;
                     stmt.execute(seedInventory);
                     System.out.println("Default chicken inventory stocks successfully seeded.");
+                }
+            }
+
+            // 4. NEW: Check and seed default starting coops
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM coops")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    String seedCoops = """
+                        INSERT INTO coops (id, name, flock_count, status) VALUES 
+                        ('COOP001', 'Main Coop A', 450, 'Optimal'),
+                        ('COOP002', 'Chicls Facility', 320, 'Optimal'),
+                        ('COOP003', 'Coop B', 400, 'Monitoring'),
+                        ('COOP004', 'Breeding Barn', 250, 'Optimal');
+                    """;
+                    stmt.execute(seedCoops);
+                    System.out.println("Default chicken coops successfully seeded.");
                 }
             }
             

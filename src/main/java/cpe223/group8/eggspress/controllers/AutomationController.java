@@ -243,10 +243,15 @@ public class AutomationController {
 
     @FXML
     private void handleBackToDashboard() {
-        try {
-            Main.setRoot("dashboard");
-        } catch (IOException e) {
-            e.printStackTrace();
+        DashboardController dashboard = DashboardController.getInstance();
+        if (dashboard != null) {
+            dashboard.loadView("overview");
+        } else {
+            try {
+                Main.setRoot("dashboard");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
