@@ -13,7 +13,7 @@ Welcome to Eggspress Chicken Farm Manager. For coding simplicity in packages, di
 
 To build, run, and contribute to this repository, your local development system must meet the following software requirements:
 
-*   **Java Development Kit (JDK)**: Version 21 (LTS release is highly recommended)
+*   **Java Development Kit (JDK)**: Version 25 (LTS release is highly recommended)
 *   **Apache Maven**: Version 3.6.0 or higher
 *   **Operating System**: Windows 10/11 (with PowerShell or Command Prompt)
 *   **SQLite**: Local JDBC client (handled automatically via Maven dependencies)
@@ -42,8 +42,8 @@ Once Scoop is installed, execute the following commands to install your Java env
 # Add the official Java bucket to Scoop
 scoop bucket add java 
 
-# Install OpenJDK 21
-scoop install java/openjdk21 # Ignore if LTS version of Java is already installed 
+# Install OpenJDK 25
+scoop install java/openjdk25 # Ignore if LTS version of Java is already installed 
 
 # Install Apache Maven
 scoop install main/maven
