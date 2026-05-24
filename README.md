@@ -1,8 +1,6 @@
 # Eggspress Chicken Farm Manager
 
-<p align="center">
-  <img src="src/main/resources/kaviyes/nhx/eggspress/1x/Eggspress-Combination-Mark-Full.png" alt="Eggspress Chicken Farm Manager Logo" width="800" />
-</p>
+![Eggspress Chicken Farm Manager Logo](./src/main/resources/kaviyes/nhx/eggspress/Assets/1x/Eggspress-Combination-Mark-Full.png)
 
 > [!WARNING]
 > This repository is created for educational use only.
