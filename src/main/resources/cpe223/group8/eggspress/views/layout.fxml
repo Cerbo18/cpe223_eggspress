@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="cpe223.group8.eggspress.controllers.LayoutController">
+   <children>
+      <TableView fx:id="ScheduleTable" layoutX="446.0" layoutY="36.0" prefHeight="234.0" prefWidth="342.0">
+        <columns>
+          <TableColumn fx:id="CategoryCol" prefWidth="92.00006103515625" text="Category" />
+          <TableColumn fx:id="TimeCol" prefWidth="74.39996337890625" text="Time" />
+            <TableColumn fx:id="FeedingCol" prefWidth="85.60003662109375" text="Feeding Type" />
+            <TableColumn fx:id="StatusCol" prefWidth="89.5999755859375" text="Status" />
+        </columns>
+      </TableView>
+      <BarChart fx:id="FeedChart" layoutX="288.0" layoutY="297.0" prefHeight="400.0" prefWidth="228.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </BarChart>
+      <BarChart fx:id="WaterChart" layoutX="537.0" layoutY="297.0" prefHeight="400.0" prefWidth="239.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </BarChart>
+      <Label layoutX="29.0" layoutY="47.0" text="Main Coop A" />
+      <Label layoutX="29.0" layoutY="120.0" text="Coop B" />
+      <Label layoutX="192.0" layoutY="47.0" text="Chicls Facility" />
+      <Label layoutX="186.0" layoutY="111.0" text="Breeeding Barn" />
+      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleBack" text="Back to Dashboard" />
+   </children>
+</AnchorPane>

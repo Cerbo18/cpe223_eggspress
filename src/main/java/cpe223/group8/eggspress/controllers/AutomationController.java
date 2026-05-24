@@ -19,6 +19,7 @@ import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.util.List;
+import javafx.event.ActionEvent;
 
 public class AutomationController {
 
@@ -66,7 +67,6 @@ public class AutomationController {
     @FXML
     private Label scheduleFeedbackLabel;
 
-    @FXML
     public void initialize() {
         // 1. Force Location Selection Setup (Avoid FXML parsing duplication bugs)
         locationComboBox.getItems().clear();
@@ -247,6 +247,39 @@ public class AutomationController {
             Main.setRoot("dashboard");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleDeleteButton(ActionEvent event) {
+        // 1. Clear any old feedback text
+        scheduleFeedbackLabel.setText("");
+
+        // 2. Get the currently selected schedule item from the table view
+        FeedingSchedule selectedSchedule = scheduleTable.getSelectionModel().getSelectedItem();
+
+        // 3. Validation: Check if the user actually clicked a row before pressing delete
+        if (selectedSchedule == null) {
+            scheduleFeedbackLabel.setStyle("-fx-text-fill: red;");
+            scheduleFeedbackLabel.setText("Error: Please select a schedule from the table to delete.");
+            return;
+        }
+
+        // 4. Fire the deletion method in the repository to clean SQLite
+        boolean success = FarmRepository.removeSchedule(selectedSchedule);
+
+        if (success) {
+            // 5. If database deletion works, pull it out of the UI table list immediately
+            scheduleTable.getItems().remove(selectedSchedule);
+
+            scheduleFeedbackLabel.setStyle("-fx-text-fill: green;");
+            scheduleFeedbackLabel.setText("Success: Schedule removed from database.");
+
+            // Optional: Reset table selection focus
+            scheduleTable.getSelectionModel().clearSelection();
+        } else {
+            scheduleFeedbackLabel.setStyle("-fx-text-fill: red;");
+            scheduleFeedbackLabel.setText("Error: Failed to delete schedule record from database.");
         }
     }
 }
