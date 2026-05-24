@@ -43,6 +43,7 @@ buildNumber.properties
 .settings/
 .factorypath
 .vscode/
+nbactions.xml
 
 # Operating System Files
 Thumbs.db
