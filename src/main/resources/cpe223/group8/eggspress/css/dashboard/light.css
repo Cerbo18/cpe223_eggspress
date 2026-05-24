@@ -1,0 +1,9 @@
+/*
+   Eggspress Dashboard View Light Theme Styling
+*/
+
+.sidebar-panel {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+}

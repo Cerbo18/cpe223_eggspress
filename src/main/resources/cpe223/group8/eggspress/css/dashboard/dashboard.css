@@ -1,85 +1,6 @@
 /*
-   Eggspress Global Stylesheet
-   Contains theme constants and control overrides
+   Eggspress Dashboard View Structural Stylesheet
 */
-
-.root {
-    /* Main Green Brand Color */
-    -fx-brand-primary: #39b54a;
-    -fx-brand-primary-hover: #319e3f;
-    -fx-brand-primary-active: #2a8836;
-    
-    /* Typography */
-    -fx-font-family: "System", "Segoe UI", "Helvetica Neue", Arial;
-}
-
-/* Base input field */
-.text-input-modern {
-    -fx-background-color: -fx-input-bg-color;
-    -fx-border-color: -fx-input-border-color;
-    -fx-border-width: 1px;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-padding: 10px 14px;
-    -fx-font-size: 14px;
-    -fx-text-fill: -fx-text-primary-color;
-    -fx-prompt-text-fill: -fx-text-secondary-color;
-}
-
-.text-input-modern:focused {
-    -fx-border-color: -fx-brand-primary;
-    -fx-background-color: -fx-input-bg-color;
-}
-
-/* Primary action button */
-.button-primary {
-    -fx-background-color: -fx-brand-primary;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-cursor: hand;
-    -fx-padding: 10px 20px;
-    -fx-font-size: 14px;
-    -fx-alignment: center;
-}
-
-.button-primary:hover {
-    -fx-background-color: -fx-brand-primary-hover;
-}
-
-.button-primary:pressed {
-    -fx-background-color: -fx-brand-primary-active;
-}
-
-.button-primary:focused {
-    -fx-background-color: -fx-brand-primary-hover;
-    -fx-effect: dropshadow(three-pass-box, rgba(57, 181, 74, 0.4), 8, 0, 0, 0);
-}
-
-/* Error state input field */
-.text-input-modern.text-input-error {
-    -fx-border-color: #ff3b30;
-}
-
-/* Custom HeaderBar Styling */
-.login-headerbar {
-    -fx-min-height: 48px;
-    -fx-pref-height: 48px;
-    -fx-max-height: 48px;
-    -fx-alignment: center-left;
-    -fx-padding: 6px 16px;
-}
-
-.app-headerbar {
-    -fx-min-height: 32px;
-    -fx-pref-height: 32px;
-    -fx-max-height: 32px;
-    -fx-alignment: center-left;
-    -fx-padding: 0px 16px;
-}
-
-/* --- Collapsible Sidebar & Dashboard Styles --- */
 
 .dashboard-split-pane {
     -fx-background-color: transparent;
@@ -187,7 +108,6 @@
 .sidebar-menu-btn:focused .sidebar-menu-icon {
     -fx-stroke: #1d1d1f;
 }
-
 
 .sidebar-new-btn {
     -fx-background-color: -fx-input-bg-color;
@@ -338,4 +258,3 @@
     -fx-font-weight: bold;
     -fx-text-fill: -fx-text-primary-color;
 }
-

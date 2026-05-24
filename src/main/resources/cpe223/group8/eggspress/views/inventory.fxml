@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -8,6 +9,13 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="cpe223.group8.eggspress.controllers.InventoryController"
       prefHeight="600.0" prefWidth="800.0">
+    <stylesheets>
+        <URL value="@../css/global.css" />
+        <URL value="@../css/light.css" />
+        <URL value="@../css/inventory/inventory.css" />
+        <URL value="@../css/inventory/light.css" />
+    </stylesheets>
+
     <HeaderBar styleClass="app-headerbar" />
 
     <VBox alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">

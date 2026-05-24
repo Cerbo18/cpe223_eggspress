@@ -1,0 +1,36 @@
+/*
+   Eggspress Login Screen Structural Stylesheet
+*/
+
+.login-headerbar {
+    -fx-min-height: 48px;
+    -fx-pref-height: 48px;
+    -fx-max-height: 48px;
+    -fx-alignment: center-left;
+    -fx-padding: 6px 16px;
+}
+
+.login-card {
+    -fx-background-radius: 24px;
+    -fx-border-radius: 24px;
+    -fx-border-width: 1px;
+    -fx-padding: 40px 36px;
+}
+
+.welcome-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.welcome-subtitle {
+    -fx-font-size: 13px;
+}
+
+.error-message {
+    -fx-font-size: 13px;
+}
+
+.login-footer {
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+}

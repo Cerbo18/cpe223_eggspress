@@ -21,8 +21,10 @@
            styleClass="login-root-container">
 
     <stylesheets>
-        <URL value="@../css/styles.css" />
+        <URL value="@../css/global.css" />
         <URL value="@../css/light.css" />
+        <URL value="@../css/login/login.css" />
+        <URL value="@../css/login/light.css" />
     </stylesheets>
 
     <VBox alignment="TOP_CENTER" spacing="0.0">

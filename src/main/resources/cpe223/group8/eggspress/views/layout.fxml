@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -12,7 +13,14 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cpe223.group8.eggspress.controllers.LayoutController">
-   <HeaderBar styleClass="app-headerbar" />
+    <stylesheets>
+        <URL value="@../css/global.css" />
+        <URL value="@../css/light.css" />
+        <URL value="@../css/layout/layout.css" />
+        <URL value="@../css/layout/light.css" />
+    </stylesheets>
+
+    <HeaderBar styleClass="app-headerbar" />
 
    <AnchorPane id="AnchorPane" VBox.vgrow="ALWAYS">
       <children>

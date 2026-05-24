@@ -22,8 +22,10 @@
 
 <VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cpe223.group8.eggspress.controllers.DashboardController">
     <stylesheets>
-        <URL value="@../css/styles.css" />
+        <URL value="@../css/global.css" />
         <URL value="@../css/light.css" />
+        <URL value="@../css/dashboard/dashboard.css" />
+        <URL value="@../css/dashboard/light.css" />
     </stylesheets>
 
     <!-- Header controls -->

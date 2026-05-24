@@ -1,0 +1,25 @@
+/*
+   Eggspress Login Screen Dark Theme Styling
+*/
+
+.login-card {
+    -fx-background-color: -fx-card-bg-color;
+    -fx-border-color: -fx-card-border-color;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 64, 0, 0, 16);
+}
+
+.welcome-title {
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.welcome-subtitle {
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+.error-message {
+    -fx-text-fill: #ff453a; /* Warning dark red */
+}
+
+.login-footer {
+    -fx-background-color: #161617;
+}
