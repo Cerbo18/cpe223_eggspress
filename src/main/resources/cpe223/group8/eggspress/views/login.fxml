@@ -9,6 +9,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.HeaderBar?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -25,16 +26,15 @@
     </stylesheets>
 
     <VBox alignment="TOP_CENTER" spacing="0.0">
-        <HBox alignment="CENTER_LEFT" prefHeight="60.0">
-            <padding>
-                <Insets top="24.0" right="24.0" bottom="0.0" left="32.0" />
-            </padding>
-            <ImageView fitHeight="24.0" preserveRatio="true">
-                <image>
-                    <Image url="@../../../../kaviyes/nhx/eggspress/Assets/1x/Eggspress-Combination-Mark.png" requestedHeight="24.0" preserveRatio="true" smooth="true" />
-                </image>
-            </ImageView>
-        </HBox>
+        <HeaderBar fx:id="headerBar" styleClass="login-headerbar">
+            <leading>
+                <ImageView fitHeight="27.0" preserveRatio="true">
+                    <image>
+                        <Image url="@../../../../kaviyes/nhx/eggspress/Assets/1x/Eggspress-Combination-Mark.png" requestedHeight="27.0" preserveRatio="true" smooth="true" />
+                    </image>
+                </ImageView>
+            </leading>
+        </HeaderBar>
 
         <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
             <padding>

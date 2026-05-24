@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,12 +17,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        stage.initStyle(StageStyle.EXTENDED);
+
         // 1. Initialize the SQLite database tables before loading the login view
         DatabaseConfig.initializeDatabase();
 
         scene = new Scene(loadFXML("login"), 760, 520);
         stage.setMinWidth(720);
-        stage.setMinHeight(500);
+        stage.setMinHeight(576);
         
         // Icon Loader
         try {

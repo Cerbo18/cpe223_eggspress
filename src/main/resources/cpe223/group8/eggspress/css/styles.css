@@ -61,3 +61,19 @@
 .text-input-modern.text-input-error {
     -fx-border-color: #ff3b30;
 }
+
+/* Custom HeaderBar Styling */
+.login-headerbar, .app-headerbar {
+    -fx-min-height: 48px;
+    -fx-pref-height: 48px;
+    -fx-max-height: 48px;
+    -fx-alignment: center-left;
+}
+
+.login-headerbar {
+    -fx-padding: 6px 16px;
+}
+
+.app-headerbar {
+    -fx-padding: 6px 16px;
+}
