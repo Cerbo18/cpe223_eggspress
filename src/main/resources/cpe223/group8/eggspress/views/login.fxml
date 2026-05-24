@@ -9,6 +9,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -87,5 +88,14 @@
                 </VBox>
             </VBox>
         </VBox>
+
+        <HBox styleClass="login-footer" prefHeight="50.0" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="0.0" right="48.0" bottom="0.0" left="48.0" />
+            </padding>
+            <Label text="Eggspress Chicken Farm Manager v0.0.1-pre-alpha.1" styleClass="welcome-subtitle" style="-fx-font-size: 11px;" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label text="Copyright © 2026. All rights reserved." styleClass="welcome-subtitle" style="-fx-font-size: 11px;" />
+        </HBox>
     </VBox>
 </StackPane>

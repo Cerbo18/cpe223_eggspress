@@ -45,3 +45,10 @@
     -fx-font-size: 13px;
     -fx-text-fill: #e03b24; /* Warning red */
 }
+
+/* Footer styling */
+.login-footer {
+    -fx-background-color: #f2f2f3;
+    -fx-border-color: rgba(0, 0, 0, 0.05) transparent transparent transparent;
+    -fx-border-width: 1px 0px 0px 0px;
+}
