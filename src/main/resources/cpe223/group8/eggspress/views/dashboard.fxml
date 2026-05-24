@@ -115,7 +115,7 @@
                                 </children>
                             </HBox>
 
-                            <Button text="Overview" styleClass="sidebar-menu-btn">
+                            <Button text="Overview" styleClass="sidebar-menu-btn" onAction="#handleOverview">
                                 <graphic>
                                     <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
                                         <Group>
@@ -217,57 +217,61 @@
                 </children>
             </VBox>
 
-            <!-- Main Content Area -->
-            <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
-                <content>
-                    <VBox styleClass="dashboard-content-pane">
-                        <children>
-                            <!-- Welcome Banner -->
-                            <VBox styleClass="welcome-banner">
+            <!-- Main Content Area Container -->
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+                <children>
+                    <ScrollPane fx:id="overviewView" fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                        <content>
+                            <VBox styleClass="dashboard-content-pane">
                                 <children>
-                                    <Label text="Welcome to Dashboard" styleClass="welcome-banner-title" />
-                                    <Label text="Manage coops, track inventory, and monitor automated schedules." styleClass="welcome-banner-desc" />
+                                    <!-- Welcome Banner -->
+                                    <VBox styleClass="welcome-banner">
+                                        <children>
+                                            <Label text="Welcome to Dashboard" styleClass="welcome-banner-title" />
+                                            <Label text="Manage coops, track inventory, and monitor automated schedules." styleClass="welcome-banner-desc" />
+                                        </children>
+                                    </VBox>
+        
+                                    <!-- Grid Title -->
+                                    <Label text="Quick Farm Overview" styleClass="stat-grid-title" />
+        
+                                    <!-- Stats Row -->
+                                    <HBox spacing="20.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                        <children>
+                                            <!-- Card 1: Coops -->
+                                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
+                                                <children>
+                                                    <Label text="ACTIVE COOPS" styleClass="stat-title" />
+                                                    <Label text="4 Coops" styleClass="stat-value" />
+                                                    <Label text="● 100% Operational" styleClass="stat-indicator" />
+                                                </children>
+                                            </VBox>
+        
+                                            <!-- Card 2: Flock -->
+                                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
+                                                <children>
+                                                    <Label text="TOTAL FLOCK" styleClass="stat-title" />
+                                                    <Label text="1,420 Birds" styleClass="stat-value" />
+                                                    <Label text="▲ +12% this month" styleClass="stat-indicator" />
+                                                </children>
+                                            </VBox>
+        
+                                            <!-- Card 3: Stock -->
+                                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
+                                                <children>
+                                                    <Label text="FEED STOCK" styleClass="stat-title" />
+                                                    <Label text="84% Level" styleClass="stat-value" />
+                                                    <Label text="● Optimal Stock" styleClass="stat-indicator" />
+                                                </children>
+                                            </VBox>
+                                        </children>
+                                    </HBox>
                                 </children>
                             </VBox>
-
-                            <!-- Grid Title -->
-                            <Label text="Quick Farm Overview" styleClass="stat-grid-title" />
-
-                            <!-- Stats Row -->
-                            <HBox spacing="20.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                                <children>
-                                    <!-- Card 1: Coops -->
-                                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
-                                        <children>
-                                            <Label text="ACTIVE COOPS" styleClass="stat-title" />
-                                            <Label text="4 Coops" styleClass="stat-value" />
-                                            <Label text="● 100% Operational" styleClass="stat-indicator" />
-                                        </children>
-                                    </VBox>
-
-                                    <!-- Card 2: Flock -->
-                                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
-                                        <children>
-                                            <Label text="TOTAL FLOCK" styleClass="stat-title" />
-                                            <Label text="1,420 Birds" styleClass="stat-value" />
-                                            <Label text="▲ +12% this month" styleClass="stat-indicator" />
-                                        </children>
-                                    </VBox>
-
-                                    <!-- Card 3: Stock -->
-                                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200.0">
-                                        <children>
-                                            <Label text="FEED STOCK" styleClass="stat-title" />
-                                            <Label text="84% Level" styleClass="stat-value" />
-                                            <Label text="● Optimal Stock" styleClass="stat-indicator" />
-                                        </children>
-                                    </VBox>
-                                </children>
-                            </HBox>
-                        </children>
-                    </VBox>
-                </content>
-            </ScrollPane>
+                        </content>
+                    </ScrollPane>
+                </children>
+            </StackPane>
         </items>
     </SplitPane>
 </VBox>

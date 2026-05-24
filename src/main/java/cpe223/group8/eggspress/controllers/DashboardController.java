@@ -2,14 +2,24 @@ package cpe223.group8.eggspress.controllers;
 
 import cpe223.group8.eggspress.Main;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.control.Button;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.application.Platform;
 
 public class DashboardController {
+
+    private static DashboardController instance;
+
+    public static DashboardController getInstance() {
+        return instance;
+    }
 
     @FXML
     private SplitPane splitPane;
@@ -23,8 +33,18 @@ public class DashboardController {
     @FXML
     private Button toggleButton;
 
+    @FXML
+    private StackPane contentArea;
+
+    @FXML
+    private ScrollPane overviewView;
+
     private boolean sidebarExpanded = true;
     private double previousDividerPosition = 0.125; // Default expanded
+
+    public DashboardController() {
+        instance = this;
+    }
 
     @FXML
     public void initialize() {
@@ -33,6 +53,33 @@ public class DashboardController {
                 splitPane.setDividerPosition(0, previousDividerPosition);
             }
         });
+    }
+
+    /**
+     * Loads the specified FXML sub-view into the SplitPane content area.
+     * If fxmlName is "overview", it restores the default dashboard overview.
+     */
+    public void loadView(String fxmlName) {
+        if ("overview".equals(fxmlName)) {
+            contentArea.getChildren().setAll(overviewView);
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/" + fxmlName + ".fxml"));
+            Parent view = loader.load();
+
+            // Wrap in a ScrollPane to ensure usability and scrolling compatibility
+            ScrollPane scrollPane = new ScrollPane(view);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setFitToHeight(true);
+            scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;");
+
+            contentArea.getChildren().setAll(scrollPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error loading sub-view: " + fxmlName);
+        }
     }
 
     @FXML
@@ -70,30 +117,23 @@ public class DashboardController {
     }
 
     @FXML
+    private void handleOverview() {
+        loadView("overview");
+    }
+
+    @FXML
     private void handleAccountManagement() {
-        try {
-            Main.setRoot("acountMgmt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadView("acountMgmt");
     }
 
     @FXML
     private void handleInventoryManagement() {
-        try {
-            Main.setRoot("inventory");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadView("inventory");
     }
 
     @FXML
     private void handleAutomationManagement() {
-        try {
-            Main.setRoot("automation");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadView("automation");
     }
 
     @FXML
@@ -106,7 +146,7 @@ public class DashboardController {
     }
 
     @FXML
-    private void handleViewLayout(ActionEvent event) throws IOException {
-        Main.setRoot("layout");
+    private void handleViewLayout(ActionEvent event) {
+        loadView("layout");
     }
 }
