@@ -23,7 +23,10 @@ public class Main extends Application {
         
         // Icon Loader
         try {
-            InputStream stream = Main.class.getResourceAsStream("icons/icon.png");
+            InputStream stream = Main.class.getResourceAsStream("/kaviyes/nhx/eggspress/1x/Eggspress-App-Icon.png");
+            if (stream == null) {
+                stream = Main.class.getResourceAsStream("icons/icon.png");
+            }
             if (stream == null) {
                 stream = Main.class.getResourceAsStream("/cpe223/group8/eggspress/icons/icon.png");
             }
@@ -37,7 +40,7 @@ public class Main extends Application {
             System.out.println("Warning: Failed to load window icon: " + e.getMessage());
         }
 
-        stage.setTitle("Chicken Eggspress");
+        stage.setTitle("Egspress Chicken Farm Manager");
         stage.setScene(scene);
         stage.show();
     }

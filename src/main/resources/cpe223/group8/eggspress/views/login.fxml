@@ -15,7 +15,7 @@
         <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
     </padding>
 
-    <Label text="Chicken Eggspress Login" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <Label text="Egspress Chicken Farm Manager Login" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
     
     <VBox spacing="5.0" maxWidth="300.0">
         <Label text="Username:"/>
