@@ -1,6 +1,5 @@
 package cpe223.group8.eggspress.config;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
