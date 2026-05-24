@@ -20,8 +20,6 @@
         <URL value="@../css/layout/light.css" />
     </stylesheets>
 
-    <HeaderBar styleClass="app-headerbar" />
-
    <AnchorPane id="AnchorPane" VBox.vgrow="ALWAYS">
       <children>
          <TableView fx:id="ScheduleTable" layoutX="446.0" layoutY="36.0" prefHeight="234.0" prefWidth="342.0">
