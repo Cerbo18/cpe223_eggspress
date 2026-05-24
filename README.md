@@ -1,13 +1,13 @@
-# Egspress Chicken Farm Manager
+# Eggspress Chicken Farm Manager
 
 <p align="center">
-  <img src="src/main/resources/kaviyes/nhx/eggspress/1x/Eggspress-Combination-Mark-Full.png" alt="Egspress Chicken Farm Manager Logo" width="800" />
+  <img src="src/main/resources/kaviyes/nhx/eggspress/1x/Eggspress-Combination-Mark-Full.png" alt="Eggspress Chicken Farm Manager Logo" width="800" />
 </p>
 
 > [!WARNING]
 > This repository is created for educational use only.
 
-Welcome to Egspress Chicken Farm Manager. For coding simplicity in packages, directories, and Maven configuration, the project utilizes the identifier "eggspress". This application is a modular, high-performance farm management platform utilizing JavaFX for its interactive graphical user interface and SQLite for secure, lightweight local data persistence.
+Welcome to Eggspress Chicken Farm Manager. For coding simplicity in packages, directories, and Maven configuration, the project utilizes the identifier "eggspress". This application is a modular, high-performance farm management platform utilizing JavaFX for its interactive graphical user interface and SQLite for secure, lightweight local data persistence.
 
 ---
 
@@ -161,7 +161,7 @@ eggspress/
 
 ## Execution and Compilation
 
-Follow these quick commands to build and test Egspress Chicken Farm Manager:
+Follow these quick commands to build and test Eggspress Chicken Farm Manager:
 
 ### 1. Build and Compile
 Fetches JavaFX and SQLite modules, resolves all libraries, and compiles the source code:

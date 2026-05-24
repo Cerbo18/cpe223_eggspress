@@ -40,7 +40,7 @@ public class Main extends Application {
             System.out.println("Warning: Failed to load window icon: " + e.getMessage());
         }
 
-        stage.setTitle("Egspress Chicken Farm Manager");
+        stage.setTitle("Eggspress Chicken Farm Manager");
         stage.setScene(scene);
         stage.show();
     }
