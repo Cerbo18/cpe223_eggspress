@@ -223,15 +223,18 @@ public class LoginController {
         }
 
         boolean isAuthenticated = false;
+        User authenticatedUser = null;
         for (User user : UserRepository.getStaticUsers()) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 isAuthenticated = true;
+                authenticatedUser = user;
                 break;
             }
         }
 
         if (isAuthenticated) {
             try {
+                cpe223.group8.eggspress.services.SessionManager.login(authenticatedUser);
                 Main.setRoot("dashboard");
             } catch (IOException e) {
                 passwordField.getStyleClass().remove("text-input-error");

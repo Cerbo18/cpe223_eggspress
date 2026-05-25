@@ -87,10 +87,6 @@
             </children>
         </GridPane>
 
-        <!-- Footer actions and messages -->
-        <HBox alignment="CENTER_RIGHT">
-            <Label fx:id="feedbackLabel" styleClass="feedback-message"/>
-        </HBox>
     </VBox>
 </VBox>
 

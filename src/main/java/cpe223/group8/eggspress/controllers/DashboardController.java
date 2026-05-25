@@ -1,19 +1,38 @@
 package cpe223.group8.eggspress.controllers;
 
 import cpe223.group8.eggspress.Main;
+import cpe223.group8.eggspress.models.Notification;
+import cpe223.group8.eggspress.services.NotificationListener;
+import cpe223.group8.eggspress.services.NotificationService;
+import cpe223.group8.eggspress.services.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.stage.Popup;
+import javafx.geometry.Pos;
+import javafx.geometry.Insets;
+import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.util.Duration;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.application.Platform;
+import java.util.List;
 
-public class DashboardController {
+
+
+public class DashboardController implements NotificationListener {
 
     private static DashboardController instance;
 
@@ -51,8 +70,27 @@ public class DashboardController {
     @FXML
     private Button layoutBtn;
 
+    @FXML
+    private Button notificationBtn;
+
+    @FXML
+    private Label notificationBadge;
+
     private boolean sidebarExpanded = true;
     private double previousDividerPosition = 0.125; // Default expanded
+
+    private Popup notificationPopup;
+    private VBox popupContent;
+    private VBox toastContainer;
+
+    // Edge resize state variables
+    private boolean isResizing = false;
+    private String resizeType = "";
+    private double startX = 0;
+    private double startY = 0;
+    private double startWidth = 0;
+    private double startHeight = 0;
+    private double startWinX = 0;
 
     public DashboardController() {
         instance = this;
@@ -80,6 +118,472 @@ public class DashboardController {
             if (splitPane != null) {
                 splitPane.setDividerPosition(0, previousDividerPosition);
             }
+        });
+
+        // Initialize Notifications
+        if (notificationBadge != null) {
+            notificationBadge.setMinWidth(Region.USE_PREF_SIZE);
+        }
+        NotificationService.getInstance().addListener(this);
+        updateUnreadBadgeCount();
+    }
+
+    @Override
+    public void onNotificationReceived(Notification notification) {
+        String currentUsername = SessionManager.getCurrentUsername();
+        if (notification.getUsername() != null && !notification.getUsername().equalsIgnoreCase(currentUsername)) {
+            // Local notification targeted at a different user; filter and ignore
+            return;
+        }
+        Platform.runLater(() -> {
+            updateUnreadBadgeCount();
+            showPushToast(notification);
+            if (notificationPopup != null && notificationPopup.isShowing()) {
+                refreshNotificationPopupContent();
+            }
+        });
+    }
+
+    private void updateUnreadBadgeCount() {
+        String currentUsername = SessionManager.getCurrentUsername();
+        int unreadCount = NotificationService.getInstance().getUnreadCountForUser(currentUsername);
+        if (notificationBtn != null) {
+            notificationBtn.getStyleClass().removeAll("has-unread", "all-read");
+        }
+        
+        if (unreadCount > 0) {
+            if (notificationBtn != null) {
+                notificationBtn.getStyleClass().add("has-unread");
+            }
+            String textVal = unreadCount >= 100 ? "99+" : String.valueOf(unreadCount);
+            String prevText = notificationBadge.getText();
+            notificationBadge.setText(textVal);
+            if (!notificationBadge.isVisible() || !prevText.equals(textVal)) {
+                notificationBadge.setVisible(true);
+                // Trigger dynamic scale-in animation on badge updates
+                javafx.animation.ScaleTransition anim = new javafx.animation.ScaleTransition(Duration.millis(200), notificationBadge);
+                anim.setFromX(0.5);
+                anim.setFromY(0.5);
+                anim.setToX(1.0);
+                anim.setToY(1.0);
+                anim.play();
+            }
+        } else {
+            if (notificationBtn != null) {
+                notificationBtn.getStyleClass().add("all-read");
+            }
+            notificationBadge.setVisible(false);
+        }
+    }
+
+    @FXML
+    private void handleToggleNotificationPopup() {
+        if (notificationPopup != null && notificationPopup.isShowing()) {
+            notificationPopup.hide();
+        } else {
+            showNotificationPopup();
+        }
+    }
+
+    private void showNotificationPopup() {
+        if (notificationPopup == null) {
+            notificationPopup = new Popup();
+            notificationPopup.setAutoHide(true);
+
+            popupContent = new VBox();
+            popupContent.getStyleClass().add("notification-popup-container");
+            popupContent.setPrefWidth(562);
+            popupContent.setMinWidth(360);
+            popupContent.setMaxWidth(800);
+            popupContent.setPrefHeight(562);
+            popupContent.setMinHeight(450);
+            popupContent.setMaxHeight(900);
+            makeResizable(popupContent);
+
+            // Popup nodes live in a separate scene graph and do not inherit the
+            // main application's stylesheets. Load them explicitly so all CSS
+            // class selectors resolve against this detached scene.
+            String[] cssResources = {
+                "css/global.css",
+                "css/light.css",
+                "css/dashboard/dashboard.css",
+                "css/dashboard/light.css"
+            };
+            for (String resource : cssResources) {
+                java.net.URL url = Main.class.getResource(resource);
+                if (url != null) {
+                    popupContent.getStylesheets().add(url.toExternalForm());
+                }
+            }
+
+            notificationPopup.getContent().add(popupContent);
+        }
+
+        refreshNotificationPopupContent();
+
+        // Position popup below notification bell button safely
+        double x = notificationBtn.localToScreen(notificationBtn.getBoundsInLocal()).getMinX();
+        double y = notificationBtn.localToScreen(notificationBtn.getBoundsInLocal()).getMaxY() + 5;
+
+        // Show slightly offset to the left dynamically based on pref width so it stays nicely aligned
+        notificationPopup.show(notificationBtn.getScene().getWindow(), x - (popupContent.getPrefWidth() - 80), y);
+    }
+
+
+    private void refreshNotificationPopupContent() {
+        if (popupContent == null) return;
+        popupContent.getChildren().clear();
+
+        String currentUsername = SessionManager.getCurrentUsername();
+
+        // 1. Header Area
+        HBox header = new HBox();
+        header.getStyleClass().add("notification-header");
+        
+        Label title = new Label("Notifications");
+        title.getStyleClass().add("notification-title");
+        
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        
+        Button markAllBtn = new Button("Mark All Read");
+        markAllBtn.getStyleClass().add("notification-action-btn");
+        markAllBtn.setGraphic(createSvgIcon(
+            "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0",
+            "M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"
+        ));
+        markAllBtn.setOnAction(e -> {
+            NotificationService.getInstance().markAllAsReadForUser(currentUsername);
+            updateUnreadBadgeCount();
+            refreshNotificationPopupContent();
+        });
+
+        Button clearBtn = new Button("Clear All");
+        clearBtn.getStyleClass().add("notification-action-btn");
+        clearBtn.setGraphic(createSvgIcon(
+            "M8 6h12",
+            "M6 12h12",
+            "M4 18h12"
+        ));
+        clearBtn.setOnAction(e -> {
+            NotificationService.getInstance().clearAllForUser(currentUsername);
+            updateUnreadBadgeCount();
+            refreshNotificationPopupContent();
+        });
+
+        header.getChildren().addAll(title, spacer, markAllBtn, clearBtn);
+        popupContent.getChildren().add(header);
+
+        // 2. Notification List in a ScrollPane
+        VBox listContainer = new VBox();
+        listContainer.getStyleClass().add("notification-list-container");
+        
+        List<Notification> notifications = NotificationService.getInstance().getAllNotificationsForUser(currentUsername);
+        if (notifications.isEmpty()) {
+            Label emptyLabel = new Label("No notifications.");
+            emptyLabel.getStyleClass().add("notification-empty-label");
+            listContainer.getChildren().add(emptyLabel);
+        } else {
+            for (Notification n : notifications) {
+                HBox row = new HBox();
+                row.setAlignment(Pos.CENTER_LEFT);
+                row.setSpacing(8);
+                row.getStyleClass().add("notification-row");
+                if (!n.isRead()) {
+                    row.getStyleClass().add("unread");
+                }
+                
+                // Severity label styled as capsule pill badge without raw brackets
+                Label levelLabel = new Label(n.getLevel().toUpperCase());
+                levelLabel.getStyleClass().addAll("notification-level-badge", n.getLevel().toLowerCase());
+                if ("warning".equalsIgnoreCase(n.getLevel()) || "critical".equalsIgnoreCase(n.getLevel())) {
+                    levelLabel.setGraphic(createSvgIcon(
+                        "M12 9v4",
+                        "M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0",
+                        "M12 16h.01"
+                    ));
+                    levelLabel.setGraphicTextGap(4);
+                } else if ("info".equalsIgnoreCase(n.getLevel())) {
+                    levelLabel.setGraphic(createSvgIcon(
+                        "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0",
+                        "M12 8v4",
+                        "M12 16h.01"
+                    ));
+                    levelLabel.setGraphicTextGap(4);
+                }
+                
+                // Timestamp and Message
+                VBox textDetails = new VBox(2);
+                Label msgLabel = new Label(n.getMessage());
+                msgLabel.setWrapText(true);
+                msgLabel.setMaxWidth(200);
+                msgLabel.getStyleClass().add("notification-message");
+                
+                Label timeLabel = new Label(n.getTimestamp());
+                timeLabel.getStyleClass().add("notification-time");
+                
+                textDetails.getChildren().addAll(msgLabel, timeLabel);
+                row.getChildren().addAll(levelLabel, textDetails);
+                
+                Region rowSpacer = new Region();
+                HBox.setHgrow(rowSpacer, Priority.ALWAYS);
+                row.getChildren().add(rowSpacer);
+                
+                // Mark single as read button
+                if (!n.isRead()) {
+                    Button readBtn = new Button();
+                    readBtn.getStyleClass().add("notification-read-btn");
+                    readBtn.setGraphic(createSvgIcon(
+                        "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0",
+                        "M11.102 17.957c-3.204 -.307 -5.904 -2.294 -8.102 -5.957c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6a19.5 19.5 0 0 1 -.663 1.032",
+                        "M15 19l2 2l4 -4"
+                    ));
+                    readBtn.setOnAction(e -> {
+                        NotificationService.getInstance().markAsReadForUser(currentUsername, n.getId());
+                        updateUnreadBadgeCount();
+                        refreshNotificationPopupContent();
+                    });
+                    row.getChildren().add(readBtn);
+                }
+
+                listContainer.getChildren().add(row);
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(listContainer);
+        scrollPane.setFitToWidth(true);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+        scrollPane.getStyleClass().add("notification-scroll-pane");
+        popupContent.getChildren().add(scrollPane);
+
+        // 3. Test Simulators (User Approved)
+        HBox testBox = new HBox();
+        testBox.getStyleClass().add("notification-test-box");
+        testBox.setAlignment(Pos.CENTER_LEFT);
+        testBox.setSpacing(6);
+        
+        Label testLbl = new Label("Simulate:");
+        testLbl.getStyleClass().add("notification-test-label");
+        
+        Button simInfo = new Button("Info");
+        simInfo.getStyleClass().addAll("notification-sim-btn", "info");
+        simInfo.setOnAction(e -> NotificationService.notificationInfo("Simulated system info: Daily feed log generated."));
+
+        Button simWarning = new Button("Warning");
+        simWarning.getStyleClass().addAll("notification-sim-btn", "warning");
+        simWarning.setOnAction(e -> NotificationService.notificationWarning("Simulated system alert: Low water tank pressure."));
+
+        Button simCritical = new Button("Critical");
+        simCritical.getStyleClass().addAll("notification-sim-btn", "critical");
+        simCritical.setOnAction(e -> NotificationService.notificationCritical("Simulated emergency: Coop A temperature exceeded 35°C!"));
+
+        testBox.getChildren().addAll(testLbl, simInfo, simWarning, simCritical);
+        popupContent.getChildren().add(testBox);
+    }
+
+    private void showPushToast(Notification notification) {
+        if (contentArea == null) return;
+        ensureToastContainer();
+
+        VBox toast = new VBox(0);
+        toast.getStyleClass().addAll("notification-toast", notification.getLevel().toLowerCase());
+        toast.setMinWidth(320);
+        toast.setMaxWidth(320);
+        toast.setMaxHeight(Region.USE_PREF_SIZE);
+
+        HBox content = new HBox(10);
+        content.getStyleClass().add("notification-toast-content");
+        content.setAlignment(Pos.CENTER_LEFT);
+
+        Label levelLabel = new Label();
+        levelLabel.getStyleClass().addAll("notification-level-badge", notification.getLevel().toLowerCase());
+        if ("warning".equalsIgnoreCase(notification.getLevel()) || "critical".equalsIgnoreCase(notification.getLevel())) {
+            levelLabel.setGraphic(createSvgIcon(
+                "M12 9v4",
+                "M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0",
+                "M12 16h.01"
+            ));
+        } else {
+            levelLabel.setGraphic(createSvgIcon(
+                "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0",
+                "M12 8v4",
+                "M12 16h.01"
+            ));
+        }
+
+        Label msgLabel = new Label(notification.getMessage());
+        msgLabel.setWrapText(true);
+        msgLabel.getStyleClass().add("notification-toast-message");
+
+        // Spacer pushes the close button to the trailing edge
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // Dismiss button
+        Button closeBtn = new Button();
+        closeBtn.getStyleClass().add("notification-toast-close-btn");
+        closeBtn.setGraphic(createSvgIcon(
+            "M18 6l-12 12",
+            "M6 6l12 12"
+        ));
+
+        content.getChildren().addAll(levelLabel, msgLabel, spacer, closeBtn);
+
+        // Draining progress bar Region at the footer
+        Region progressBar = new Region();
+        progressBar.getStyleClass().add("notification-toast-progressbar");
+        progressBar.setPrefWidth(318); // Start at full width inside the 320px container (accounting for 1px borders)
+        progressBar.setMinWidth(0);
+        progressBar.maxWidthProperty().bind(progressBar.prefWidthProperty());
+
+        toast.getChildren().addAll(content, progressBar);
+
+        // Timeline to animate progress bar width to 0
+        javafx.animation.Timeline progressTimeline = new javafx.animation.Timeline(
+            new javafx.animation.KeyFrame(Duration.ZERO, new javafx.animation.KeyValue(progressBar.prefWidthProperty(), 318)),
+            new javafx.animation.KeyFrame(Duration.seconds(4.0), new javafx.animation.KeyValue(progressBar.prefWidthProperty(), 0))
+        );
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(4.0));
+
+        closeBtn.setOnAction(e -> {
+            delay.stop();
+            progressTimeline.stop();
+            if (toastContainer != null) {
+                toastContainer.getChildren().remove(toast);
+            }
+        });
+
+        delay.setOnFinished(e -> {
+            progressTimeline.stop();
+            if (toastContainer != null) {
+                toastContainer.getChildren().remove(toast);
+            }
+        });
+
+        if (toastContainer != null) {
+            toastContainer.getChildren().add(toast);
+        }
+
+        progressTimeline.play();
+        delay.play();
+    }
+
+    private void ensureToastContainer() {
+        if (toastContainer == null) {
+            toastContainer = new VBox(10);
+            toastContainer.setAlignment(Pos.TOP_RIGHT);
+            toastContainer.setPickOnBounds(false);
+            toastContainer.setMaxWidth(Region.USE_PREF_SIZE);
+            toastContainer.setMaxHeight(Region.USE_PREF_SIZE);
+            StackPane.setAlignment(toastContainer, Pos.TOP_RIGHT);
+            StackPane.setMargin(toastContainer, new Insets(24, 24, 0, 0));
+        }
+        if (contentArea != null && !contentArea.getChildren().contains(toastContainer)) {
+            contentArea.getChildren().add(toastContainer);
+        }
+    }
+
+    private void makeResizable(Region region) {
+        region.setOnMouseMoved(e -> {
+            if (isResizing) return;
+            double x = e.getX();
+            double y = e.getY();
+            double w = region.getWidth();
+            double h = region.getHeight();
+            boolean nearRight = (x >= w - 10);
+            boolean nearLeft = (x <= 10);
+            boolean nearBottom = (y >= h - 10);
+            
+            if (nearLeft && nearBottom) {
+                region.setCursor(javafx.scene.Cursor.SW_RESIZE);
+            } else if (nearRight && nearBottom) {
+                region.setCursor(javafx.scene.Cursor.SE_RESIZE);
+            } else if (nearLeft) {
+                region.setCursor(javafx.scene.Cursor.W_RESIZE);
+            } else if (nearRight) {
+                region.setCursor(javafx.scene.Cursor.E_RESIZE);
+            } else if (nearBottom) {
+                region.setCursor(javafx.scene.Cursor.S_RESIZE);
+            } else {
+                region.setCursor(javafx.scene.Cursor.DEFAULT);
+            }
+        });
+
+        region.setOnMousePressed(e -> {
+            double x = e.getX();
+            double y = e.getY();
+            double w = region.getWidth();
+            double h = region.getHeight();
+            boolean nearRight = (x >= w - 10);
+            boolean nearLeft = (x <= 10);
+            boolean nearBottom = (y >= h - 10);
+            
+            if (nearRight || nearLeft || nearBottom) {
+                isResizing = true;
+                startX = e.getScreenX();
+                startY = e.getScreenY();
+                startWidth = region.getWidth();
+                startHeight = region.getHeight();
+                if (region.getScene() != null && region.getScene().getWindow() != null) {
+                    startWinX = region.getScene().getWindow().getX();
+                }
+                
+                if (nearLeft && nearBottom) {
+                    resizeType = "SW";
+                } else if (nearRight && nearBottom) {
+                    resizeType = "SE";
+                } else if (nearLeft) {
+                    resizeType = "W";
+                } else if (nearRight) {
+                    resizeType = "E";
+                } else {
+                    resizeType = "S";
+                }
+                e.consume();
+            }
+        });
+
+        region.setOnMouseDragged(e -> {
+            if (!isResizing) return;
+            
+            double deltaX = e.getScreenX() - startX;
+            double deltaY = e.getScreenY() - startY;
+            
+            // Sizing constraints matching the minimum (360) and maximum (800) limits
+            double minW = 360;
+            double maxW = 800;
+            
+            if ("E".equals(resizeType) || "SE".equals(resizeType)) {
+                double newWidth = Math.max(minW, Math.min(maxW, startWidth + deltaX));
+                region.setPrefWidth(newWidth);
+            }
+            
+            if ("W".equals(resizeType) || "SW".equals(resizeType)) {
+                double maxNewWidth = startWidth - deltaX;
+                double constrainedWidth = Math.max(minW, Math.min(maxW, maxNewWidth));
+                double actualDeltaW = constrainedWidth - startWidth;
+                region.setPrefWidth(constrainedWidth);
+                if (region.getScene() != null && region.getScene().getWindow() != null) {
+                    region.getScene().getWindow().setX(startWinX - actualDeltaW);
+                }
+            }
+            
+            // Sizing constraints matching the minimum (450) and maximum (900) limits
+            double minH = 450;
+            double maxH = 900;
+            
+            if ("S".equals(resizeType) || "SE".equals(resizeType) || "SW".equals(resizeType)) {
+                double newHeight = Math.max(minH, Math.min(maxH, startHeight + deltaY));
+                region.setPrefHeight(newHeight);
+            }
+            e.consume();
+        });
+
+        region.setOnMouseReleased(e -> {
+            isResizing = false;
+            resizeType = "";
+            region.setCursor(javafx.scene.Cursor.DEFAULT);
         });
     }
 
@@ -118,7 +622,11 @@ public class DashboardController {
             scrollPane.setFitToHeight(true);
             scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;");
 
-            contentArea.getChildren().setAll(scrollPane);
+            if (toastContainer != null && contentArea.getChildren().contains(toastContainer)) {
+                contentArea.getChildren().setAll(scrollPane, toastContainer);
+            } else {
+                contentArea.getChildren().setAll(scrollPane);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading sub-view: " + fxmlName);
@@ -182,6 +690,9 @@ public class DashboardController {
     @FXML
     private void handleLogout() {
         try {
+            // Remove listener so we don't hold static references leading to leaks on re-entry
+            NotificationService.getInstance().removeListener(this);
+            SessionManager.logout();
             Main.setRoot("login");
         } catch (IOException e) {
             e.printStackTrace();
@@ -191,5 +702,30 @@ public class DashboardController {
     @FXML
     private void handleViewLayout(ActionEvent event) {
         loadView("layout");
+    }
+
+    private javafx.scene.Group createSvgIcon(String path1) {
+        return createSvgIcon(new String[]{path1});
+    }
+
+    private javafx.scene.Group createSvgIcon(String path1, String path2) {
+        return createSvgIcon(new String[]{path1, path2});
+    }
+
+    private javafx.scene.Group createSvgIcon(String path1, String path2, String path3) {
+        return createSvgIcon(new String[]{path1, path2, path3});
+    }
+
+    private javafx.scene.Group createSvgIcon(String[] paths) {
+        javafx.scene.Group group = new javafx.scene.Group();
+        group.setScaleX(0.7);
+        group.setScaleY(0.7);
+        for (String path : paths) {
+            javafx.scene.shape.SVGPath svgPath = new javafx.scene.shape.SVGPath();
+            svgPath.setContent(path);
+            svgPath.getStyleClass().add("notification-icon-path");
+            group.getChildren().add(svgPath);
+        }
+        return group;
     }
 }

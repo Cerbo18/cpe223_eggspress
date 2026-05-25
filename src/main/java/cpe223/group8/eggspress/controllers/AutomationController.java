@@ -5,6 +5,7 @@ import cpe223.group8.eggspress.models.FeedingSchedule;
 import cpe223.group8.eggspress.models.InventoryItem;
 import cpe223.group8.eggspress.models.Automation;
 import cpe223.group8.eggspress.repository.FarmRepository;
+import cpe223.group8.eggspress.services.NotificationService;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,8 +33,7 @@ public class AutomationController {
     @FXML
     private TextField waterAmountField;
 
-    @FXML
-    private Label waterFeedbackLabel;
+
 
     // Feeding Schedule Table
     @FXML
@@ -64,8 +64,7 @@ public class AutomationController {
     @FXML
     private TextField scheduleStatusField;
 
-    @FXML
-    private Label scheduleFeedbackLabel;
+
 
     public void initialize() {
         // 1. Force Location Selection Setup (Avoid FXML parsing duplication bugs)
@@ -153,19 +152,15 @@ public class AutomationController {
 
     @FXML
     private void handleSendWater() {
-        waterFeedbackLabel.setText("");
-        
         InventoryItem selectedWater = waterSourceComboBox.getSelectionModel().getSelectedItem();
         if (selectedWater == null) {
-            waterFeedbackLabel.setStyle("-fx-text-fill: red;");
-            waterFeedbackLabel.setText("Error: Please select a water source from the inventory.");
+            NotificationService.notificationWarning("Error: Please select a water source from the inventory.", false);
             return;
         }
 
         String amountText = waterAmountField.getText();
         if (amountText == null || amountText.trim().isEmpty()) {
-            waterFeedbackLabel.setStyle("-fx-text-fill: red;");
-            waterFeedbackLabel.setText("Error: Please enter a water amount.");
+            NotificationService.notificationWarning("Error: Please enter a water amount.", false);
             return;
         }
 
@@ -173,20 +168,17 @@ public class AutomationController {
         try {
             amount = Double.parseDouble(amountText);
         } catch (NumberFormatException e) {
-            waterFeedbackLabel.setStyle("-fx-text-fill: red;");
-            waterFeedbackLabel.setText("Error: Invalid amount. Please enter a valid number.");
+            NotificationService.notificationWarning("Error: Invalid amount. Please enter a valid number.", false);
             return;
         }
 
         if (amount <= 0) {
-            waterFeedbackLabel.setStyle("-fx-text-fill: red;");
-            waterFeedbackLabel.setText("Error: Amount must be greater than zero.");
+            NotificationService.notificationWarning("Error: Amount must be greater than zero.", false);
             return;
         }
 
         if (selectedWater.getQuantity() < amount) {
-            waterFeedbackLabel.setStyle("-fx-text-fill: red;");
-            waterFeedbackLabel.setText("Error: Insufficient stock. Available: " + selectedWater.getQuantity() + " " + selectedWater.getUnit());
+            NotificationService.notificationWarning("Error: Insufficient stock. Available: " + selectedWater.getQuantity() + " " + selectedWater.getUnit(), false);
             return;
         }
 
@@ -194,18 +186,19 @@ public class AutomationController {
         boolean updateSuccess = FarmRepository.updateInventoryQuantity(selectedWater.getId(), updatedQuantity);
 
         if (!updateSuccess) {
-            waterFeedbackLabel.setStyle("-fx-text-fill: red;");
-            waterFeedbackLabel.setText("Error: Failed to update inventory database records.");
+            NotificationService.notificationWarning("Error: Failed to update inventory database records.", false);
             return;
         }
+
+        selectedWater.setQuantity(updatedQuantity);
+        NotificationService.getInstance().checkInventoryThresholds(selectedWater);
         
         String autoId = "AUTO-" + (FarmRepository.getAutomationCount() + 1);
         String location = locationComboBox.getSelectionModel().getSelectedItem();
         Automation log = new Automation(autoId, selectedWater.getName(), location, amount, "Success");
         FarmRepository.addAutomationLog(log);
 
-        waterFeedbackLabel.setStyle("-fx-text-fill: green;");
-        waterFeedbackLabel.setText("Success: Dispatched " + amount + " " + selectedWater.getUnit() + " to " + location + ".");
+        NotificationService.notificationInfo("Success: Dispatched " + amount + " " + selectedWater.getUnit() + " to " + location + ".");
         waterAmountField.clear();
 
         refreshWaterSources();
@@ -213,8 +206,6 @@ public class AutomationController {
 
     @FXML
     private void handleCreateSchedule() {
-        scheduleFeedbackLabel.setText("");
-
         String category = scheduleCategoryComboBox.getSelectionModel().getSelectedItem();
         String time = scheduleTimeField.getText();
         String feedingType = scheduleFeedingTypeField.getText();
@@ -223,16 +214,30 @@ public class AutomationController {
         if (time == null || time.trim().isEmpty() ||
             feedingType == null || feedingType.trim().isEmpty() ||
             status == null || status.trim().isEmpty()) {
-            scheduleFeedbackLabel.setStyle("-fx-text-fill: red;");
-            scheduleFeedbackLabel.setText("Error: All fields are required.");
+            NotificationService.notificationWarning("Error: All fields are required.", false);
+            return;
+        }
+
+        // Validate characters
+        if (!time.matches("^[a-zA-Z0-9\\s:]+$")) {
+            NotificationService.notificationWarning("Error: Time contains invalid characters. Only alphanumeric, spaces, and colons are allowed.", false);
+            return;
+        }
+
+        if (!feedingType.matches("^[a-zA-Z0-9\\s._-]+$")) {
+            NotificationService.notificationWarning("Error: Feeding Type contains invalid characters. Only alphanumeric, spaces, dots, dashes, and underscores are allowed.", false);
+            return;
+        }
+
+        if (!status.matches("^[a-zA-Z\\s]+$")) {
+            NotificationService.notificationWarning("Error: Status contains invalid characters. Only letters and spaces are allowed.", false);
             return;
         }
 
         FeedingSchedule newSchedule = new FeedingSchedule(category, time, feedingType, status);
         FarmRepository.addSchedule(newSchedule);
 
-        scheduleFeedbackLabel.setStyle("-fx-text-fill: green;");
-        scheduleFeedbackLabel.setText("Success: Added schedule to database successfully.");
+        NotificationService.notificationInfo("Created schedule: " + category + " at " + time);
         
         scheduleTimeField.clear();
         scheduleFeedingTypeField.clear();
@@ -257,34 +262,27 @@ public class AutomationController {
 
     @FXML
     private void handleDeleteButton(ActionEvent event) {
-        // 1. Clear any old feedback text
-        scheduleFeedbackLabel.setText("");
-
-        // 2. Get the currently selected schedule item from the table view
+        // Get the currently selected schedule item from the table view
         FeedingSchedule selectedSchedule = scheduleTable.getSelectionModel().getSelectedItem();
 
-        // 3. Validation: Check if the user actually clicked a row before pressing delete
+        // Validation: Check if the user actually clicked a row before pressing delete
         if (selectedSchedule == null) {
-            scheduleFeedbackLabel.setStyle("-fx-text-fill: red;");
-            scheduleFeedbackLabel.setText("Error: Please select a schedule from the table to delete.");
+            NotificationService.notificationWarning("Error: Please select a schedule from the table to delete.", false);
             return;
         }
 
-        // 4. Fire the deletion method in the repository to clean SQLite
+        // Fire the deletion method in the repository to clean SQLite
         boolean success = FarmRepository.removeSchedule(selectedSchedule);
 
         if (success) {
-            // 5. If database deletion works, pull it out of the UI table list immediately
+            // If database deletion works, pull it out of the UI table list immediately
             scheduleTable.getItems().remove(selectedSchedule);
-
-            scheduleFeedbackLabel.setStyle("-fx-text-fill: green;");
-            scheduleFeedbackLabel.setText("Success: Schedule removed from database.");
+            NotificationService.notificationInfo("Deleted schedule: " + selectedSchedule.getCategory() + " at " + selectedSchedule.getTime());
 
             // Optional: Reset table selection focus
             scheduleTable.getSelectionModel().clearSelection();
         } else {
-            scheduleFeedbackLabel.setStyle("-fx-text-fill: red;");
-            scheduleFeedbackLabel.setText("Error: Failed to delete schedule record from database.");
+            NotificationService.notificationWarning("Error: Failed to delete schedule record from database.", false);
         }
     }
 }

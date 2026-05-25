@@ -94,6 +94,22 @@
     -fx-stroke: #1d1d1f;
 }
 
+/* Sidebar action button unread state (turns vibrant green) */
+.sidebar-action-btn.has-unread .sidebar-toggle-icon {
+    -fx-stroke: #39b54a;
+}
+.sidebar-action-btn.has-unread:hover .sidebar-toggle-icon {
+    -fx-stroke: #319e3f;
+}
+
+/* Sidebar action button all-read state (stale neutral grey) */
+.sidebar-action-btn.all-read .sidebar-toggle-icon {
+    -fx-stroke: #86868b;
+}
+.sidebar-action-btn.all-read:hover .sidebar-toggle-icon {
+    -fx-stroke: #1d1d1f;
+}
+
 /* Sidebar navigation menu icons */
 .sidebar-menu-icon {
     -fx-fill: transparent;
@@ -280,3 +296,330 @@
     -fx-font-weight: bold;
     -fx-text-fill: -fx-text-primary-color;
 }
+
+/* =========================================================================
+   Notification System Styles — Light Theme (hardcoded direct values)
+   Custom CSS properties cannot be resolved across Popup scene boundaries,
+   so all color and effect values are defined explicitly here.
+   ========================================================================= */
+
+.notification-badge {
+    -fx-background-color: #ff3b30;
+    -fx-text-fill: white;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-padding: 1px 5px;
+    -fx-background-radius: 8px;
+    -fx-translate-x: 8px;
+    -fx-translate-y: -8px;
+}
+
+/* Notification dropdown panel — Fluent 2 Elevation 8 (Flyout surface).
+   - Surface: #FFFFFF (Layer/Rest in Fluent 2 color system)
+   - Stroke: rgba(0,0,0,0.0578) — Fluent 2 NeutralStroke1Rest
+   - Shadow: 0px 4px 8px rgba(0,0,0,0.14) — Fluent 2 shadow2 elevation token
+   - Corner radius: 8px — Fluent 2 "medium" radius token */
+.notification-popup-container {
+    -fx-background-color: #ffffff;
+    -fx-border-color: rgba(0, 0, 0, 0.058);
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.14), 16, 0, 0, 4);
+    -fx-padding: 12px;
+    -fx-spacing: 10px;
+}
+
+/* Header line area within the notification dropdown popup */
+.notification-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 10px;
+    -fx-padding: 0 0 6px 0;
+}
+
+/* Dropdown panel title label */
+.notification-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1d1d1f;
+}
+
+/* "Mark All Read" and "Clear All" header action buttons */
+.notification-action-btn {
+    -fx-font-size: 10px;
+    -fx-padding: 4px 8px;
+    -fx-background-color: transparent;
+    -fx-border-color: #d2d2d7;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-text-fill: #1d1d1f;
+    -fx-cursor: hand;
+}
+
+.notification-action-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* SVG icon path styles for notifications */
+.notification-icon-path {
+    -fx-fill: transparent;
+    -fx-stroke: #86868b;
+    -fx-stroke-width: 1.5px;
+    -fx-stroke-linecap: round;
+    -fx-stroke-linejoin: round;
+}
+
+/* Action button SVG path colors inside header */
+.notification-action-btn .notification-icon-path {
+    -fx-stroke: #1d1d1f;
+}
+
+/* Mark-read button SVG path colors */
+.notification-read-btn .notification-icon-path {
+    -fx-stroke: #39b54a;
+}
+.notification-read-btn:hover .notification-icon-path {
+    -fx-stroke: #ffffff;
+}
+
+/* Level badge SVG path colors */
+.notification-level-badge.warning .notification-icon-path {
+    -fx-stroke: #ff9500;
+}
+.notification-level-badge.critical .notification-icon-path {
+    -fx-stroke: #ff3b30;
+}
+.notification-level-badge.info .notification-icon-path {
+    -fx-stroke: #39b54a;
+}
+
+/* Close button SVG path colors */
+.notification-toast-close-btn .notification-icon-path {
+    -fx-stroke: #86868b;
+}
+.notification-toast-close-btn:hover .notification-icon-path {
+    -fx-stroke: #1d1d1f;
+}
+
+/* Container for listing rows in dropdown scroll container */
+.notification-list-container {
+    -fx-spacing: 6px;
+}
+
+/* Fallback label shown when no notifications exist */
+.notification-empty-label {
+    -fx-text-fill: #86868b;
+    -fx-font-style: italic;
+    -fx-padding: 12px 0;
+    -fx-alignment: center;
+}
+
+/* Scroll area overlay base inside the dropdown panel */
+.notification-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-viewport-background: transparent;
+}
+
+.notification-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Individual notification item row container */
+.notification-row {
+    -fx-border-color: rgba(0, 0, 0, 0.06);
+    -fx-border-width: 1px;
+    -fx-background-color: transparent;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+}
+
+.notification-row:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Highlight style applied to unread message containers */
+.notification-row.unread {
+    -fx-border-color: rgba(57, 181, 74, 0.4);
+    -fx-background-color: rgba(57, 181, 74, 0.06);
+}
+
+.notification-row.unread:hover {
+    -fx-background-color: rgba(57, 181, 74, 0.1);
+}
+
+/* Severity tag capsule boundaries */
+.notification-level-badge {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 2px 6px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+.notification-level-badge.critical {
+    -fx-background-color: rgba(255, 59, 48, 0.12);
+    -fx-text-fill: #ff3b30;
+}
+
+.notification-level-badge.warning {
+    -fx-background-color: rgba(255, 149, 0, 0.12);
+    -fx-text-fill: #ff9500;
+}
+
+.notification-level-badge.info {
+    -fx-background-color: rgba(57, 181, 74, 0.12);
+    -fx-text-fill: #39b54a;
+}
+
+/* Notification body message text */
+.notification-message {
+    -fx-text-fill: #86868b;
+    -fx-font-size: 11px;
+}
+
+/* Bold primary text for unread message bodies */
+.notification-row.unread .notification-message {
+    -fx-text-fill: #1d1d1f;
+    -fx-font-weight: bold;
+}
+
+/* Secondary timestamp text below each notification message */
+.notification-time {
+    -fx-text-fill: #86868b;
+    -fx-font-size: 9px;
+    -fx-opacity: 0.8;
+}
+
+/* Single-item read checkmark button */
+.notification-read-btn {
+    -fx-font-size: 9px;
+    -fx-padding: 2px 5px;
+    -fx-background-color: rgba(57, 181, 74, 0.1);
+    -fx-text-fill: #39b54a;
+    -fx-border-color: rgba(57, 181, 74, 0.2);
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.notification-read-btn:hover {
+    -fx-background-color: #39b54a;
+    -fx-text-fill: white;
+}
+
+/* Simulation test panel separator and layout */
+.notification-test-box {
+    -fx-border-color: rgba(0, 0, 0, 0.06) transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+    -fx-padding: 8px 0 0 0;
+}
+
+.notification-test-label {
+    -fx-font-size: 10px;
+    -fx-text-fill: #86868b;
+    -fx-font-weight: bold;
+}
+
+.notification-sim-btn {
+    -fx-font-size: 9px;
+    -fx-padding: 3px 6px;
+    -fx-background-color: transparent;
+    -fx-border-color: #d2d2d7;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: #1d1d1f;
+    -fx-cursor: hand;
+}
+
+.notification-sim-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.04);
+}
+
+.notification-sim-btn.info {
+    -fx-text-fill: #39b54a;
+    -fx-border-color: rgba(57, 181, 74, 0.3);
+}
+
+.notification-sim-btn.info:hover {
+    -fx-background-color: rgba(57, 181, 74, 0.08);
+}
+
+.notification-sim-btn.warning {
+    -fx-text-fill: #ff9500;
+    -fx-border-color: rgba(255, 149, 0, 0.3);
+}
+
+.notification-sim-btn.warning:hover {
+    -fx-background-color: rgba(255, 149, 0, 0.08);
+}
+
+.notification-sim-btn.critical {
+    -fx-text-fill: #ff3b30;
+    -fx-border-color: rgba(255, 59, 48, 0.3);
+}
+
+.notification-sim-btn.critical:hover {
+    -fx-background-color: rgba(255, 59, 48, 0.08);
+}
+
+/* Push notification floating toast card — Fluent 2 Elevation 4 (card floating).
+   - Surface: #FFFFFF (Layer/Rest)
+   - Stroke: rgba(0,0,0,0.0578) on three sides; 4px severity accent on the left
+   - Shadow: 0px 2px 4px rgba(0,0,0,0.14) — Fluent 2 shadow1 elevation token
+   - Corner radius: 8px — Fluent 2 "medium" radius token
+   Border order in JavaFX CSS: top right bottom left. */
+.notification-toast {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: rgba(0, 0, 0, 0.058);
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.14), 8, 0, 0, 2);
+    -fx-padding: 0px;
+    -fx-alignment: top-left;
+}
+
+.notification-toast-content {
+    -fx-padding: 12px 14px;
+    -fx-spacing: 10px;
+    -fx-alignment: center-left;
+}
+
+.notification-toast-progressbar {
+    -fx-background-color: #d2d2d7;
+    -fx-pref-height: 3px;
+    -fx-min-height: 3px;
+    -fx-max-height: 3px;
+    -fx-background-radius: 0 0 7px 7px;
+}
+
+/* Toast body message label */
+.notification-toast-message {
+    -fx-text-fill: #1d1d1f;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* Subtle rounded dismiss button */
+.notification-toast-close-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #86868b;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 2px 6px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-cursor: hand;
+}
+
+.notification-toast-close-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.06);
+    -fx-text-fill: #1d1d1f;
+}
+

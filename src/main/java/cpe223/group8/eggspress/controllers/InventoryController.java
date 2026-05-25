@@ -3,6 +3,7 @@ package cpe223.group8.eggspress.controllers;
 import cpe223.group8.eggspress.Main;
 import cpe223.group8.eggspress.models.InventoryItem;
 import cpe223.group8.eggspress.repository.FarmRepository;
+import cpe223.group8.eggspress.services.NotificationService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -47,8 +48,7 @@ public class InventoryController {
     @FXML
     private TextField adjustmentField;
 
-    @FXML
-    private Label feedbackLabel;
+
 
     @FXML
     public void initialize() {
@@ -81,6 +81,17 @@ public class InventoryController {
 
         if (name.isEmpty() || category == null || category.isEmpty() || qtyStr.isEmpty() || unit.isEmpty()) {
             showError("Please fill out all fields to add an item.");
+            return;
+        }
+
+        // Validate characters
+        if (!name.matches("^[a-zA-Z0-9\\s._-]+$")) {
+            showError("Item Name contains invalid characters. Only alphanumeric, spaces, dots, dashes, and underscores are allowed.");
+            return;
+        }
+
+        if (!unit.matches("^[a-zA-Z\\s]+$")) {
+            showError("Unit contains invalid characters. Only letters and spaces are allowed.");
             return;
         }
 
@@ -144,6 +155,7 @@ public class InventoryController {
         selectedItem.setQuantity(selectedItem.getQuantity() + adjustment);
         // Inside handleAddStock() and handleConsumeStock() right below selectedItem.setQuantity(...)
         FarmRepository.updateItemQuantity(selectedItem);
+        NotificationService.getInstance().checkInventoryThresholds(selectedItem);
         adjustmentField.clear();
         inventoryTable.refresh();
         showSuccess(String.format("Added %.2f %s to %s.", adjustment, selectedItem.getUnit(), selectedItem.getName()));
@@ -185,6 +197,7 @@ public class InventoryController {
         selectedItem.setQuantity(selectedItem.getQuantity() - adjustment);
         // Inside handleAddStock() and handleConsumeStock() right below selectedItem.setQuantity(...)
         FarmRepository.updateItemQuantity(selectedItem);
+        NotificationService.getInstance().checkInventoryThresholds(selectedItem);
         adjustmentField.clear();
         inventoryTable.refresh();
         showSuccess(String.format("Consumed %.2f %s from %s.", adjustment, selectedItem.getUnit(), selectedItem.getName()));
@@ -223,12 +236,10 @@ public class InventoryController {
     }
 
     private void showSuccess(String message) {
-        feedbackLabel.setText(message);
-        feedbackLabel.setTextFill(Color.GREEN);
+        NotificationService.notificationInfo(message);
     }
 
     private void showError(String message) {
-        feedbackLabel.setText(message);
-        feedbackLabel.setTextFill(Color.RED);
+        NotificationService.notificationWarning(message, false);
     }
 }

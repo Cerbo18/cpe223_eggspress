@@ -27,11 +27,26 @@ public class UserRepository implements BaseRepository<User> {
     // Replaces the local array append with a direct DB insertion
     public static void addStaticUser(User user) {
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, user.getUsername());
-            pstmt.setString(2, user.getPassword());
-            pstmt.executeUpdate();
+        String clearOldSql = """
+            INSERT INTO user_notification_states (username, notification_id, is_read, is_cleared)
+            SELECT ?, id, 1, 1 FROM notifications
+        """;
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement pstmt = conn.prepareStatement(sql);
+                 PreparedStatement pstmtClear = conn.prepareStatement(clearOldSql)) {
+                pstmt.setString(1, user.getUsername());
+                pstmt.setString(2, user.getPassword());
+                pstmt.executeUpdate();
+                
+                pstmtClear.setString(1, user.getUsername());
+                pstmtClear.executeUpdate();
+                
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

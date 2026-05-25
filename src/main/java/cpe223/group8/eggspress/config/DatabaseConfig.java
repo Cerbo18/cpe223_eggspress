@@ -68,6 +68,27 @@ public class DatabaseConfig {
             );
         """;
 
+        String createNotificationsTable = """
+            CREATE TABLE IF NOT EXISTS notifications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+                level TEXT NOT NULL,
+                message TEXT NOT NULL,
+                is_read INTEGER DEFAULT 0,
+                username TEXT
+            );
+        """;
+
+        String createUserNotificationStatesTable = """
+            CREATE TABLE IF NOT EXISTS user_notification_states (
+                username TEXT NOT NULL,
+                notification_id INTEGER NOT NULL,
+                is_read INTEGER DEFAULT 0,
+                is_cleared INTEGER DEFAULT 0,
+                PRIMARY KEY (username, notification_id)
+            );
+        """;
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             
@@ -77,6 +98,16 @@ public class DatabaseConfig {
             stmt.execute(createSchedulesTable);
             stmt.execute(createAutomationsTable);
             stmt.execute(createCoopsTable);
+            stmt.execute(createNotificationsTable);
+            stmt.execute(createUserNotificationStatesTable);
+            
+            // Dynamic column migration for existing notifications table
+            try {
+                stmt.execute("ALTER TABLE notifications ADD COLUMN username TEXT;");
+                System.out.println("Migrated: added username column to notifications table.");
+            } catch (SQLException e) {
+                // Column already exists, safe to ignore
+            }
             
             // 2. Check and seed standard admin user
             try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {

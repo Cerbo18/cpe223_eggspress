@@ -77,21 +77,39 @@
 
             </HBox>
         </leading>
-        <trailing>
-            <HBox alignment="CENTER_RIGHT" spacing="8.0" styleClass="header-profile-container">
-                <children>
-                    <!-- Profile Button -->
-                    <Button styleClass="sidebar-action-btn" text="">
-                        <graphic>
-                            <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
-                                <Group scaleX="0.8" scaleY="0.8">
-                                    <SVGPath styleClass="sidebar-toggle-icon" content="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                                    <SVGPath styleClass="sidebar-toggle-icon" content="M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
-                                    <SVGPath styleClass="sidebar-toggle-icon" content="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
-                                </Group>
-                            </StackPane>
-                        </graphic>
-                    </Button>
+         <trailing>
+             <HBox alignment="CENTER_RIGHT" spacing="8.0" styleClass="header-profile-container">
+                 <children>
+                     <!-- Notification Button -->
+                     <Button fx:id="notificationBtn" styleClass="sidebar-action-btn" text="" onAction="#handleToggleNotificationPopup">
+                         <graphic>
+                             <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
+                                 <children>
+                                     <Group scaleX="0.8" scaleY="0.8">
+                                         <children>
+                                             <SVGPath styleClass="sidebar-toggle-icon" content="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+                                             <SVGPath styleClass="sidebar-toggle-icon" content="M9 17v1a3 3 0 0 0 6 0v-1" />
+                                         </children>
+                                     </Group>
+                                     <Label fx:id="notificationBadge" text="0" visible="false" mouseTransparent="true"
+                                            styleClass="notification-badge" />
+                                 </children>
+                             </StackPane>
+                         </graphic>
+                     </Button>
+
+                     <!-- Profile Button -->
+                     <Button styleClass="sidebar-action-btn" text="">
+                         <graphic>
+                             <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
+                                 <Group scaleX="0.8" scaleY="0.8">
+                                     <SVGPath styleClass="sidebar-toggle-icon" content="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                     <SVGPath styleClass="sidebar-toggle-icon" content="M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                                     <SVGPath styleClass="sidebar-toggle-icon" content="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                                 </Group>
+                             </StackPane>
+                         </graphic>
+                     </Button>
 
                     <!-- Settings Button -->
                     <Button styleClass="sidebar-action-btn" text="" disable="true">
