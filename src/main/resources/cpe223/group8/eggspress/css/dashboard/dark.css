@@ -8,9 +8,24 @@
     -fx-border-width: 0px;
 }
 
-/* Dark mode menu and icon stroke overrides */
 .sidebar-action-btn:hover .sidebar-toggle-icon,
 .sidebar-action-btn:pressed .sidebar-toggle-icon {
+    -fx-stroke: #f5f5f7;
+}
+
+/* Dark mode action button unread state (turns vibrant green) */
+.sidebar-action-btn.has-unread .sidebar-toggle-icon {
+    -fx-stroke: #39b54a;
+}
+.sidebar-action-btn.has-unread:hover .sidebar-toggle-icon {
+    -fx-stroke: #319e3f;
+}
+
+/* Dark mode action button all-read state (stale neutral grey) */
+.sidebar-action-btn.all-read .sidebar-toggle-icon {
+    -fx-stroke: #86868b;
+}
+.sidebar-action-btn.all-read:hover .sidebar-toggle-icon {
     -fx-stroke: #f5f5f7;
 }
 
@@ -136,6 +151,10 @@
     -fx-border-color: rgba(255, 255, 255, 0.084);
     -fx-border-width: 1px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.28), 8, 0, 0, 2);
+}
+
+.notification-toast-progressbar {
+    -fx-background-color: #424245;
 }
 
 .notification-toast-message {

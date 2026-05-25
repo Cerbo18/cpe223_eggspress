@@ -21,6 +21,9 @@ import javafx.stage.Popup;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.util.Duration;
 import java.io.IOException;
 import javafx.event.ActionEvent;
@@ -78,6 +81,16 @@ public class DashboardController implements NotificationListener {
 
     private Popup notificationPopup;
     private VBox popupContent;
+    private VBox toastContainer;
+
+    // Edge resize state variables
+    private boolean isResizing = false;
+    private String resizeType = "";
+    private double startX = 0;
+    private double startY = 0;
+    private double startWidth = 0;
+    private double startHeight = 0;
+    private double startWinX = 0;
 
     public DashboardController() {
         instance = this;
@@ -108,6 +121,9 @@ public class DashboardController implements NotificationListener {
         });
 
         // Initialize Notifications
+        if (notificationBadge != null) {
+            notificationBadge.setMinWidth(Region.USE_PREF_SIZE);
+        }
         NotificationService.getInstance().addListener(this);
         updateUnreadBadgeCount();
     }
@@ -126,10 +142,18 @@ public class DashboardController implements NotificationListener {
     private void updateUnreadBadgeCount() {
         String currentUsername = SessionManager.getCurrentUsername();
         int unreadCount = NotificationService.getInstance().getUnreadCountForUser(currentUsername);
+        if (notificationBtn != null) {
+            notificationBtn.getStyleClass().removeAll("has-unread", "all-read");
+        }
+        
         if (unreadCount > 0) {
+            if (notificationBtn != null) {
+                notificationBtn.getStyleClass().add("has-unread");
+            }
+            String textVal = unreadCount >= 100 ? "99+" : String.valueOf(unreadCount);
             String prevText = notificationBadge.getText();
-            notificationBadge.setText(String.valueOf(unreadCount));
-            if (!notificationBadge.isVisible() || !prevText.equals(String.valueOf(unreadCount))) {
+            notificationBadge.setText(textVal);
+            if (!notificationBadge.isVisible() || !prevText.equals(textVal)) {
                 notificationBadge.setVisible(true);
                 // Trigger dynamic scale-in animation on badge updates
                 javafx.animation.ScaleTransition anim = new javafx.animation.ScaleTransition(Duration.millis(200), notificationBadge);
@@ -140,6 +164,9 @@ public class DashboardController implements NotificationListener {
                 anim.play();
             }
         } else {
+            if (notificationBtn != null) {
+                notificationBtn.getStyleClass().add("all-read");
+            }
             notificationBadge.setVisible(false);
         }
     }
@@ -160,9 +187,13 @@ public class DashboardController implements NotificationListener {
 
             popupContent = new VBox();
             popupContent.getStyleClass().add("notification-popup-container");
+            popupContent.setPrefWidth(562);
             popupContent.setMinWidth(360);
-            popupContent.setMaxWidth(360);
-            popupContent.setMaxHeight(450);
+            popupContent.setMaxWidth(800);
+            popupContent.setPrefHeight(562);
+            popupContent.setMinHeight(450);
+            popupContent.setMaxHeight(900);
+            makeResizable(popupContent);
 
             // Popup nodes live in a separate scene graph and do not inherit the
             // main application's stylesheets. Load them explicitly so all CSS
@@ -189,8 +220,8 @@ public class DashboardController implements NotificationListener {
         double x = notificationBtn.localToScreen(notificationBtn.getBoundsInLocal()).getMinX();
         double y = notificationBtn.localToScreen(notificationBtn.getBoundsInLocal()).getMaxY() + 5;
 
-        // Show slightly offset to the left so it stays nicely aligned
-        notificationPopup.show(notificationBtn.getScene().getWindow(), x - 280, y);
+        // Show slightly offset to the left dynamically based on pref width so it stays nicely aligned
+        notificationPopup.show(notificationBtn.getScene().getWindow(), x - (popupContent.getPrefWidth() - 80), y);
     }
 
 
@@ -204,7 +235,7 @@ public class DashboardController implements NotificationListener {
         HBox header = new HBox();
         header.getStyleClass().add("notification-header");
         
-        Label title = new Label("Notifications (" + currentUsername + ")");
+        Label title = new Label("Notifications");
         title.getStyleClass().add("notification-title");
         
         Region spacer = new Region();
@@ -244,7 +275,7 @@ public class DashboardController implements NotificationListener {
         
         List<Notification> notifications = NotificationService.getInstance().getAllNotificationsForUser(currentUsername);
         if (notifications.isEmpty()) {
-            Label emptyLabel = new Label("No notifications recorded.");
+            Label emptyLabel = new Label("No notifications.");
             emptyLabel.getStyleClass().add("notification-empty-label");
             listContainer.getChildren().add(emptyLabel);
         } else {
@@ -309,7 +340,7 @@ public class DashboardController implements NotificationListener {
 
         ScrollPane scrollPane = new ScrollPane(listContainer);
         scrollPane.setFitToWidth(true);
-        scrollPane.setPrefHeight(200);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
         scrollPane.getStyleClass().add("notification-scroll-pane");
         popupContent.getChildren().add(scrollPane);
 
@@ -336,14 +367,19 @@ public class DashboardController implements NotificationListener {
 
     private void showPushToast(Notification notification) {
         if (contentArea == null) return;
+        ensureToastContainer();
 
-        HBox toast = new HBox();
+        VBox toast = new VBox(0);
         toast.getStyleClass().addAll("notification-toast", notification.getLevel().toLowerCase());
         toast.setMinWidth(320);
         toast.setMaxWidth(320);
         toast.setMaxHeight(Region.USE_PREF_SIZE);
 
-        Label levelLabel = new Label(notification.getLevel().toUpperCase());
+        HBox content = new HBox(10);
+        content.getStyleClass().add("notification-toast-content");
+        content.setAlignment(Pos.CENTER_LEFT);
+
+        Label levelLabel = new Label();
         levelLabel.getStyleClass().addAll("notification-level-badge", notification.getLevel().toLowerCase());
         if ("warning".equalsIgnoreCase(notification.getLevel()) || "critical".equalsIgnoreCase(notification.getLevel())) {
             levelLabel.setGraphic(createSvgIcon(
@@ -351,7 +387,12 @@ public class DashboardController implements NotificationListener {
                 "M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0",
                 "M12 16h.01"
             ));
-            levelLabel.setGraphicTextGap(4);
+        } else {
+            levelLabel.setGraphic(createSvgIcon(
+                "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0 -18",
+                "M12 8h.01",
+                "M12 11v4"
+            ));
         }
 
         Label msgLabel = new Label(notification.getMessage());
@@ -369,19 +410,165 @@ public class DashboardController implements NotificationListener {
             "M18 6l-12 12",
             "M6 6l12 12"
         ));
-        closeBtn.setOnAction(e -> contentArea.getChildren().remove(toast));
 
-        toast.getChildren().addAll(levelLabel, msgLabel, spacer, closeBtn);
+        content.getChildren().addAll(levelLabel, msgLabel, spacer, closeBtn);
 
-        StackPane.setAlignment(toast, Pos.TOP_RIGHT);
-        // Set spatial margin offset of 24px from the top-right container boundary
-        StackPane.setMargin(toast, new Insets(24, 24, 0, 0));
-        contentArea.getChildren().add(toast);
+        // Draining progress bar Region at the footer
+        Region progressBar = new Region();
+        progressBar.getStyleClass().add("notification-toast-progressbar");
+        progressBar.setPrefWidth(318); // Start at full width inside the 320px container (accounting for 1px borders)
+        progressBar.setMinWidth(0);
+        progressBar.maxWidthProperty().bind(progressBar.prefWidthProperty());
 
-        // Auto-remove after 4 seconds
+        toast.getChildren().addAll(content, progressBar);
+
+        // Timeline to animate progress bar width to 0
+        javafx.animation.Timeline progressTimeline = new javafx.animation.Timeline(
+            new javafx.animation.KeyFrame(Duration.ZERO, new javafx.animation.KeyValue(progressBar.prefWidthProperty(), 318)),
+            new javafx.animation.KeyFrame(Duration.seconds(4.0), new javafx.animation.KeyValue(progressBar.prefWidthProperty(), 0))
+        );
+
         PauseTransition delay = new PauseTransition(Duration.seconds(4.0));
-        delay.setOnFinished(e -> contentArea.getChildren().remove(toast));
+
+        closeBtn.setOnAction(e -> {
+            delay.stop();
+            progressTimeline.stop();
+            if (toastContainer != null) {
+                toastContainer.getChildren().remove(toast);
+            }
+        });
+
+        delay.setOnFinished(e -> {
+            progressTimeline.stop();
+            if (toastContainer != null) {
+                toastContainer.getChildren().remove(toast);
+            }
+        });
+
+        if (toastContainer != null) {
+            toastContainer.getChildren().add(toast);
+        }
+
+        progressTimeline.play();
         delay.play();
+    }
+
+    private void ensureToastContainer() {
+        if (toastContainer == null) {
+            toastContainer = new VBox(10);
+            toastContainer.setAlignment(Pos.TOP_RIGHT);
+            toastContainer.setPickOnBounds(false);
+            toastContainer.setMaxWidth(Region.USE_PREF_SIZE);
+            toastContainer.setMaxHeight(Region.USE_PREF_SIZE);
+            StackPane.setAlignment(toastContainer, Pos.TOP_RIGHT);
+            StackPane.setMargin(toastContainer, new Insets(24, 24, 0, 0));
+        }
+        if (contentArea != null && !contentArea.getChildren().contains(toastContainer)) {
+            contentArea.getChildren().add(toastContainer);
+        }
+    }
+
+    private void makeResizable(Region region) {
+        region.setOnMouseMoved(e -> {
+            if (isResizing) return;
+            double x = e.getX();
+            double y = e.getY();
+            double w = region.getWidth();
+            double h = region.getHeight();
+            boolean nearRight = (x >= w - 10);
+            boolean nearLeft = (x <= 10);
+            boolean nearBottom = (y >= h - 10);
+            
+            if (nearLeft && nearBottom) {
+                region.setCursor(javafx.scene.Cursor.SW_RESIZE);
+            } else if (nearRight && nearBottom) {
+                region.setCursor(javafx.scene.Cursor.SE_RESIZE);
+            } else if (nearLeft) {
+                region.setCursor(javafx.scene.Cursor.W_RESIZE);
+            } else if (nearRight) {
+                region.setCursor(javafx.scene.Cursor.E_RESIZE);
+            } else if (nearBottom) {
+                region.setCursor(javafx.scene.Cursor.S_RESIZE);
+            } else {
+                region.setCursor(javafx.scene.Cursor.DEFAULT);
+            }
+        });
+
+        region.setOnMousePressed(e -> {
+            double x = e.getX();
+            double y = e.getY();
+            double w = region.getWidth();
+            double h = region.getHeight();
+            boolean nearRight = (x >= w - 10);
+            boolean nearLeft = (x <= 10);
+            boolean nearBottom = (y >= h - 10);
+            
+            if (nearRight || nearLeft || nearBottom) {
+                isResizing = true;
+                startX = e.getScreenX();
+                startY = e.getScreenY();
+                startWidth = region.getWidth();
+                startHeight = region.getHeight();
+                if (region.getScene() != null && region.getScene().getWindow() != null) {
+                    startWinX = region.getScene().getWindow().getX();
+                }
+                
+                if (nearLeft && nearBottom) {
+                    resizeType = "SW";
+                } else if (nearRight && nearBottom) {
+                    resizeType = "SE";
+                } else if (nearLeft) {
+                    resizeType = "W";
+                } else if (nearRight) {
+                    resizeType = "E";
+                } else {
+                    resizeType = "S";
+                }
+                e.consume();
+            }
+        });
+
+        region.setOnMouseDragged(e -> {
+            if (!isResizing) return;
+            
+            double deltaX = e.getScreenX() - startX;
+            double deltaY = e.getScreenY() - startY;
+            
+            // Sizing constraints matching the minimum (360) and maximum (800) limits
+            double minW = 360;
+            double maxW = 800;
+            
+            if ("E".equals(resizeType) || "SE".equals(resizeType)) {
+                double newWidth = Math.max(minW, Math.min(maxW, startWidth + deltaX));
+                region.setPrefWidth(newWidth);
+            }
+            
+            if ("W".equals(resizeType) || "SW".equals(resizeType)) {
+                double maxNewWidth = startWidth - deltaX;
+                double constrainedWidth = Math.max(minW, Math.min(maxW, maxNewWidth));
+                double actualDeltaW = constrainedWidth - startWidth;
+                region.setPrefWidth(constrainedWidth);
+                if (region.getScene() != null && region.getScene().getWindow() != null) {
+                    region.getScene().getWindow().setX(startWinX - actualDeltaW);
+                }
+            }
+            
+            // Sizing constraints matching the minimum (450) and maximum (900) limits
+            double minH = 450;
+            double maxH = 900;
+            
+            if ("S".equals(resizeType) || "SE".equals(resizeType) || "SW".equals(resizeType)) {
+                double newHeight = Math.max(minH, Math.min(maxH, startHeight + deltaY));
+                region.setPrefHeight(newHeight);
+            }
+            e.consume();
+        });
+
+        region.setOnMouseReleased(e -> {
+            isResizing = false;
+            resizeType = "";
+            region.setCursor(javafx.scene.Cursor.DEFAULT);
+        });
     }
 
     /**
@@ -419,7 +606,11 @@ public class DashboardController implements NotificationListener {
             scrollPane.setFitToHeight(true);
             scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;");
 
-            contentArea.getChildren().setAll(scrollPane);
+            if (toastContainer != null && contentArea.getChildren().contains(toastContainer)) {
+                contentArea.getChildren().setAll(scrollPane, toastContainer);
+            } else {
+                contentArea.getChildren().setAll(scrollPane);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading sub-view: " + fxmlName);

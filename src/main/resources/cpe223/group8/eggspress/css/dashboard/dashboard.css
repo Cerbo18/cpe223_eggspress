@@ -94,6 +94,22 @@
     -fx-stroke: #1d1d1f;
 }
 
+/* Sidebar action button unread state (turns vibrant green) */
+.sidebar-action-btn.has-unread .sidebar-toggle-icon {
+    -fx-stroke: #39b54a;
+}
+.sidebar-action-btn.has-unread:hover .sidebar-toggle-icon {
+    -fx-stroke: #319e3f;
+}
+
+/* Sidebar action button all-read state (stale neutral grey) */
+.sidebar-action-btn.all-read .sidebar-toggle-icon {
+    -fx-stroke: #86868b;
+}
+.sidebar-action-btn.all-read:hover .sidebar-toggle-icon {
+    -fx-stroke: #1d1d1f;
+}
+
 /* Sidebar navigation menu icons */
 .sidebar-menu-icon {
     -fx-fill: transparent;
@@ -287,7 +303,6 @@
    so all color and effect values are defined explicitly here.
    ========================================================================= */
 
-/* Unread notification status counter badge */
 .notification-badge {
     -fx-background-color: #ff3b30;
     -fx-text-fill: white;
@@ -374,6 +389,9 @@
 }
 .notification-level-badge.critical .notification-icon-path {
     -fx-stroke: #ff3b30;
+}
+.notification-level-badge.info .notification-icon-path {
+    -fx-stroke: #39b54a;
 }
 
 /* Close button SVG path colors */
@@ -554,9 +572,22 @@
     -fx-border-color: rgba(0, 0, 0, 0.058);
     -fx-border-width: 1px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.14), 8, 0, 0, 2);
+    -fx-padding: 0px;
+    -fx-alignment: top-left;
+}
+
+.notification-toast-content {
     -fx-padding: 12px 14px;
     -fx-spacing: 10px;
     -fx-alignment: center-left;
+}
+
+.notification-toast-progressbar {
+    -fx-background-color: #d2d2d7;
+    -fx-pref-height: 3px;
+    -fx-min-height: 3px;
+    -fx-max-height: 3px;
+    -fx-background-radius: 0 0 7px 7px;
 }
 
 /* Toast body message label */
