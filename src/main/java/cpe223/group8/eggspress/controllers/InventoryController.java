@@ -48,8 +48,7 @@ public class InventoryController {
     @FXML
     private TextField adjustmentField;
 
-    @FXML
-    private Label feedbackLabel;
+
 
     @FXML
     public void initialize() {
@@ -82,6 +81,17 @@ public class InventoryController {
 
         if (name.isEmpty() || category == null || category.isEmpty() || qtyStr.isEmpty() || unit.isEmpty()) {
             showError("Please fill out all fields to add an item.");
+            return;
+        }
+
+        // Validate characters
+        if (!name.matches("^[a-zA-Z0-9\\s._-]+$")) {
+            showError("Item Name contains invalid characters. Only alphanumeric, spaces, dots, dashes, and underscores are allowed.");
+            return;
+        }
+
+        if (!unit.matches("^[a-zA-Z\\s]+$")) {
+            showError("Unit contains invalid characters. Only letters and spaces are allowed.");
             return;
         }
 
@@ -226,12 +236,10 @@ public class InventoryController {
     }
 
     private void showSuccess(String message) {
-        feedbackLabel.setText(message);
-        feedbackLabel.setTextFill(Color.GREEN);
+        NotificationService.notificationInfo(message);
     }
 
     private void showError(String message) {
-        feedbackLabel.setText(message);
-        feedbackLabel.setTextFill(Color.RED);
+        NotificationService.notificationWarning(message, false);
     }
 }

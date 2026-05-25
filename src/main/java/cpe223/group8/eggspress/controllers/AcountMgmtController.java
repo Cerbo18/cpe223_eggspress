@@ -3,6 +3,7 @@ package cpe223.group8.eggspress.controllers;
 import cpe223.group8.eggspress.Main;
 import cpe223.group8.eggspress.models.User;
 import cpe223.group8.eggspress.repository.UserRepository;
+import cpe223.group8.eggspress.services.NotificationService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -32,9 +33,6 @@ public class AcountMgmtController {
     private TextField newPasswordField;
 
     @FXML
-    private Label feedbackLabel;
-
-    @FXML
     public void initialize() {
         // Setup column bindings
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -50,16 +48,25 @@ public class AcountMgmtController {
         String password = newPasswordField.getText().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            feedbackLabel.setText("Username and Password cannot be empty");
-            feedbackLabel.setTextFill(javafx.scene.paint.Color.RED);
+            NotificationService.notificationWarning("Username and Password cannot be empty.", false);
+            return;
+        }
+
+        // Validate characters
+        if (!username.matches("^[a-zA-Z0-9._@-]+$")) {
+            NotificationService.notificationWarning("Username contains invalid characters. Only alphanumeric, dots, underscores, dashes, and @ are allowed.", false);
+            return;
+        }
+
+        if (!password.matches("^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\",./<>?]+$")) {
+            NotificationService.notificationWarning("Password contains invalid characters. No spaces or control characters are allowed.", false);
             return;
         }
 
         // Check if user already exists
         for (User u : UserRepository.getStaticUsers()) {
             if (u.getUsername().equalsIgnoreCase(username)) {
-                feedbackLabel.setText("Account already exists");
-                feedbackLabel.setTextFill(javafx.scene.paint.Color.RED);
+                NotificationService.notificationWarning("Account '" + username + "' already exists.", false);
                 return;
             }
         }
@@ -74,8 +81,7 @@ public class AcountMgmtController {
         // Refresh table view
         refreshTable();
 
-        feedbackLabel.setText("Account created successfully");
-        feedbackLabel.setTextFill(javafx.scene.paint.Color.GREEN);
+        NotificationService.notificationInfo("Created new account: " + username);
     }
 
     @FXML
