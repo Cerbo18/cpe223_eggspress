@@ -5,6 +5,7 @@ import cpe223.group8.eggspress.models.FeedingSchedule;
 import cpe223.group8.eggspress.models.InventoryItem;
 import cpe223.group8.eggspress.models.Automation;
 import cpe223.group8.eggspress.repository.FarmRepository;
+import cpe223.group8.eggspress.services.NotificationService;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -198,6 +199,9 @@ public class AutomationController {
             waterFeedbackLabel.setText("Error: Failed to update inventory database records.");
             return;
         }
+
+        selectedWater.setQuantity(updatedQuantity);
+        NotificationService.getInstance().checkInventoryThresholds(selectedWater);
         
         String autoId = "AUTO-" + (FarmRepository.getAutomationCount() + 1);
         String location = locationComboBox.getSelectionModel().getSelectedItem();
