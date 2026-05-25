@@ -27,6 +27,8 @@ import javafx.event.ActionEvent;
 import javafx.application.Platform;
 import java.util.List;
 
+
+
 public class DashboardController implements NotificationListener {
 
     private static DashboardController instance;
@@ -125,8 +127,18 @@ public class DashboardController implements NotificationListener {
         String currentUsername = SessionManager.getCurrentUsername();
         int unreadCount = NotificationService.getInstance().getUnreadCountForUser(currentUsername);
         if (unreadCount > 0) {
+            String prevText = notificationBadge.getText();
             notificationBadge.setText(String.valueOf(unreadCount));
-            notificationBadge.setVisible(true);
+            if (!notificationBadge.isVisible() || !prevText.equals(String.valueOf(unreadCount))) {
+                notificationBadge.setVisible(true);
+                // Trigger dynamic scale-in animation on badge updates
+                javafx.animation.ScaleTransition anim = new javafx.animation.ScaleTransition(Duration.millis(200), notificationBadge);
+                anim.setFromX(0.5);
+                anim.setFromY(0.5);
+                anim.setToX(1.0);
+                anim.setToY(1.0);
+                anim.play();
+            }
         } else {
             notificationBadge.setVisible(false);
         }
@@ -145,12 +157,29 @@ public class DashboardController implements NotificationListener {
         if (notificationPopup == null) {
             notificationPopup = new Popup();
             notificationPopup.setAutoHide(true);
-            
+
             popupContent = new VBox();
-            popupContent.setStyle("-fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-width: 1px; -fx-padding: 10px; -fx-spacing: 8px; -fx-border-radius: 4px; -fx-background-radius: 4px;");
-            popupContent.setMinWidth(350);
-            popupContent.setMaxWidth(400);
-            
+            popupContent.getStyleClass().add("notification-popup-container");
+            popupContent.setMinWidth(360);
+            popupContent.setMaxWidth(360);
+            popupContent.setMaxHeight(450);
+
+            // Popup nodes live in a separate scene graph and do not inherit the
+            // main application's stylesheets. Load them explicitly so all CSS
+            // class selectors resolve against this detached scene.
+            String[] cssResources = {
+                "css/global.css",
+                "css/light.css",
+                "css/dashboard/dashboard.css",
+                "css/dashboard/light.css"
+            };
+            for (String resource : cssResources) {
+                java.net.URL url = Main.class.getResource(resource);
+                if (url != null) {
+                    popupContent.getStylesheets().add(url.toExternalForm());
+                }
+            }
+
             notificationPopup.getContent().add(popupContent);
         }
 
@@ -159,10 +188,11 @@ public class DashboardController implements NotificationListener {
         // Position popup below notification bell button safely
         double x = notificationBtn.localToScreen(notificationBtn.getBoundsInLocal()).getMinX();
         double y = notificationBtn.localToScreen(notificationBtn.getBoundsInLocal()).getMaxY() + 5;
-        
+
         // Show slightly offset to the left so it stays nicely aligned
         notificationPopup.show(notificationBtn.getScene().getWindow(), x - 280, y);
     }
+
 
     private void refreshNotificationPopupContent() {
         if (popupContent == null) return;
@@ -172,17 +202,20 @@ public class DashboardController implements NotificationListener {
 
         // 1. Header Area
         HBox header = new HBox();
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setSpacing(10);
+        header.getStyleClass().add("notification-header");
         
         Label title = new Label("Notifications (" + currentUsername + ")");
-        title.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #333333;");
+        title.getStyleClass().add("notification-title");
         
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
         Button markAllBtn = new Button("Mark All Read");
-        markAllBtn.setStyle("-fx-font-size: 10px; -fx-padding: 3px 6px;");
+        markAllBtn.getStyleClass().add("notification-action-btn");
+        markAllBtn.setGraphic(createSvgIcon(
+            "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0",
+            "M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"
+        ));
         markAllBtn.setOnAction(e -> {
             NotificationService.getInstance().markAllAsReadForUser(currentUsername);
             updateUnreadBadgeCount();
@@ -190,7 +223,12 @@ public class DashboardController implements NotificationListener {
         });
 
         Button clearBtn = new Button("Clear All");
-        clearBtn.setStyle("-fx-font-size: 10px; -fx-padding: 3px 6px;");
+        clearBtn.getStyleClass().add("notification-action-btn");
+        clearBtn.setGraphic(createSvgIcon(
+            "M8 6h12",
+            "M6 12h12",
+            "M4 18h12"
+        ));
         clearBtn.setOnAction(e -> {
             NotificationService.getInstance().clearAllForUser(currentUsername);
             updateUnreadBadgeCount();
@@ -202,37 +240,44 @@ public class DashboardController implements NotificationListener {
 
         // 2. Notification List in a ScrollPane
         VBox listContainer = new VBox();
-        listContainer.setSpacing(6);
+        listContainer.getStyleClass().add("notification-list-container");
         
         List<Notification> notifications = NotificationService.getInstance().getAllNotificationsForUser(currentUsername);
         if (notifications.isEmpty()) {
             Label emptyLabel = new Label("No notifications recorded.");
-            emptyLabel.setStyle("-fx-text-fill: #888888; -fx-font-style: italic; -fx-padding: 10px 0;");
+            emptyLabel.getStyleClass().add("notification-empty-label");
             listContainer.getChildren().add(emptyLabel);
         } else {
             for (Notification n : notifications) {
                 HBox row = new HBox();
                 row.setAlignment(Pos.CENTER_LEFT);
                 row.setSpacing(8);
+                row.getStyleClass().add("notification-row");
+                if (!n.isRead()) {
+                    row.getStyleClass().add("unread");
+                }
                 
-                // Styling based on level and unread status
-                String borderStyle = n.isRead() ? "-fx-border-color: #eeeeee;" : "-fx-border-color: #007aff; -fx-background-color: #f2f8ff;";
-                row.setStyle(borderStyle + " -fx-border-width: 1px; -fx-padding: 6px; -fx-border-radius: 4px; -fx-background-radius: 4px;");
-                
-                // Severity label
-                Label levelLabel = new Label("[" + n.getLevel().toUpperCase() + "]");
-                String levelColor = "info".equalsIgnoreCase(n.getLevel()) ? "#555555" : ("warning".equalsIgnoreCase(n.getLevel()) ? "#e67e22" : "#ff3b30");
-                levelLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 10px; -fx-text-fill: " + levelColor + ";");
+                // Severity label styled as capsule pill badge without raw brackets
+                Label levelLabel = new Label(n.getLevel().toUpperCase());
+                levelLabel.getStyleClass().addAll("notification-level-badge", n.getLevel().toLowerCase());
+                if ("warning".equalsIgnoreCase(n.getLevel()) || "critical".equalsIgnoreCase(n.getLevel())) {
+                    levelLabel.setGraphic(createSvgIcon(
+                        "M12 9v4",
+                        "M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0",
+                        "M12 16h.01"
+                    ));
+                    levelLabel.setGraphicTextGap(4);
+                }
                 
                 // Timestamp and Message
                 VBox textDetails = new VBox(2);
                 Label msgLabel = new Label(n.getMessage());
                 msgLabel.setWrapText(true);
                 msgLabel.setMaxWidth(200);
-                msgLabel.setStyle(n.isRead() ? "-fx-text-fill: #555555; -fx-font-size: 11px;" : "-fx-text-fill: #000000; -fx-font-weight: bold; -fx-font-size: 11px;");
+                msgLabel.getStyleClass().add("notification-message");
                 
                 Label timeLabel = new Label(n.getTimestamp());
-                timeLabel.setStyle("-fx-text-fill: #999999; -fx-font-size: 9px;");
+                timeLabel.getStyleClass().add("notification-time");
                 
                 textDetails.getChildren().addAll(msgLabel, timeLabel);
                 row.getChildren().addAll(levelLabel, textDetails);
@@ -243,8 +288,13 @@ public class DashboardController implements NotificationListener {
                 
                 // Mark single as read button
                 if (!n.isRead()) {
-                    Button readBtn = new Button("✓");
-                    readBtn.setStyle("-fx-font-size: 9px; -fx-padding: 2px 4px;");
+                    Button readBtn = new Button();
+                    readBtn.getStyleClass().add("notification-read-btn");
+                    readBtn.setGraphic(createSvgIcon(
+                        "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0",
+                        "M11.102 17.957c-3.204 -.307 -5.904 -2.294 -8.102 -5.957c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6a19.5 19.5 0 0 1 -.663 1.032",
+                        "M15 19l2 2l4 -4"
+                    ));
                     readBtn.setOnAction(e -> {
                         NotificationService.getInstance().markAsReadForUser(currentUsername, n.getId());
                         updateUnreadBadgeCount();
@@ -260,24 +310,24 @@ public class DashboardController implements NotificationListener {
         ScrollPane scrollPane = new ScrollPane(listContainer);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefHeight(200);
-        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;");
+        scrollPane.getStyleClass().add("notification-scroll-pane");
         popupContent.getChildren().add(scrollPane);
 
         // 3. Test Simulators (User Approved)
         HBox testBox = new HBox();
+        testBox.getStyleClass().add("notification-test-box");
         testBox.setAlignment(Pos.CENTER_LEFT);
         testBox.setSpacing(6);
-        testBox.setStyle("-fx-border-color: #dddddd; -fx-border-width: 1px 0 0 0; -fx-padding: 8px 0 0 0;");
         
         Label testLbl = new Label("Simulate:");
-        testLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #666666;");
+        testLbl.getStyleClass().add("notification-test-label");
         
         Button simWarning = new Button("Warning");
-        simWarning.setStyle("-fx-font-size: 9px; -fx-padding: 2px 4px;");
+        simWarning.getStyleClass().addAll("notification-sim-btn", "warning");
         simWarning.setOnAction(e -> NotificationService.getInstance().publish("Warning", "Simulated system alert: Low water tank pressure."));
 
         Button simCritical = new Button("Critical");
-        simCritical.setStyle("-fx-font-size: 9px; -fx-padding: 2px 4px;");
+        simCritical.getStyleClass().addAll("notification-sim-btn", "critical");
         simCritical.setOnAction(e -> NotificationService.getInstance().publish("Critical", "Simulated emergency: Coop A temperature exceeded 35°C!"));
 
         testBox.getChildren().addAll(testLbl, simWarning, simCritical);
@@ -288,32 +338,44 @@ public class DashboardController implements NotificationListener {
         if (contentArea == null) return;
 
         HBox toast = new HBox();
-        toast.setAlignment(Pos.CENTER_LEFT);
-        toast.setSpacing(10);
-        
-        // Restrict bounds so it floats as a compact card in the top-right
-        toast.setMaxWidth(380);
-        toast.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
+        toast.getStyleClass().addAll("notification-toast", notification.getLevel().toLowerCase());
+        toast.setMinWidth(320);
+        toast.setMaxWidth(320);
+        toast.setMaxHeight(Region.USE_PREF_SIZE);
 
-        Label levelLabel = new Label("[" + notification.getLevel().toUpperCase() + "]");
+        Label levelLabel = new Label(notification.getLevel().toUpperCase());
+        levelLabel.getStyleClass().addAll("notification-level-badge", notification.getLevel().toLowerCase());
+        if ("warning".equalsIgnoreCase(notification.getLevel()) || "critical".equalsIgnoreCase(notification.getLevel())) {
+            levelLabel.setGraphic(createSvgIcon(
+                "M12 9v4",
+                "M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0",
+                "M12 16h.01"
+            ));
+            levelLabel.setGraphicTextGap(4);
+        }
+
         Label msgLabel = new Label(notification.getMessage());
         msgLabel.setWrapText(true);
-        msgLabel.setMaxWidth(240); // Allow room for the close button on the right
+        msgLabel.getStyleClass().add("notification-toast-message");
 
-        // Add spacer to push the close button to the far right
+        // Spacer pushes the close button to the trailing edge
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Add an unstyled dedicated close button
-        Button closeBtn = new Button("×");
+        // Dismiss button
+        Button closeBtn = new Button();
+        closeBtn.getStyleClass().add("notification-toast-close-btn");
+        closeBtn.setGraphic(createSvgIcon(
+            "M18 6l-12 12",
+            "M6 6l12 12"
+        ));
         closeBtn.setOnAction(e -> contentArea.getChildren().remove(toast));
 
         toast.getChildren().addAll(levelLabel, msgLabel, spacer, closeBtn);
 
         StackPane.setAlignment(toast, Pos.TOP_RIGHT);
-        // Standard HIG/Fluent consistency margins (e.g. 24px from top and right)
+        // Set spatial margin offset of 24px from the top-right container boundary
         StackPane.setMargin(toast, new Insets(24, 24, 0, 0));
-        
         contentArea.getChildren().add(toast);
 
         // Auto-remove after 4 seconds
@@ -433,5 +495,30 @@ public class DashboardController implements NotificationListener {
     @FXML
     private void handleViewLayout(ActionEvent event) {
         loadView("layout");
+    }
+
+    private javafx.scene.Group createSvgIcon(String path1) {
+        return createSvgIcon(new String[]{path1});
+    }
+
+    private javafx.scene.Group createSvgIcon(String path1, String path2) {
+        return createSvgIcon(new String[]{path1, path2});
+    }
+
+    private javafx.scene.Group createSvgIcon(String path1, String path2, String path3) {
+        return createSvgIcon(new String[]{path1, path2, path3});
+    }
+
+    private javafx.scene.Group createSvgIcon(String[] paths) {
+        javafx.scene.Group group = new javafx.scene.Group();
+        group.setScaleX(0.7);
+        group.setScaleY(0.7);
+        for (String path : paths) {
+            javafx.scene.shape.SVGPath svgPath = new javafx.scene.shape.SVGPath();
+            svgPath.setContent(path);
+            svgPath.getStyleClass().add("notification-icon-path");
+            group.getChildren().add(svgPath);
+        }
+        return group;
     }
 }

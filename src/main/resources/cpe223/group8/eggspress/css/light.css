@@ -16,6 +16,12 @@
     /* Cards */
     -fx-card-bg-color: #ffffff;
     -fx-card-border-color: rgba(0, 0, 0, 0.05);
+    
+    /* Translucent Overlays */
+    -fx-overlay-bg: rgba(255, 255, 255, 0.72);
+    -fx-overlay-border: rgba(0, 0, 0, 0.08);
+    -fx-overlay-shadow: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 24, 0, 0, 8);
+    -fx-separator-color: rgba(0, 0, 0, 0.06);
 }
 
 /* HeaderBar styling */
