@@ -11,12 +11,13 @@ public class NotificationRepository implements BaseRepository<Notification> {
 
     @Override
     public void save(Notification entity) {
-        String sql = "INSERT INTO notifications (level, message, is_read) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO notifications (level, message, is_read, username) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, entity.getLevel());
             pstmt.setString(2, entity.getMessage());
             pstmt.setInt(3, entity.isRead() ? 1 : 0);
+            pstmt.setString(4, entity.getUsername());
             
             pstmt.executeUpdate();
             
@@ -58,7 +59,8 @@ public class NotificationRepository implements BaseRepository<Notification> {
                         rs.getString("timestamp"),
                         rs.getString("level"),
                         rs.getString("message"),
-                        rs.getInt("is_read") == 1
+                        rs.getInt("is_read") == 1,
+                        rs.getString("username")
                     );
                 }
             }
@@ -130,12 +132,13 @@ public class NotificationRepository implements BaseRepository<Notification> {
             FROM notifications n
             LEFT JOIN user_notification_states uns 
               ON n.id = uns.notification_id AND uns.username = ?
-            WHERE user_is_cleared = 0
+            WHERE user_is_cleared = 0 AND (n.username IS NULL OR n.username = ?)
             ORDER BY n.id DESC
         """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
+            pstmt.setString(2, username);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     list.add(new Notification(
@@ -143,7 +146,8 @@ public class NotificationRepository implements BaseRepository<Notification> {
                         rs.getString("timestamp"),
                         rs.getString("level"),
                         rs.getString("message"),
-                        rs.getInt("user_is_read") == 1
+                        rs.getInt("user_is_read") == 1,
+                        rs.getString("username")
                     ));
                 }
             }
@@ -161,10 +165,12 @@ public class NotificationRepository implements BaseRepository<Notification> {
             LEFT JOIN user_notification_states uns 
               ON n.id = uns.notification_id AND uns.username = ?
             WHERE COALESCE(uns.is_read, 0) = 0 AND COALESCE(uns.is_cleared, 0) = 0
+              AND (n.username IS NULL OR n.username = ?)
         """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
+            pstmt.setString(2, username);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -202,11 +208,13 @@ public class NotificationRepository implements BaseRepository<Notification> {
             FROM notifications n
             LEFT JOIN user_notification_states uns ON n.id = uns.notification_id AND uns.username = ?
             WHERE COALESCE(uns.is_read, 0) = 0 AND COALESCE(uns.is_cleared, 0) = 0
+              AND (n.username IS NULL OR n.username = ?)
         """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, username);
+            pstmt.setString(3, username);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error marking all notifications read for user: " + e.getMessage());
@@ -221,11 +229,13 @@ public class NotificationRepository implements BaseRepository<Notification> {
             FROM notifications n
             LEFT JOIN user_notification_states uns ON n.id = uns.notification_id AND uns.username = ?
             WHERE COALESCE(uns.is_cleared, 0) = 0
+              AND (n.username IS NULL OR n.username = ?)
         """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, username);
+            pstmt.setString(3, username);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error clearing all notifications for user: " + e.getMessage());

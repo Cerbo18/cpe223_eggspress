@@ -74,7 +74,8 @@ public class DatabaseConfig {
                 timestamp TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
                 level TEXT NOT NULL,
                 message TEXT NOT NULL,
-                is_read INTEGER DEFAULT 0
+                is_read INTEGER DEFAULT 0,
+                username TEXT
             );
         """;
 
@@ -99,6 +100,14 @@ public class DatabaseConfig {
             stmt.execute(createCoopsTable);
             stmt.execute(createNotificationsTable);
             stmt.execute(createUserNotificationStatesTable);
+            
+            // Dynamic column migration for existing notifications table
+            try {
+                stmt.execute("ALTER TABLE notifications ADD COLUMN username TEXT;");
+                System.out.println("Migrated: added username column to notifications table.");
+            } catch (SQLException e) {
+                // Column already exists, safe to ignore
+            }
             
             // 2. Check and seed standard admin user
             try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {

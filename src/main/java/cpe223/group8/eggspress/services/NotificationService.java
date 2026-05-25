@@ -72,7 +72,8 @@ public class NotificationService {
                         rs.getString("timestamp"),
                         rs.getString("level"),
                         rs.getString("message"),
-                        false
+                        false,
+                        rs.getString("username")
                     );
                     
                     if (n.getId() > lastKnownId) {
@@ -102,8 +103,10 @@ public class NotificationService {
         listeners.remove(listener);
     }
 
-    public void publish(String level, String message) {
-        Notification notification = new Notification(level, message);
+    public void publish(String level, String message, boolean isGlobal) {
+        String targetUser = isGlobal ? null : SessionManager.getCurrentUsername();
+        Notification notification = new Notification(level, message, targetUser);
+        
         // Save to DB (creates timestamp and generated ID)
         repository.save(notification);
 
@@ -118,6 +121,57 @@ public class NotificationService {
                 Platform.runLater(() -> listener.onNotificationReceived(notification));
             }
         }
+    }
+
+    public void publish(String level, String message) {
+        // By default, preserve backward compatibility by publishing globally
+        publish(level, message, true);
+    }
+
+    // ---------------------------------------------------------
+    // Abstracted Static Notification API
+    // ---------------------------------------------------------
+
+    /**
+     * Publishes an Info notification. Local to the active user session by default.
+     */
+    public static void notificationInfo(String message) {
+        getInstance().publish("Info", message, false);
+    }
+
+    /**
+     * Publishes an Info notification with explicit global or local scope.
+     */
+    public static void notificationInfo(String message, boolean isGlobal) {
+        getInstance().publish("Info", message, isGlobal);
+    }
+
+    /**
+     * Publishes a Warning notification. Global to all users by default.
+     */
+    public static void notificationWarning(String message) {
+        getInstance().publish("Warning", message, true);
+    }
+
+    /**
+     * Publishes a Warning notification with explicit global or local scope.
+     */
+    public static void notificationWarning(String message, boolean isGlobal) {
+        getInstance().publish("Warning", message, isGlobal);
+    }
+
+    /**
+     * Publishes a Critical notification. Global to all users by default.
+     */
+    public static void notificationCritical(String message) {
+        getInstance().publish("Critical", message, true);
+    }
+
+    /**
+     * Publishes a Critical notification with explicit global or local scope.
+     */
+    public static void notificationCritical(String message, boolean isGlobal) {
+        getInstance().publish("Critical", message, isGlobal);
     }
 
     public List<Notification> getAllNotifications() {

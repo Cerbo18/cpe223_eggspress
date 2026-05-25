@@ -541,6 +541,15 @@
     -fx-background-color: rgba(0, 0, 0, 0.04);
 }
 
+.notification-sim-btn.info {
+    -fx-text-fill: #39b54a;
+    -fx-border-color: rgba(57, 181, 74, 0.3);
+}
+
+.notification-sim-btn.info:hover {
+    -fx-background-color: rgba(57, 181, 74, 0.08);
+}
+
 .notification-sim-btn.warning {
     -fx-text-fill: #ff9500;
     -fx-border-color: rgba(255, 149, 0, 0.3);

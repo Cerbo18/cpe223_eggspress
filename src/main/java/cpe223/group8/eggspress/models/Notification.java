@@ -6,23 +6,36 @@ public class Notification {
     private String level;
     private String message;
     private boolean isRead;
+    private String username; // Nullable for global notifications
 
-    // Full constructor
-    public Notification(int id, String timestamp, String level, String message, boolean isRead) {
+    // Full constructor with username
+    public Notification(int id, String timestamp, String level, String message, boolean isRead, String username) {
         this.id = id;
         this.timestamp = timestamp;
         this.level = level;
         this.message = message;
         this.isRead = isRead;
+        this.username = username;
     }
 
-    // Helper constructor for creation
-    public Notification(String level, String message) {
+    // Backward-compatible full constructor
+    public Notification(int id, String timestamp, String level, String message, boolean isRead) {
+        this(id, timestamp, level, message, isRead, null);
+    }
+
+    // Helper constructor for creation with username
+    public Notification(String level, String message, String username) {
         this.id = 0;
         this.timestamp = "";
         this.level = level;
         this.message = message;
         this.isRead = false;
+        this.username = username;
+    }
+
+    // Backward-compatible helper constructor for creation
+    public Notification(String level, String message) {
+        this(level, message, null);
     }
 
     // Getters and Setters
@@ -64,5 +77,13 @@ public class Notification {
 
     public void setRead(boolean read) {
         isRead = read;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

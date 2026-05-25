@@ -130,6 +130,11 @@ public class DashboardController implements NotificationListener {
 
     @Override
     public void onNotificationReceived(Notification notification) {
+        String currentUsername = SessionManager.getCurrentUsername();
+        if (notification.getUsername() != null && !notification.getUsername().equalsIgnoreCase(currentUsername)) {
+            // Local notification targeted at a different user; filter and ignore
+            return;
+        }
         Platform.runLater(() -> {
             updateUnreadBadgeCount();
             showPushToast(notification);
@@ -298,6 +303,13 @@ public class DashboardController implements NotificationListener {
                         "M12 16h.01"
                     ));
                     levelLabel.setGraphicTextGap(4);
+                } else if ("info".equalsIgnoreCase(n.getLevel())) {
+                    levelLabel.setGraphic(createSvgIcon(
+                        "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0",
+                        "M12 8v4",
+                        "M12 16h.01"
+                    ));
+                    levelLabel.setGraphicTextGap(4);
                 }
                 
                 // Timestamp and Message
@@ -353,15 +365,19 @@ public class DashboardController implements NotificationListener {
         Label testLbl = new Label("Simulate:");
         testLbl.getStyleClass().add("notification-test-label");
         
+        Button simInfo = new Button("Info");
+        simInfo.getStyleClass().addAll("notification-sim-btn", "info");
+        simInfo.setOnAction(e -> NotificationService.notificationInfo("Simulated system info: Daily feed log generated."));
+
         Button simWarning = new Button("Warning");
         simWarning.getStyleClass().addAll("notification-sim-btn", "warning");
-        simWarning.setOnAction(e -> NotificationService.getInstance().publish("Warning", "Simulated system alert: Low water tank pressure."));
+        simWarning.setOnAction(e -> NotificationService.notificationWarning("Simulated system alert: Low water tank pressure."));
 
         Button simCritical = new Button("Critical");
         simCritical.getStyleClass().addAll("notification-sim-btn", "critical");
-        simCritical.setOnAction(e -> NotificationService.getInstance().publish("Critical", "Simulated emergency: Coop A temperature exceeded 35°C!"));
+        simCritical.setOnAction(e -> NotificationService.notificationCritical("Simulated emergency: Coop A temperature exceeded 35°C!"));
 
-        testBox.getChildren().addAll(testLbl, simWarning, simCritical);
+        testBox.getChildren().addAll(testLbl, simInfo, simWarning, simCritical);
         popupContent.getChildren().add(testBox);
     }
 
@@ -389,9 +405,9 @@ public class DashboardController implements NotificationListener {
             ));
         } else {
             levelLabel.setGraphic(createSvgIcon(
-                "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0 -18",
-                "M12 8h.01",
-                "M12 11v4"
+                "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0",
+                "M12 8v4",
+                "M12 16h.01"
             ));
         }
 
