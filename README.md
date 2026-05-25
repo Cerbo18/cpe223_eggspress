@@ -5,7 +5,7 @@
 > [!WARNING]
 > This repository is created for educational use only.
 
-Welcome to Eggspress Chicken Farm Manager. For coding simplicity in packages, directories, and Maven configuration, the project utilizes the identifier "eggspress". This application is a modular, high-performance farm management platform utilizing JavaFX for its interactive graphical user interface and SQLite for secure, lightweight local data persistence.
+Welcome to Eggspress Chicken Farm Manager. For coding simplicity in packages, directories, and Maven configuration, the project utilizes the identifier "eggspress". This application is a modular, high-performance farm management platform utilizing JavaFX for its interactive graphical user interface, SQLite for secure, lightweight local data persistence, and a modern, high-contrast style system built on calibrated depth layers.
 
 ---
 
@@ -13,7 +13,7 @@ Welcome to Eggspress Chicken Farm Manager. For coding simplicity in packages, di
 
 To build, run, and contribute to this repository, your local development system must meet the following software requirements:
 
-*   **Java Development Kit (JDK)**: Version 25 (LTS release is highly recommended)
+*   **Java Development Kit (JDK)**: Version 25 (LTS release is highly recommended, utilizing compile-time and runtime preview options)
 *   **Apache Maven**: Version 3.6.0 or higher
 *   **Operating System**: Windows 10/11 (with PowerShell or Command Prompt)
 *   **SQLite**: Local JDBC client (handled automatically via Maven dependencies)
@@ -92,7 +92,7 @@ eggspress/
 │       │           └── eggspress/
 │       │               ├── Main.java    # Application entry point (JavaFX Starter)
 │       │               │
-│       │               ├── config/      # Database driver connections
+│       │               ├── config/      # Database driver connections and schema setup
 │       │               │   └── DatabaseConfig.java
 │       │               │
 │       │               ├── models/      # Domain Logic / Entity models
@@ -100,12 +100,19 @@ eggspress/
 │       │               │   ├── ChickenHouse.java
 │       │               │   ├── FeedingSchedule.java
 │       │               │   ├── InventoryItem.java
-│       │               │   └── Automation.java
+│       │               │   ├── Automation.java
+│       │               │   └── Notification.java
 │       │               │
 │       │               ├── repository/  # Data Access Object (DAO) CRUD interactions
 │       │               │   ├── BaseRepository.java
 │       │               │   ├── UserRepository.java
-│       │               │   └── FarmRepository.java
+│       │               │   ├── FarmRepository.java
+│       │               │   └── NotificationRepository.java
+│       │               │
+│       │               ├── services/    # App-level services (session & async syncing)
+│       │               │   ├── SessionManager.java
+│       │               │   ├── NotificationListener.java
+│       │               │   └── NotificationService.java
 │       │               │
 │       │               └── controllers/ # Glue layer between views and models
 │       │                   ├── LoginController.java
@@ -113,7 +120,8 @@ eggspress/
 │       │                   ├── LayoutController.java
 │       │                   ├── InventoryController.java
 │       │                   ├── AcountMgmtController.java
-│       │                   └── AutomationController.java
+│       │                   ├── AutomationController.java
+│       │                   └── OverviewController.java
 │       │
 │       └── resources/               # Static markup layouts, UI styles, and brand assets
 │           ├── cpe223/
@@ -125,62 +133,142 @@ eggspress/
 │           │           │   ├── layout.fxml
 │           │           │   ├── inventory.fxml
 │           │           │   ├── acountMgmt.fxml
-│           │           │   └── automation.fxml
-│           │           ├── css/         # Global stylesheets for custom skinning
-│           │           │   └── styles.css
-│           │           └── icons/       # Application icons
+│           │           │   ├── automation.fxml
+│           │           │   └── overview.fxml
+│           │           │
+│           │           ├── css/         # Modular CSS system
+│           │           │   ├── global.css          # Baseline application-wide styles
+│           │           │   ├── light.css           # Global light theme colors
+│           │           │   ├── dark.css            # Global dark theme colors
+│           │           │   ├── acountMgmt/         # Account Management-specific CSS
+│           │           │   │   ├── acountMgmt.css
+│           │           │   │   ├── light.css
+│           │           │   │   └── dark.css
+│           │           │   ├── automation/         # Automation panel-specific CSS
+│           │           │   │   ├── automation.css
+│           │           │   │   ├── light.css
+│           │           │   │   └── dark.css
+│           │           │   ├── dashboard/          # Dashboard-specific CSS
+│           │           │   │   ├── dashboard.css
+│           │           │   │   ├── light.css
+│           │           │   │   └── dark.css
+│           │           │   ├── inventory/          # Inventory-specific CSS
+│           │           │   │   ├── inventory.css
+│           │           │   │   ├── light.css
+│           │           │   │   └── dark.css
+│           │           │   ├── layout/             # Window chrome & navigation CSS
+│           │           │   │   ├── layout.css
+│           │           │   │   ├── light.css
+│           │           │   │   └── dark.css
+│           │           │   ├── login/              # Login interface-specific CSS
+│           │           │   │   ├── login.css
+│           │           │   │   ├── light.css
+│           │           │   │   └── dark.css
+│           │           │   └── overview/           # Overview sub-view CSS
+│           │           │       ├── overview.css
+│           │           │       └── light.css
+│           │           │
+│           │           └── icons/       # Application window icons
 │           │               └── icon.png
 │           │
 │           └── kaviyes/                 # Brand and design assets
 │               └── nhx/
 │                   └── eggspress/
-│                       ├── 1x/          # 1x PNG branding assets
-│                       │   ├── Eggspress-App-Icon.png
-│                       │   ├── Eggspress-Combination-Mark-Full.png
-│                       │   ├── Eggspress-Combination-Mark.png
-│                       │   ├── Eggspress-Icon.png
-│                       │   └── Wordmark.png
-│                       ├── SVG/         # SVG Vector branding assets
-│                       │   ├── Eggspress App Icon.svg
-│                       │   ├── Eggspress Combination Mark Full.svg
-│                       │   ├── Eggspress Combination Mark.svg
-│                       │   ├── Eggspress Icon.svg
-│                       │   └── Wordmark.svg
-│                       └── ...          # Additional scaled assets (0.2x, 0.5x, etc.)
+│                       └── Assets/      # Vector and scaled raster brand marks
+│                           ├── COPYRIGHT
+│                           ├── 1x/      # 1x PNG branding assets
+│                           │   ├── Eggspress-App-Icon.png
+│                           │   ├── Eggspress-Combination-Mark-Full.png
+│                           │   ├── Eggspress-Combination-Mark.png
+│                           │   ├── Eggspress-Icon.png
+│                           │   └── Wordmark.png
+│                           ├── SVG/     # SVG Vector branding assets
+│                           │   ├── Eggspress App Icon.svg
+│                           │   ├── Eggspress Combination Mark Full.svg
+│                           │   ├── Eggspress Combination Mark.svg
+│                           │   ├── Eggspress Icon.svg
+│                           │   └── Wordmark.svg
+│                           └── ...      # Scaled assets (0.2x, 0.5x, 16w, etc.)
 │
-├── database/                        # Dedicated directory for database files
+├── database/                        # Local database persistence
 │   └── eggspress.db
 │
-├── .gitignore                       # Standard version-control filter definitions
-└── pom.xml                          # Maven build descriptors and core dependencies
+├── .gitignore                       # Version-control filters
+└── pom.xml                          # Maven build dependencies (JDK 25 / JavaFX 25)
 ```
 
 ---
 
 ## Execution and Compilation
 
-Follow these quick commands to build and test Eggspress Chicken Farm Manager:
+The application is configured to leverage compile-time and runtime preview features in **Java 25** and **OpenJFX 25**. Make sure that your `JAVA_HOME` environment variable points to a valid JDK 25 installation.
 
 ### 1. Build and Compile
-Fetches JavaFX and SQLite modules, resolves all libraries, and compiles the source code:
-```bash
-mvn clean compile
+Fetches JavaFX and SQLite modules, resolves all libraries, and compiles the source code with preview options:
+```powershell
+# Windows (PowerShell) - Compile and resolve dependencies
+$env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-25.0.3.9-hotspot"; mvn clean compile
 ```
 
 ### 2. Run Application
 Launches the JavaFX graphics UI environment:
-```bash
-mvn clean javafx:run
+```powershell
+# Windows (PowerShell) - Run the Application
+$env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-25.0.3.9-hotspot"; mvn clean javafx:run
 ```
+
+---
+
+## Technical Features & Architectural Implementations
+
+### A. Accessible Static Notification API
+To decoupling notification triggers from context fetches and keep developer code concise and readable, `NotificationService` exposes a simple static API:
+*   `NotificationService.notificationInfo(String message)` (Default local scope context)
+*   `NotificationService.notificationInfo(String message, boolean isGlobal)`
+*   `NotificationService.notificationWarning(String message)` (Default global scope context)
+*   `NotificationService.notificationWarning(String message, boolean isGlobal)`
+*   `NotificationService.notificationCritical(String message)` (Default global scope context)
+*   `NotificationService.notificationCritical(String message, boolean isGlobal)`
+
+These helpers automatically persist the alerts and immediately dispatch updates on the JavaFX application thread.
+
+### B. Global vs. Local Visibility Scopes
+Notifications are categorized by their visibility scope:
+1.  **Global Scoped (`isGlobal = true`)**: Sent to all users. Saved in the SQLite database with a `NULL` username. Visible in every account's notification drawer.
+2.  **Local Scoped (`isGlobal = false`)**: Sent to a specific user (e.g., input validation failures, user actions). Saved in the database mapped to the current `SessionManager` username. Correctly ignored on the fly by other accounts' dashboard pollers.
+
+### C. Legacy Notification Isolation for New Accounts
+When a new user registers via `UserRepository`, a database transaction automatically inserts read/cleared states into the `user_notification_states` table for **all** pre-existing database notifications. This guarantees that new user profiles begin with a perfectly empty notification tray on creation, while correctly receiving all subsequent notifications.
+
+---
+
+## Project Coding Guidelines & Development Standards
+
+### 1. Objective & Technical Code Comments
+To maintain a high-quality, professional codebase, all code documentation and inline comments must remain strictly technical and objective:
+*   **No Brand / System References**: Do not use proprietary names like *Apple*, *iOS*, *macOS*, *SwiftUI*, *Windows*, *Fluent*, or *HIG*. Refer instead to physical visual properties (e.g., "translucent overlays", "glassmorphic materials", "drop shadows", or "ambient layers").
+*   **No Subjective Style Adjectives**: Refrain from using qualitative buzzwords like "premium", "beautiful", "gorgeous", or "sleek".
+*   **Why, Not What**: Explain architectural details, layout math, thread-safety conditions, or spatial offset boundaries.
+    *   *Bad*: `// Standard HIG/Fluent consistency margins for a premium, beautiful look.`
+    *   *Good*: `// Set spatial margin offset of 24px from the top-right container boundary to prevent overlap with persistent navigation elements.`
+
+### 2. Strict Separation of Concerns (SoC)
+*   **Styling Isolation**: Absolutely **no** inline styling in Java controller files using `node.setStyle(...)` or programmatic visual overrides. All visual properties, margins, hover actions, colors, and elevations must reside in the component CSS stylesheets under `resources/css/`. Java classes interact with styling strictly by adding, removing, or toggling CSS style classes via `node.getStyleClass().add("class-name")`.
+*   **Database Isolation**: All SQLite connection logic is centralized within `DatabaseConfig.java`. Do not write raw JDBC connection strings inside your views or controllers. Always execute queries through repositories inheriting from `BaseRepository`.
+*   **Layout and Controller Binding**: Assign FXML views under `views/` to their corresponding controllers under `controllers/` using the `fx:controller` XML declaration.
+
+### 3. Microsoft Fluent 2 Elevation Standard
+The application follows the Fluent 2 depth hierarchy standard using opaque high-contrast background surfaces paired with calibrated dropshadow tokens to separate overlapping components:
+*   **Elevation 4 (Card / Push Toast)**: Uses dropshadow `dropshadow(gaussian, rgba(0, 0, 0, 0.14), 8, 0, 0, 2)` (Light Mode) or `dropshadow(gaussian, rgba(0, 0, 0, 0.28), 8, 0, 0, 2)` (Dark Mode) with an `8px` corner radius.
+*   **Elevation 8 (Notification Panel / Flyout)**: Uses dropshadow `dropshadow(gaussian, rgba(0, 0, 0, 0.14), 16, 0, 0, 4)` (Light Mode) or `dropshadow(gaussian, rgba(0, 0, 0, 0.28), 16, 0, 0, 4)` (Dark Mode) with an `8px` corner radius.
 
 ---
 
 ## Collaborative Workflow (Creating a Pull Request)
 
-To submit your code changes to the project without sending manual files back and forth, follow the official Git branching and Pull Request (PR) workflow:
+To submit your code changes to the project, follow the official Git branching and Pull Request (PR) workflow:
 
 ### Step 1: Pull the Latest Changes
-Always start by retrieving the latest updates from the main branch on GitHub before writing new code:
 ```bash
 # Switch to the main branch
 git checkout main
@@ -190,13 +278,11 @@ git pull origin main
 ```
 
 ### Step 2: Create a Feature Branch
-Create a new branch dedicated to your task. Replace "your-feature-name" with a descriptive task identifier (for example, "feature/login-validation"):
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
 ### Step 3: Code and Commit Changes
-Edit your files and save your progress locally. Stage and commit your changes using a professional description:
 ```bash
 # Check which files were modified
 git status
@@ -209,22 +295,13 @@ git commit -m "Implement validation checks on the login screen"
 ```
 
 ### Step 4: Push to GitHub
-Upload your local branch and commits directly to the remote GitHub server:
 ```bash
 git push origin feature/your-feature-name
 ```
 
 ### Step 5: Submit a Pull Request
 1. Open your web browser and navigate to: `https://github.com/kvedux/cpe223_eggspress`
-2. You will see a yellow banner stating your branch was recently pushed, click **Compare & pull request** (or click the **Pull requests** tab, followed by **New pull request**).
-3. Review your changes, input a descriptive title and outline what was done in the comment section.
-4. Click **Create pull request**.
-5. Once your team members review and approve your submission, it can be merged directly into the `main` branch.
-
----
-
-## Guidelines for Collaborative Development
-
-1. **Namespace and Package Consistency**: Always keep the "package cpe223.group8.eggspress;" namespace in all new Java files.
-2. **Database Management**: Connection logic is centralized inside DatabaseConfig.java. Do not write raw JDBC connection strings inside your views or controllers.
-3. **JavaFX Integration**: Assign FXML views under views/ to their corresponding controllers under controllers/ using the "fx:controller" declaration.
+2. Click **Compare & pull request** on the yellow notification banner (or open the **Pull requests** tab, then **New pull request**).
+3. Review your diffs, input a descriptive title, and outline your changes.
+4. Click **Create pull request**. Once team members review and approve it, it can be merged directly into `main`.
+```,StartLine:1,TargetContent:
