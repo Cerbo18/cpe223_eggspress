@@ -406,6 +406,22 @@
     -fx-stroke-dash-array: 2px, 2px;
 }
 
+/* Legend styling overrides to ensure visibility in both theme modes */
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 0px 0px 0px;
+}
+
+.chart-legend-item {
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.chart-legend-item-label {
+    -fx-text-fill: -fx-text-primary-color;
+}
+
 /* Context Menu & MenuBar Dropdown Styling */
 .context-menu {
     -fx-background-color: -fx-input-bg-color;
