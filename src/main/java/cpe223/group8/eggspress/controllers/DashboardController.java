@@ -162,7 +162,7 @@ public class DashboardController implements NotificationListener {
         NotificationService.getInstance().addListener(this);
         updateUnreadBadgeCount();
 
-        // Install premium themed tooltips on navigation and action controls
+        // Install themed tooltips on navigation and action controls
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(themeToggleBtn, "Switch visual theme mode");
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(settingsBtn, "Open application configurations and database state settings");
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(notificationBtn, "View system alerts and notifications");
@@ -199,6 +199,14 @@ public class DashboardController implements NotificationListener {
         scene.getAccelerators().put(
             new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT5, javafx.scene.input.KeyCombination.CONTROL_DOWN),
             () -> Platform.runLater(() -> handleViewLayout(null))
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT6, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(() -> {
+                if (cpe223.group8.eggspress.services.PreferencesManager.isDeveloperMode()) {
+                    handleDeveloperPanel();
+                }
+            })
         );
     }
 
