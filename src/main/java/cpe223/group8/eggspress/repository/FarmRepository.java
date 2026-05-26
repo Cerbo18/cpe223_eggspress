@@ -5,6 +5,7 @@ import cpe223.group8.eggspress.models.Automation;
 import cpe223.group8.eggspress.models.FeedingSchedule;
 import cpe223.group8.eggspress.models.InventoryItem;
 import cpe223.group8.eggspress.models.ChickenHouse;
+import cpe223.group8.eggspress.models.MonthlyConsumptionLog;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -272,5 +273,82 @@ public class FarmRepository {
             e.printStackTrace();
         }
         return coops;
+    }
+
+    // Retrieves all historical monthly logs from the monthly_consumption_logs table sorted by date descending
+    public static List<MonthlyConsumptionLog> getAllMonthlyLogs() {
+        List<MonthlyConsumptionLog> logs = new ArrayList<>();
+        String sql = "SELECT * FROM monthly_consumption_logs ORDER BY month_year DESC";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                logs.add(new MonthlyConsumptionLog(
+                    rs.getInt("id"),
+                    rs.getString("month_year"),
+                    rs.getInt("flock_count"),
+                    rs.getDouble("estimated_feed"),
+                    rs.getDouble("estimated_water"),
+                    rs.getDouble("actual_feed"),
+                    rs.getDouble("actual_water"),
+                    rs.getString("logged_at")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Database query failure fetching all monthly consumption logs: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return logs;
+    }
+
+    // Persists a newly completed monthly consumption log into the SQLite database
+    public static boolean addMonthlyLog(MonthlyConsumptionLog log) {
+        String sql = "INSERT INTO monthly_consumption_logs (month_year, flock_count, estimated_feed, estimated_water, actual_feed, actual_water) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, log.getMonthYear());
+            pstmt.setInt(2, log.getFlockCount());
+            pstmt.setDouble(3, log.getEstimatedFeed());
+            pstmt.setDouble(4, log.getEstimatedWater());
+            pstmt.setDouble(5, log.getActualFeed());
+            pstmt.setDouble(6, log.getActualWater());
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Database execution error saving monthly consumption log entry: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Deletes an existing monthly log record from database using its unique identifier key
+    public static boolean removeMonthlyLog(int id) {
+        String sql = "DELETE FROM monthly_consumption_logs WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Database delete operations failure for monthly log record ID: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Evaluates if a monthly ledger key already exists to prevent duplicate entries
+    public static boolean isMonthYearLogged(String monthYear) {
+        String sql = "SELECT COUNT(*) FROM monthly_consumption_logs WHERE month_year = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, monthYear);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Failed checking month existence constraints: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
     }
 }
