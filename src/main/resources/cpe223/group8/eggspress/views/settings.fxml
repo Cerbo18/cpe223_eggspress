@@ -44,7 +44,7 @@
         <VBox spacing="8.0">
             <Label text="Notification Alerts" styleClass="form-label" />
             <CheckBox fx:id="enableToastsCheckbox" text="Enable Real-Time Push Toast Alerts" 
-                      styleClass="welcome-subtitle" style="-fx-font-size: 13px;" />
+                      styleClass="settings-checkbox" style="-fx-font-size: 13px;" />
             <VBox spacing="6.0">
                 <Label text="Toast Severity Filter" styleClass="form-label" style="-fx-opacity: 0.8;" />
                 <ComboBox fx:id="severityFilterSelector" styleClass="combo-box-modern" maxWidth="Infinity" />
@@ -55,14 +55,14 @@
         <VBox spacing="6.0">
             <Label text="Developer Options" styleClass="form-label" />
             <CheckBox fx:id="developerModeCheckbox" text="Enable Developer Mode &amp; Diagnostics Panel" 
-                      styleClass="welcome-subtitle" style="-fx-font-size: 13px;" />
+                      styleClass="settings-checkbox" style="-fx-font-size: 13px;" />
         </VBox>
 
         <!-- 4. Database Setup -->
         <VBox spacing="8.0" style="-fx-border-color: -fx-input-border-color; -fx-border-width: 1px 0 0 0; -fx-padding: 12px 0 0 0;">
             <Label text="Database Configurations" styleClass="form-label" />
             <VBox spacing="4.0">
-                <Label text="Active SQLite Database Location:" styleClass="welcome-subtitle" style="-fx-font-size: 11px;" />
+                <Label text="Active SQLite Database Location:" styleClass="form-label" style="-fx-font-size: 11px;" />
                 <TextField fx:id="dbPathField" editable="false" styleClass="text-input-modern" style="-fx-font-size: 12px; -fx-padding: 8px 12px;" />
             </VBox>
             <HBox spacing="12.0" style="-fx-padding: 4px 0 0 0;">
