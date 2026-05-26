@@ -508,3 +508,17 @@
     -fx-background-color: transparent;
 }
 
+/* Custom Tooltip Styling */
+.tooltip {
+    -fx-background-color: -fx-input-bg-color;
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: -fx-input-border-color;
+    -fx-border-width: 1px;
+    -fx-font-family: "System", "Segoe UI", "Helvetica Neue", Arial;
+    -fx-font-size: 11px;
+    -fx-padding: 6px 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 8, 0, 0, 2);
+}
+
