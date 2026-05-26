@@ -13,6 +13,25 @@
     -fx-font-family: "System", "Segoe UI", "Helvetica Neue", Arial;
 }
 
+/* =========================================================================
+   Brand Logo Inline SVG Path Styles
+   Applied to SVGPath nodes embedded directly in FXML for crisp DPI-independent rendering.
+   ========================================================================= */
+
+/* Green filled wordmark / icon body paths */
+.wordmark-path {
+    -fx-fill: #39b54a;
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0;
+}
+
+/* White filled detail paths (e.g. chicken illustration inside the egg icon) */
+.combination-mark-white-path {
+    -fx-fill: #ffffff;
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0;
+}
+
 /* Base input field */
 .text-input-modern {
     -fx-background-color: -fx-input-bg-color;
