@@ -101,7 +101,6 @@
 .notification-popup-container {
     -fx-background-color: #292929;
     -fx-border-color: rgba(255, 255, 255, 0.084);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.28), 16, 0, 0, 4);
 }
 
 .notification-title {

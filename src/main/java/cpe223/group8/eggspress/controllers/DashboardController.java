@@ -357,8 +357,8 @@ public class DashboardController implements NotificationListener {
             popupContent.setPrefWidth(360);
             popupContent.setMinWidth(280);
             popupContent.setMaxWidth(Double.MAX_VALUE);
-            popupContent.setPrefHeight(450);
-            popupContent.setMinHeight(200);
+            popupContent.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            popupContent.setMinHeight(Region.USE_COMPUTED_SIZE);
             popupContent.setMaxHeight(Double.MAX_VALUE);
             makeResizable(popupContent, notificationPopup);
 

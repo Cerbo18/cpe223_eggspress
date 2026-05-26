@@ -328,7 +328,6 @@
     -fx-border-width: 1px;
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.14), 16, 0, 0, 4);
     -fx-padding: 12px;
     -fx-spacing: 10px;
 }
