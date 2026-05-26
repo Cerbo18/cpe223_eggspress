@@ -120,17 +120,46 @@
 
 /* Inline actions column buttons styling rules inside Inventory TableView */
 .table-action-btn {
-    -fx-padding: 4px 10px;
-    -fx-font-size: 11px;
+    -fx-padding: 4px;
     -fx-background-radius: 6px;
     -fx-border-radius: 6px;
-    -fx-min-width: 64px;
-    -fx-pref-width: 64px;
-    -fx-max-width: 64px;
+    -fx-min-width: 28px;
+    -fx-pref-width: 28px;
+    -fx-max-width: 28px;
+    -fx-min-height: 28px;
+    -fx-pref-height: 28px;
+    -fx-max-height: 28px;
+    -fx-alignment: center;
 }
 
 /* Ensure the delete button text fill is explicitly white in both Light and Dark themes inside cells */
 .table-view .table-cell .button-danger,
 .table-view .table-row-cell:filled:selected .table-cell .button-danger {
     -fx-text-fill: white;
+}
+
+/* Inline SVG icon stroke properties inside buttons */
+.table-btn-icon {
+    -fx-fill: transparent;
+    -fx-stroke-width: 2px;
+    -fx-stroke-linecap: round;
+    -fx-stroke-linejoin: round;
+}
+
+/* For secondary button icons (Adjust) */
+.button-secondary .table-btn-icon {
+    -fx-stroke: -fx-text-primary-color;
+}
+
+.button-secondary:hover .table-btn-icon {
+    -fx-stroke: -fx-text-primary-color;
+}
+
+/* For danger button icons (Delete) */
+.button-danger .table-btn-icon {
+    -fx-stroke: white;
+}
+
+.button-danger:hover .table-btn-icon {
+    -fx-stroke: white;
 }

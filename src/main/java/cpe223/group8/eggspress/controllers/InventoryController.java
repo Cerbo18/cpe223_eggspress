@@ -15,6 +15,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.Group;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 
@@ -105,18 +108,22 @@ public class InventoryController {
 
         // Setup Action Column inline buttons for Adjusting and Deleting items in Tab 1
         actionColumn.setCellFactory(col -> new TableCell<InventoryItem, Void>() {
-            private final Button adjustBtn = new Button("Adjust");
-            private final Button deleteBtn = new Button("Delete");
+            private final Button adjustBtn = new Button();
+            private final Button deleteBtn = new Button();
             private final HBox container = new HBox(8, adjustBtn, deleteBtn);
 
             {
                 adjustBtn.getStyleClass().addAll("button-secondary", "table-action-btn");
+                adjustBtn.setGraphic(createSVGIcon(EDIT_PATH, "table-btn-icon"));
+                cpe223.group8.eggspress.services.TooltipHelper.installTooltip(adjustBtn, "Adjust Stock");
                 adjustBtn.setOnAction(e -> {
                     InventoryItem item = getTableView().getItems().get(getIndex());
                     handleOpenAdjustModal(item);
                 });
 
                 deleteBtn.getStyleClass().addAll("button-danger", "table-action-btn");
+                deleteBtn.setGraphic(createSVGIcon(DELETE_PATH, "table-btn-icon"));
+                cpe223.group8.eggspress.services.TooltipHelper.installTooltip(deleteBtn, "Delete Item");
                 deleteBtn.setOnAction(e -> {
                     InventoryItem item = getTableView().getItems().get(getIndex());
                     handleConfirmDelete(item);
@@ -443,5 +450,29 @@ public class InventoryController {
         } else {
             showError("SQLite database failure removing selected log entry.");
         }
+    }
+
+    private static final String EDIT_PATH = "M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1 M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415 M16 5l3 3";
+    private static final String DELETE_PATH = "M4 7h16 M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12 M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3 M10 12l4 4m0 -4l-4 4";
+
+    private StackPane createSVGIcon(String pathContent, String styleClass) {
+        SVGPath path = new SVGPath();
+        path.setContent(pathContent);
+        path.getStyleClass().add(styleClass);
+        
+        Group group = new Group(path);
+        group.setScaleX(0.65);
+        group.setScaleY(0.65);
+        
+        StackPane wrapper = new StackPane(group);
+        wrapper.setMinWidth(14);
+        wrapper.setPrefWidth(14);
+        wrapper.setMaxWidth(14);
+        wrapper.setMinHeight(14);
+        wrapper.setPrefHeight(14);
+        wrapper.setMaxHeight(14);
+        wrapper.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        return wrapper;
     }
 }
