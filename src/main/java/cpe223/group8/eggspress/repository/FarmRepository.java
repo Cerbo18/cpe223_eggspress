@@ -5,6 +5,7 @@ import cpe223.group8.eggspress.models.Automation;
 import cpe223.group8.eggspress.models.FeedingSchedule;
 import cpe223.group8.eggspress.models.InventoryItem;
 import cpe223.group8.eggspress.models.ChickenHouse;
+import cpe223.group8.eggspress.models.ChickenGrowthPoint;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -272,5 +273,140 @@ public class FarmRepository {
             e.printStackTrace();
         }
         return coops;
+    }
+
+    // 10. Add a new coop to SQLite
+    public static boolean addCoop(ChickenHouse coop) {
+        String sql = "INSERT INTO coops (id, name, flock_count, status) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, coop.getId());
+            pstmt.setString(2, coop.getName());
+            pstmt.setInt(3, coop.getFlockCount());
+            pstmt.setString(4, coop.getStatus());
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error adding coop to DB: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 11. Remove an existing coop from SQLite
+    public static boolean removeCoop(String id) {
+        String sql = "DELETE FROM coops WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error removing coop from DB: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 11b. Update an existing coop in SQLite
+    public static boolean updateCoop(ChickenHouse coop) {
+        String sql = "UPDATE coops SET name = ?, flock_count = ?, status = ? WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, coop.getName());
+            pstmt.setInt(2, coop.getFlockCount());
+            pstmt.setString(3, coop.getStatus());
+            pstmt.setString(4, coop.getId());
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating coop in DB: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 11c. Update flock count of a coop and record/synchronize the total farm flock size historically
+    public static boolean updateCoopFlockCountAndLogHistory(String coopId, int newFlockCount, String dateStr) {
+        String updateCoopSql = "UPDATE coops SET flock_count = ? WHERE id = ?";
+        String sumFlockSql = "SELECT SUM(flock_count) FROM coops";
+        String logHistorySql = """
+            INSERT INTO chicken_growth (record_date, flock_count, average_weight)
+            VALUES (?, ?, 1.8)
+            ON CONFLICT(record_date) DO UPDATE SET flock_count = excluded.flock_count;
+        """;
+        
+        Connection conn = null;
+        try {
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false);
+            
+            // A. Update specific coop flock count
+            try (PreparedStatement pstmt1 = conn.prepareStatement(updateCoopSql)) {
+                pstmt1.setInt(1, newFlockCount);
+                pstmt1.setString(2, coopId);
+                pstmt1.executeUpdate();
+            }
+            
+            // B. Sum flock counts across all coops to get total farm population
+            int totalFlock = 0;
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sumFlockSql)) {
+                if (rs.next()) {
+                    totalFlock = rs.getInt(1);
+                }
+            }
+            
+            // C. Insert or update record in historical chicken_growth for this date
+            try (PreparedStatement pstmt2 = conn.prepareStatement(logHistorySql)) {
+                pstmt2.setString(1, dateStr);
+                pstmt2.setInt(2, totalFlock);
+                pstmt2.executeUpdate();
+            }
+            
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            System.err.println("Transaction failed for flock count update and historical logging: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    // 12. Fetch historical chicken growth data points filtered by start/end dates
+    public static List<ChickenGrowthPoint> getGrowthHistory(String startDate, String endDate) {
+        List<ChickenGrowthPoint> history = new ArrayList<>();
+        String sql = "SELECT * FROM chicken_growth WHERE record_date >= ? AND record_date <= ? ORDER BY record_date ASC";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, startDate);
+            pstmt.setString(2, endDate);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    history.add(new ChickenGrowthPoint(
+                        rs.getString("record_date"),
+                        rs.getInt("flock_count"),
+                        rs.getDouble("average_weight")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching chicken growth history: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return history;
     }
 }

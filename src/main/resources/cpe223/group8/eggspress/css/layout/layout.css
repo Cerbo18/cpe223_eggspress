@@ -6,17 +6,36 @@
     -fx-background-color: transparent;
 }
 
-/* Facility Badge/Card grid */
+/* ScrollPane transparent styling */
+.transparent-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-viewport-background-color: transparent;
+}
+
+.map-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-viewport-background-color: transparent;
+    -fx-padding: 4px;
+}
+
+/* Facility Badge/Card container */
 .facility-badge {
-    -fx-background-color: -fx-background-color;
+    -fx-background-color: -fx-card-bg-color;
     -fx-border-color: -fx-card-border-color;
-    -fx-border-width: 1px;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 12px;
-    -fx-spacing: 4px;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 16px;
+    -fx-spacing: 6px;
     -fx-alignment: center-left;
     -fx-cursor: hand;
+    -fx-min-width: 170px;
+    -fx-pref-width: 170px;
+    -fx-transition: all 0.2s ease-in-out;
 }
 
 .facility-badge:hover {
@@ -24,12 +43,25 @@
     -fx-border-color: -fx-brand-primary;
 }
 
+/* Gorgeous Selection Highlight */
+.facility-badge.selected-card {
+    -fx-background-color: rgba(57, 181, 74, 0.08);
+    -fx-border-color: -fx-brand-primary;
+    -fx-border-width: 2.5px;
+}
+
 .facility-name {
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: -fx-text-primary-color;
 }
 
+.facility-flock {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+/* Environmental Status badges in coops grid */
 .facility-status-optimal {
     -fx-font-size: 11px;
     -fx-font-weight: bold;
@@ -42,3 +74,118 @@
     -fx-text-fill: #ff9500;
 }
 
+.facility-status-inactive {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #8e8e93;
+}
+
+/* Telemetry Details Panel styling */
+.coop-detail-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.status-badge {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 10px 4px 10px;
+    -fx-background-radius: 20px;
+    -fx-text-fill: white;
+}
+
+.status-badge.optimal {
+    -fx-background-color: -fx-brand-primary;
+}
+
+.status-badge.monitoring {
+    -fx-background-color: #ff9500;
+}
+
+.status-badge.inactive {
+    -fx-background-color: #8e8e93;
+}
+
+/* Mini telemetry sensor cards inside dashboard */
+.metric-mini-card {
+    -fx-background-color: rgba(120, 120, 128, 0.05);
+    -fx-border-color: rgba(120, 120, 128, 0.1);
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 12px 14px 12px 14px;
+    -fx-spacing: 4px;
+}
+
+.metric-mini-title {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-secondary-color;
+    -fx-text-transform: uppercase;
+}
+
+.metric-mini-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.empty-prompt-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-secondary-color;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+/* Form Styles */
+.form-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.form-text-field {
+    -fx-background-color: rgba(120, 120, 128, 0.08);
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-border-color: transparent;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 12px 8px 12px;
+}
+
+.form-text-field:focus {
+    -fx-border-color: -fx-brand-primary;
+    -fx-border-radius: 6px;
+}
+
+.form-combo-box {
+    -fx-background-color: rgba(120, 120, 128, 0.08);
+    -fx-background-radius: 6px;
+}
+
+.modern-date-picker {
+    -fx-background-color: transparent;
+}
+
+.modern-date-picker > .text-field {
+    -fx-background-color: rgba(120, 120, 128, 0.08);
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-background-radius: 6px 0 0 6px;
+}
+
+.modern-date-picker > .arrow-button {
+    -fx-background-color: rgba(120, 120, 128, 0.12);
+    -fx-background-radius: 0 6px 6px 0;
+}
+
+/* Chart Styles overrides */
+.chart-series-line {
+    -fx-stroke: -fx-brand-primary;
+    -fx-stroke-width: 3.5px;
+}
+
+.chart-line-symbol {
+    -fx-background-color: -fx-brand-primary, white;
+    -fx-background-radius: 6px;
+    -fx-padding: 5px;
+}
