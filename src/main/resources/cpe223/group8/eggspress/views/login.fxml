@@ -13,6 +13,8 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.shape.SVGPath?>
 
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
@@ -100,4 +102,19 @@
             <Label text="Copyright © 2026. All rights reserved." styleClass="welcome-subtitle" style="-fx-font-size: 11px;" />
         </HBox>
     </VBox>
+
+    <!-- Theme Toggle Floating Button -->
+    <Button fx:id="themeToggleBtn" styleClass="sidebar-action-btn" onAction="#handleToggleTheme"
+            StackPane.alignment="BOTTOM_RIGHT">
+        <StackPane.margin>
+            <Insets bottom="75.0" right="24.0" />
+        </StackPane.margin>
+        <graphic>
+            <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
+                <Group scaleX="0.8" scaleY="0.8">
+                    <SVGPath fx:id="themeToggleIcon" styleClass="sidebar-toggle-icon" content="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" />
+                </Group>
+            </StackPane>
+        </graphic>
+    </Button>
 </StackPane>

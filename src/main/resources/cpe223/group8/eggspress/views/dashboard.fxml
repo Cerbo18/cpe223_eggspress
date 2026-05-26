@@ -80,6 +80,21 @@
          <trailing>
              <HBox alignment="CENTER_RIGHT" spacing="8.0" styleClass="header-profile-container">
                  <children>
+                     <!-- Theme Toggle Button -->
+                     <Button fx:id="themeToggleBtn" styleClass="sidebar-action-btn" text="" onAction="#handleToggleTheme">
+                         <graphic>
+                             <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
+                                 <children>
+                                     <Group scaleX="0.8" scaleY="0.8">
+                                         <children>
+                                             <SVGPath fx:id="themeToggleIcon" styleClass="sidebar-toggle-icon" content="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" />
+                                         </children>
+                                     </Group>
+                                 </children>
+                             </StackPane>
+                         </graphic>
+                     </Button>
+
                      <!-- Notification Button -->
                      <Button fx:id="notificationBtn" styleClass="sidebar-action-btn" text="" onAction="#handleToggleNotificationPopup">
                          <graphic>

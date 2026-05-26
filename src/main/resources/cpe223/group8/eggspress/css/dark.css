@@ -5,12 +5,12 @@
 
 .root {
     /* Colors */
-    -fx-background-color: #161617;
+    -fx-background-color: #1d1d1f;
     -fx-text-primary-color: #f5f5f7;
     -fx-text-secondary-color: #86868b;
     
     /* Inputs */
-    -fx-input-bg-color: #1d1d1f;
+    -fx-input-bg-color: #161617;
     -fx-input-border-color: #424245;
     
     /* Cards */
@@ -26,11 +26,11 @@
 
 /* HeaderBar styling */
 .login-headerbar {
-    -fx-background-color: #161617;
+    -fx-background-color: #1d1d1f;
 }
 
 .app-headerbar {
     -fx-background-color: #161617;
-    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.05) transparent;
-    -fx-border-width: 0px 0px 1px 0px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
 }

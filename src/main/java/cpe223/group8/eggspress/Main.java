@@ -22,7 +22,10 @@ public class Main extends Application {
         // 1. Initialize the SQLite database tables before loading the login view
         DatabaseConfig.initializeDatabase();
 
-        scene = new Scene(loadFXML("login"), 760, 520);
+        Parent loginRoot = loadFXML("login");
+        cpe223.group8.eggspress.services.ThemeManager.applyTheme(loginRoot);
+        scene = new Scene(loginRoot, 760, 520);
+        cpe223.group8.eggspress.services.ThemeManager.applySceneFill(scene);
         stage.setMinWidth(720);
         stage.setMinHeight(576);
         
@@ -52,7 +55,10 @@ public class Main extends Application {
     }
 
     public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+        Parent root = loadFXML(fxml);
+        cpe223.group8.eggspress.services.ThemeManager.applyTheme(root);
+        scene.setRoot(root);
+        cpe223.group8.eggspress.services.ThemeManager.applySceneFill(scene);
     }
 
     private static Parent loadFXML(String fxml) throws IOException {

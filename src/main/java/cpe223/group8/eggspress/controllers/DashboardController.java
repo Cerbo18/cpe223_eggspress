@@ -18,6 +18,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Popup;
+import javafx.scene.shape.SVGPath;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.animation.PauseTransition;
@@ -76,6 +77,14 @@ public class DashboardController implements NotificationListener {
     @FXML
     private Label notificationBadge;
 
+    @FXML
+    private Button themeToggleBtn;
+
+    @FXML
+    private SVGPath themeToggleIcon;
+
+    private Parent currentSubView;
+
     private boolean sidebarExpanded = true;
     private double previousDividerPosition = 0.125; // Default expanded
 
@@ -117,6 +126,17 @@ public class DashboardController implements NotificationListener {
         Platform.runLater(() -> {
             if (splitPane != null) {
                 splitPane.setDividerPosition(0, previousDividerPosition);
+            }
+            if (splitPane != null && splitPane.getScene() != null) {
+                Parent root = splitPane.getScene().getRoot();
+                cpe223.group8.eggspress.services.ThemeManager.applyTheme(root);
+                if (themeToggleIcon != null) {
+                    if (cpe223.group8.eggspress.services.ThemeManager.isDarkMode()) {
+                        themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
+                    } else {
+                        themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
+                    }
+                }
             }
         });
 
@@ -177,6 +197,39 @@ public class DashboardController implements NotificationListener {
     }
 
     @FXML
+    private void handleToggleTheme() {
+        boolean dark = !cpe223.group8.eggspress.services.ThemeManager.isDarkMode();
+        cpe223.group8.eggspress.services.ThemeManager.setDarkMode(dark);
+
+        // 1. Apply theme to dashboard root (includes sidebar, header, etc.)
+        if (splitPane != null && splitPane.getScene() != null) {
+            Parent root = splitPane.getScene().getRoot();
+            cpe223.group8.eggspress.services.ThemeManager.applyTheme(root);
+        }
+
+        // 2. Apply theme to currently loaded sub-view
+        if (currentSubView != null) {
+            cpe223.group8.eggspress.services.ThemeManager.applyTheme(currentSubView);
+        }
+
+        // 3. Apply theme to notification popup content if it exists
+        if (popupContent != null) {
+            cpe223.group8.eggspress.services.ThemeManager.applyTheme(popupContent);
+        }
+
+        // 4. Update toggle button icon path (Moon for Light Mode, Sun for Dark Mode)
+        if (themeToggleIcon != null) {
+            if (dark) {
+                // Dark mode is now active; show Sun icon to switch back to Light Mode
+                themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
+            } else {
+                // Light mode is now active; show Moon icon to switch back to Dark Mode
+                themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
+            }
+        }
+    }
+
+    @FXML
     private void handleToggleNotificationPopup() {
         if (notificationPopup != null && notificationPopup.isShowing()) {
             notificationPopup.hide();
@@ -219,6 +272,7 @@ public class DashboardController implements NotificationListener {
             notificationPopup.getContent().add(popupContent);
         }
 
+        cpe223.group8.eggspress.services.ThemeManager.applyTheme(popupContent);
         refreshNotificationPopupContent();
 
         // Position popup below notification bell button safely
@@ -615,6 +669,8 @@ public class DashboardController implements NotificationListener {
         try {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/" + fxmlName + ".fxml"));
             Parent view = loader.load();
+            currentSubView = view;
+            cpe223.group8.eggspress.services.ThemeManager.applyTheme(view);
 
             // Wrap in a ScrollPane to ensure usability and scrolling compatibility
             ScrollPane scrollPane = new ScrollPane(view);
