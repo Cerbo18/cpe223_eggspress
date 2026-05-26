@@ -354,12 +354,12 @@ public class DashboardController implements NotificationListener {
 
             popupContent = new VBox();
             popupContent.getStyleClass().add("notification-popup-container");
-            popupContent.setPrefWidth(562);
+            popupContent.setPrefWidth(360);
             popupContent.setMinWidth(360);
-            popupContent.setMaxWidth(800);
-            popupContent.setPrefHeight(562);
+            popupContent.setMaxWidth(360);
+            popupContent.setPrefHeight(450);
             popupContent.setMinHeight(450);
-            popupContent.setMaxHeight(900);
+            popupContent.setMaxHeight(450);
             makeResizable(popupContent);
 
             // Popup nodes live in a separate scene graph and do not inherit the
@@ -518,38 +518,6 @@ public class DashboardController implements NotificationListener {
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
         scrollPane.getStyleClass().add("notification-scroll-pane");
         popupContent.getChildren().add(scrollPane);
-
-        // 3. Test Simulators (User Approved)
-        HBox testBox = new HBox();
-        testBox.getStyleClass().add("notification-test-box");
-        testBox.setAlignment(Pos.CENTER_LEFT);
-        testBox.setSpacing(6);
-        
-        Label testLbl = new Label("Simulate:");
-        testLbl.getStyleClass().add("notification-test-label");
-        
-        Button simInfo = new Button("Info");
-        simInfo.getStyleClass().addAll("notification-sim-btn", "info");
-        simInfo.setOnAction(e -> NotificationService.notificationInfo("Simulated system info: Daily feed log generated."));
-
-        Button simWarning = new Button("Warning");
-        simWarning.getStyleClass().addAll("notification-sim-btn", "warning");
-        simWarning.setOnAction(e -> NotificationService.notificationWarning("Simulated system alert: Low water tank pressure."));
-
-        Button simCritical = new Button("Critical");
-        simCritical.getStyleClass().addAll("notification-sim-btn", "critical");
-        simCritical.setOnAction(e -> NotificationService.notificationCritical("Simulated emergency: Coop A temperature exceeded 35°C!"));
-
-        Button simLowInfo = new Button("Low Info");
-        simLowInfo.getStyleClass().addAll("notification-sim-btn", "info");
-        simLowInfo.setOnAction(e -> NotificationService.notificationInfo("Simulated low info: Non-blocking log created.", false, 2));
-
-        Button simLowWarning = new Button("Low Warning");
-        simLowWarning.getStyleClass().addAll("notification-sim-btn", "warning");
-        simLowWarning.setOnAction(e -> NotificationService.notificationWarning("Simulated low warning: Screen refreshed.", false, 2));
-
-        testBox.getChildren().addAll(testLbl, simInfo, simWarning, simCritical, simLowInfo, simLowWarning);
-        popupContent.getChildren().add(testBox);
     }
 
     private void showPushToast(Notification notification) {

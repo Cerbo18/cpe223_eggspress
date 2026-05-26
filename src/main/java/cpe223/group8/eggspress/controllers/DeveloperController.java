@@ -156,4 +156,40 @@ public class DeveloperController {
             log("Error seeding mock schedule: " + e.getMessage());
         }
     }
+
+    @FXML
+    private void handleSimulateInfo() {
+        log("Simulating Info Notification: Daily feed log generated...");
+        NotificationService.notificationInfo("Simulated system info: Daily feed log generated.");
+        handleRefreshCounts();
+    }
+
+    @FXML
+    private void handleSimulateWarning() {
+        log("Simulating Warning Notification: Low water tank pressure...");
+        NotificationService.notificationWarning("Simulated system alert: Low water tank pressure.");
+        handleRefreshCounts();
+    }
+
+    @FXML
+    private void handleSimulateCritical() {
+        log("Simulating Critical Notification: Coop A temperature exceeded 35°C...");
+        NotificationService.notificationCritical("Simulated emergency: Coop A temperature exceeded 35°C!");
+        handleRefreshCounts();
+    }
+
+    @FXML
+    private void handleSimulateLowInfo() {
+        log("Simulating Low Info Notification: Non-blocking log created...");
+        NotificationService.notificationInfo("Simulated low info: Non-blocking log created.", false, 2);
+        handleRefreshCounts();
+    }
+
+    @FXML
+    private void handleSimulateLowWarning() {
+        log("Simulating Low Warning Notification: Screen refreshed...");
+        NotificationService.notificationWarning("Simulated low warning: Screen refreshed.", false, 2);
+        handleRefreshCounts();
+    }
 }
+
