@@ -72,6 +72,9 @@ public class DashboardController implements NotificationListener {
     private Button layoutBtn;
 
     @FXML
+    private Button developerBtn;
+
+    @FXML
     private Button notificationBtn;
 
     @FXML
@@ -79,6 +82,9 @@ public class DashboardController implements NotificationListener {
 
     @FXML
     private Button themeToggleBtn;
+
+    @FXML
+    private Button settingsBtn;
 
     @FXML
     private SVGPath themeToggleIcon;
@@ -140,12 +146,68 @@ public class DashboardController implements NotificationListener {
             }
         });
 
+        // Register keyboard shortcuts when scene becomes available
+        if (splitPane != null) {
+            splitPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    setupKeyboardAccelerators(newScene);
+                }
+            });
+        }
+
         // Initialize Notifications
         if (notificationBadge != null) {
             notificationBadge.setMinWidth(Region.USE_PREF_SIZE);
         }
         NotificationService.getInstance().addListener(this);
         updateUnreadBadgeCount();
+
+        // Install themed tooltips on navigation and action controls
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(themeToggleBtn, "Switch visual theme mode");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(settingsBtn, "Open application configurations and database state settings");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(notificationBtn, "View system alerts and notifications");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(toggleButton, "Collapse or expand left navigation sidebar");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(overviewBtn, "Overview dashboard metrics and telemetry");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(accountMgmtBtn, "Manage staff and database access credentials");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(inventoryBtn, "Monitor feed, water, and flock resources");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(automationBtn, "Configure environmental rules and schedules");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(layoutBtn, "Interactive coop layouts and map blueprint");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(developerBtn, "Open developer mock injector and diagnostics console");
+
+        // Restore Developer Panel menu button status based on cached preferences
+        toggleDeveloperModeSidebarButton(cpe223.group8.eggspress.services.PreferencesManager.isDeveloperMode());
+    }
+
+    private void setupKeyboardAccelerators(javafx.scene.Scene scene) {
+        if (scene == null) return;
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT1, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(this::handleOverview)
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT2, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(this::handleAccountManagement)
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT3, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(this::handleInventoryManagement)
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT4, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(this::handleAutomationManagement)
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT5, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(() -> handleViewLayout(null))
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT6, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(() -> {
+                if (cpe223.group8.eggspress.services.PreferencesManager.isDeveloperMode()) {
+                    handleDeveloperPanel();
+                }
+            })
+        );
     }
 
     @Override
@@ -200,6 +262,15 @@ public class DashboardController implements NotificationListener {
     private void handleToggleTheme() {
         boolean dark = !cpe223.group8.eggspress.services.ThemeManager.isDarkMode();
         cpe223.group8.eggspress.services.ThemeManager.setDarkMode(dark);
+        
+        applyVisualThemeChange();
+        
+        // Dynamically save the toggled starting theme
+        cpe223.group8.eggspress.services.PreferencesManager.setStartingTheme(dark ? "DARK" : "LIGHT");
+    }
+
+    public void applyVisualThemeChange() {
+        boolean dark = cpe223.group8.eggspress.services.ThemeManager.isDarkMode();
 
         // 1. Apply theme to dashboard root (includes sidebar, header, etc.)
         if (splitPane != null && splitPane.getScene() != null) {
@@ -220,14 +291,52 @@ public class DashboardController implements NotificationListener {
         // 4. Update toggle button icon path (Moon for Light Mode, Sun for Dark Mode)
         if (themeToggleIcon != null) {
             if (dark) {
-                // Dark mode is now active; show Sun icon to switch back to Light Mode
                 themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
             } else {
-                // Light mode is now active; show Moon icon to switch back to Dark Mode
                 themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
             }
         }
     }
+
+    @FXML
+    private void handleSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/settings.fxml"));
+            Parent root = loader.load();
+            cpe223.group8.eggspress.services.ThemeManager.applyTheme(root);
+
+            javafx.stage.Stage settingsStage = new javafx.stage.Stage();
+            settingsStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            if (splitPane != null && splitPane.getScene() != null) {
+                settingsStage.initOwner(splitPane.getScene().getWindow());
+            }
+            settingsStage.setTitle("Settings");
+            settingsStage.setResizable(false);
+
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            cpe223.group8.eggspress.services.ThemeManager.applySceneFill(scene);
+            settingsStage.setScene(scene);
+            settingsStage.showAndWait();
+        } catch (IOException e) {
+            System.err.println("Error loading settings modal: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void toggleDeveloperModeSidebarButton(boolean enable) {
+        Platform.runLater(() -> {
+            if (developerBtn != null) {
+                developerBtn.setVisible(enable);
+                developerBtn.setManaged(enable);
+            }
+        });
+    }
+
+    @FXML
+    private void handleDeveloperPanel() {
+        loadView("developer");
+    }
+
 
     @FXML
     private void handleToggleNotificationPopup() {
@@ -245,13 +354,13 @@ public class DashboardController implements NotificationListener {
 
             popupContent = new VBox();
             popupContent.getStyleClass().add("notification-popup-container");
-            popupContent.setPrefWidth(562);
-            popupContent.setMinWidth(360);
-            popupContent.setMaxWidth(800);
-            popupContent.setPrefHeight(562);
-            popupContent.setMinHeight(450);
-            popupContent.setMaxHeight(900);
-            makeResizable(popupContent);
+            popupContent.setPrefWidth(360);
+            popupContent.setMinWidth(280);
+            popupContent.setMaxWidth(Double.MAX_VALUE);
+            popupContent.setPrefHeight(450);
+            popupContent.setMinHeight(200);
+            popupContent.setMaxHeight(Double.MAX_VALUE);
+            makeResizable(popupContent, notificationPopup);
 
             // Popup nodes live in a separate scene graph and do not inherit the
             // main application's stylesheets. Load them explicitly so all CSS
@@ -409,42 +518,29 @@ public class DashboardController implements NotificationListener {
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
         scrollPane.getStyleClass().add("notification-scroll-pane");
         popupContent.getChildren().add(scrollPane);
-
-        // 3. Test Simulators (User Approved)
-        HBox testBox = new HBox();
-        testBox.getStyleClass().add("notification-test-box");
-        testBox.setAlignment(Pos.CENTER_LEFT);
-        testBox.setSpacing(6);
-        
-        Label testLbl = new Label("Simulate:");
-        testLbl.getStyleClass().add("notification-test-label");
-        
-        Button simInfo = new Button("Info");
-        simInfo.getStyleClass().addAll("notification-sim-btn", "info");
-        simInfo.setOnAction(e -> NotificationService.notificationInfo("Simulated system info: Daily feed log generated."));
-
-        Button simWarning = new Button("Warning");
-        simWarning.getStyleClass().addAll("notification-sim-btn", "warning");
-        simWarning.setOnAction(e -> NotificationService.notificationWarning("Simulated system alert: Low water tank pressure."));
-
-        Button simCritical = new Button("Critical");
-        simCritical.getStyleClass().addAll("notification-sim-btn", "critical");
-        simCritical.setOnAction(e -> NotificationService.notificationCritical("Simulated emergency: Coop A temperature exceeded 35°C!"));
-
-        Button simLowInfo = new Button("Low Info");
-        simLowInfo.getStyleClass().addAll("notification-sim-btn", "info");
-        simLowInfo.setOnAction(e -> NotificationService.notificationInfo("Simulated low info: Non-blocking log created.", false, 2));
-
-        Button simLowWarning = new Button("Low Warning");
-        simLowWarning.getStyleClass().addAll("notification-sim-btn", "warning");
-        simLowWarning.setOnAction(e -> NotificationService.notificationWarning("Simulated low warning: Screen refreshed.", false, 2));
-
-        testBox.getChildren().addAll(testLbl, simInfo, simWarning, simCritical, simLowInfo, simLowWarning);
-        popupContent.getChildren().add(testBox);
     }
 
     private void showPushToast(Notification notification) {
         if (contentArea == null) return;
+
+        // Check if push toasts are enabled in user configurations
+        if (!cpe223.group8.eggspress.services.PreferencesManager.isPushToastsEnabled()) {
+            return;
+        }
+
+        // Apply severity level priority filtering
+        String severityFilter = cpe223.group8.eggspress.services.PreferencesManager.getToastPriorityFilter();
+        String notificationLevel = notification.getLevel() != null ? notification.getLevel().toUpperCase() : "INFO";
+        if ("CRITICAL".equals(severityFilter)) {
+            if (!"CRITICAL".equals(notificationLevel)) {
+                return;
+            }
+        } else if ("WARNING".equals(severityFilter)) {
+            if ("INFO".equals(notificationLevel)) {
+                return;
+            }
+        }
+
         ensureToastContainer();
 
         VBox toast = new VBox(0);
@@ -556,7 +652,7 @@ public class DashboardController implements NotificationListener {
         }
     }
 
-    private void makeResizable(Region region) {
+    private void makeResizable(Region region, Popup popup) {
         region.setOnMouseMoved(e -> {
             if (isResizing) return;
             double x = e.getX();
@@ -566,7 +662,7 @@ public class DashboardController implements NotificationListener {
             boolean nearRight = (x >= w - 10);
             boolean nearLeft = (x <= 10);
             boolean nearBottom = (y >= h - 10);
-            
+
             if (nearLeft && nearBottom) {
                 region.setCursor(javafx.scene.Cursor.SW_RESIZE);
             } else if (nearRight && nearBottom) {
@@ -590,17 +686,17 @@ public class DashboardController implements NotificationListener {
             boolean nearRight = (x >= w - 10);
             boolean nearLeft = (x <= 10);
             boolean nearBottom = (y >= h - 10);
-            
+
             if (nearRight || nearLeft || nearBottom) {
                 isResizing = true;
                 startX = e.getScreenX();
                 startY = e.getScreenY();
-                startWidth = region.getWidth();
-                startHeight = region.getHeight();
-                if (region.getScene() != null && region.getScene().getWindow() != null) {
-                    startWinX = region.getScene().getWindow().getX();
-                }
-                
+                // Guard against 0 during early layout pass — fall back to pref dimensions
+                startWidth  = (region.getWidth()  > 0) ? region.getWidth()  : region.getPrefWidth();
+                startHeight = (region.getHeight() > 0) ? region.getHeight() : region.getPrefHeight();
+                // Capture the popup window X position for left-edge repositioning
+                startWinX = (popup != null && popup.isShowing()) ? popup.getX() : 0;
+
                 if (nearLeft && nearBottom) {
                     resizeType = "SW";
                 } else if (nearRight && nearBottom) {
@@ -618,33 +714,33 @@ public class DashboardController implements NotificationListener {
 
         region.setOnMouseDragged(e -> {
             if (!isResizing) return;
-            
+
             double deltaX = e.getScreenX() - startX;
             double deltaY = e.getScreenY() - startY;
-            
-            // Sizing constraints matching the minimum (360) and maximum (800) limits
-            double minW = 360;
+
+            // Width: clamp between 280px minimum and 800px maximum
+            double minW = 280;
             double maxW = 800;
-            
+
             if ("E".equals(resizeType) || "SE".equals(resizeType)) {
                 double newWidth = Math.max(minW, Math.min(maxW, startWidth + deltaX));
                 region.setPrefWidth(newWidth);
             }
-            
+
             if ("W".equals(resizeType) || "SW".equals(resizeType)) {
-                double maxNewWidth = startWidth - deltaX;
-                double constrainedWidth = Math.max(minW, Math.min(maxW, maxNewWidth));
-                double actualDeltaW = constrainedWidth - startWidth;
-                region.setPrefWidth(constrainedWidth);
-                if (region.getScene() != null && region.getScene().getWindow() != null) {
-                    region.getScene().getWindow().setX(startWinX - actualDeltaW);
+                double newWidth = Math.max(minW, Math.min(maxW, startWidth - deltaX));
+                double actualDeltaW = newWidth - startWidth;
+                region.setPrefWidth(newWidth);
+                // Reposition the popup window (not the main app window) to anchor left edge
+                if (popup != null && popup.isShowing()) {
+                    popup.setX(startWinX - actualDeltaW);
                 }
             }
-            
-            // Sizing constraints matching the minimum (450) and maximum (900) limits
-            double minH = 450;
+
+            // Height: clamp between 200px minimum and 900px maximum
+            double minH = 200;
             double maxH = 900;
-            
+
             if ("S".equals(resizeType) || "SE".equals(resizeType) || "SW".equals(resizeType)) {
                 double newHeight = Math.max(minH, Math.min(maxH, startHeight + deltaY));
                 region.setPrefHeight(newHeight);
@@ -670,6 +766,7 @@ public class DashboardController implements NotificationListener {
         clearActiveStyle(inventoryBtn);
         clearActiveStyle(automationBtn);
         clearActiveStyle(layoutBtn);
+        clearActiveStyle(developerBtn);
 
         // Set the current view button as active
         if ("overview".equals(fxmlName)) {
@@ -682,6 +779,8 @@ public class DashboardController implements NotificationListener {
             setActiveStyle(automationBtn);
         } else if ("layout".equals(fxmlName)) {
             setActiveStyle(layoutBtn);
+        } else if ("developer".equals(fxmlName)) {
+            setActiveStyle(developerBtn);
         }
 
         try {

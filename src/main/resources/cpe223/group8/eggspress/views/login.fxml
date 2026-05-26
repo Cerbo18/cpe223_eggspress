@@ -86,7 +86,7 @@
                 <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS" spacing="12.0">
                     <StackPane alignment="TOP_CENTER">
                         <VBox fx:id="usernameStep" spacing="8.0" alignment="TOP_CENTER">
-                            <TextField fx:id="usernameField" promptText="Username" styleClass="text-input-modern" prefHeight="44.0" />
+                            <TextField fx:id="usernameField" promptText="Username" styleClass="text-input-modern" prefHeight="44.0" onAction="#handleNext" />
                         </VBox>
                         
                         <VBox fx:id="passwordStep" spacing="8.0" alignment="TOP_CENTER" visible="false" managed="false">
@@ -94,7 +94,7 @@
                                 <Label text="Logging in as" styleClass="welcome-subtitle" />
                                 <Label fx:id="userConfirmationLabel" text="admin" styleClass="welcome-subtitle" style="-fx-font-weight: bold; -fx-text-fill: -fx-brand-primary;" />
                             </HBox>
-                            <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-input-modern" prefHeight="44.0" />
+                            <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-input-modern" prefHeight="44.0" onAction="#handleLogin" />
                         </VBox>
                     </StackPane>
 

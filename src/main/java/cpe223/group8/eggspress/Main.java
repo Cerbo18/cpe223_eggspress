@@ -24,6 +24,10 @@ public class Main extends Application {
         // 1. Initialize the SQLite database tables before loading the login view
         DatabaseConfig.initializeDatabase();
 
+        // 2. Initialize default starting theme from persistent user configurations
+        boolean isDarkTheme = "DARK".equalsIgnoreCase(cpe223.group8.eggspress.services.PreferencesManager.getStartingTheme());
+        cpe223.group8.eggspress.services.ThemeManager.setDarkMode(isDarkTheme);
+
         Parent loginRoot = loadFXML("login");
         cpe223.group8.eggspress.services.ThemeManager.applyTheme(loginRoot);
         scene = new Scene(loginRoot, 760, 520);
