@@ -7,35 +7,48 @@ public class Notification {
     private String message;
     private boolean isRead;
     private String username; // Nullable for global notifications
+    private int priority = 1; // 1 = Normal, 2 = Low
 
-    // Full constructor with username
-    public Notification(int id, String timestamp, String level, String message, boolean isRead, String username) {
+    // Full constructor with username and priority
+    public Notification(int id, String timestamp, String level, String message, boolean isRead, String username, int priority) {
         this.id = id;
         this.timestamp = timestamp;
         this.level = level;
         this.message = message;
-        this.isRead = isRead;
+        this.priority = priority;
+        this.isRead = (priority == 2) || isRead;
         this.username = username;
+    }
+
+    // Full constructor with username
+    public Notification(int id, String timestamp, String level, String message, boolean isRead, String username) {
+        this(id, timestamp, level, message, isRead, username, 1);
     }
 
     // Backward-compatible full constructor
     public Notification(int id, String timestamp, String level, String message, boolean isRead) {
-        this(id, timestamp, level, message, isRead, null);
+        this(id, timestamp, level, message, isRead, null, 1);
     }
 
-    // Helper constructor for creation with username
-    public Notification(String level, String message, String username) {
+    // Helper constructor for creation with username and priority
+    public Notification(String level, String message, String username, int priority) {
         this.id = 0;
         this.timestamp = "";
         this.level = level;
         this.message = message;
-        this.isRead = false;
+        this.priority = priority;
+        this.isRead = (priority == 2);
         this.username = username;
+    }
+
+    // Helper constructor for creation with username
+    public Notification(String level, String message, String username) {
+        this(level, message, username, 1);
     }
 
     // Backward-compatible helper constructor for creation
     public Notification(String level, String message) {
-        this(level, message, null);
+        this(level, message, null, 1);
     }
 
     // Getters and Setters
@@ -85,5 +98,16 @@ public class Notification {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+        if (priority == 2) {
+            this.isRead = true;
+        }
     }
 }

@@ -11,13 +11,14 @@ public class NotificationRepository implements BaseRepository<Notification> {
 
     @Override
     public void save(Notification entity) {
-        String sql = "INSERT INTO notifications (level, message, is_read, username) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO notifications (level, message, is_read, username, priority) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, entity.getLevel());
             pstmt.setString(2, entity.getMessage());
             pstmt.setInt(3, entity.isRead() ? 1 : 0);
             pstmt.setString(4, entity.getUsername());
+            pstmt.setInt(5, entity.getPriority());
             
             pstmt.executeUpdate();
             
@@ -60,7 +61,8 @@ public class NotificationRepository implements BaseRepository<Notification> {
                         rs.getString("level"),
                         rs.getString("message"),
                         rs.getInt("is_read") == 1,
-                        rs.getString("username")
+                        rs.getString("username"),
+                        rs.getInt("priority")
                     );
                 }
             }
@@ -78,13 +80,14 @@ public class NotificationRepository implements BaseRepository<Notification> {
 
     @Override
     public void update(Notification entity) {
-        String sql = "UPDATE notifications SET level = ?, message = ?, is_read = ? WHERE id = ?";
+        String sql = "UPDATE notifications SET level = ?, message = ?, is_read = ?, priority = ? WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, entity.getLevel());
             pstmt.setString(2, entity.getMessage());
             pstmt.setInt(3, entity.isRead() ? 1 : 0);
-            pstmt.setInt(4, entity.getId());
+            pstmt.setInt(4, entity.getPriority());
+            pstmt.setInt(5, entity.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error updating notification: " + e.getMessage());
@@ -127,7 +130,7 @@ public class NotificationRepository implements BaseRepository<Notification> {
         List<Notification> list = new ArrayList<>();
         String sql = """
             SELECT n.*, 
-                   COALESCE(uns.is_read, 0) as user_is_read, 
+                   (CASE WHEN n.priority = 2 THEN 1 ELSE COALESCE(uns.is_read, 0) END) as user_is_read, 
                    COALESCE(uns.is_cleared, 0) as user_is_cleared 
             FROM notifications n
             LEFT JOIN user_notification_states uns 
@@ -147,7 +150,8 @@ public class NotificationRepository implements BaseRepository<Notification> {
                         rs.getString("level"),
                         rs.getString("message"),
                         rs.getInt("user_is_read") == 1,
-                        rs.getString("username")
+                        rs.getString("username"),
+                        rs.getInt("priority")
                     ));
                 }
             }
@@ -166,6 +170,7 @@ public class NotificationRepository implements BaseRepository<Notification> {
               ON n.id = uns.notification_id AND uns.username = ?
             WHERE COALESCE(uns.is_read, 0) = 0 AND COALESCE(uns.is_cleared, 0) = 0
               AND (n.username IS NULL OR n.username = ?)
+              AND n.priority != 2
         """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

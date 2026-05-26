@@ -75,7 +75,8 @@ public class DatabaseConfig {
                 level TEXT NOT NULL,
                 message TEXT NOT NULL,
                 is_read INTEGER DEFAULT 0,
-                username TEXT
+                username TEXT,
+                priority INTEGER DEFAULT 1
             );
         """;
 
@@ -105,6 +106,12 @@ public class DatabaseConfig {
             try {
                 stmt.execute("ALTER TABLE notifications ADD COLUMN username TEXT;");
                 System.out.println("Migrated: added username column to notifications table.");
+            } catch (SQLException e) {
+                // Column already exists, safe to ignore
+            }
+            try {
+                stmt.execute("ALTER TABLE notifications ADD COLUMN priority INTEGER DEFAULT 1;");
+                System.out.println("Migrated: added priority column to notifications table.");
             } catch (SQLException e) {
                 // Column already exists, safe to ignore
             }
