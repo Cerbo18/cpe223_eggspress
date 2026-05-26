@@ -22,17 +22,24 @@
             <Insets top="28.0" right="28.0" bottom="28.0" left="28.0"/>
         </padding>
 
-        <VBox spacing="6.0">
-            <Label text="Account Management" styleClass="view-title"/>
-            <Label text="Manage and create user credentials for the Eggspress Chicken Farm Management platform." styleClass="view-desc"/>
-        </VBox>
+        <!-- Header containing Title area and Top-Right Create button -->
+        <HBox alignment="CENTER_LEFT" spacing="20.0">
+            <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                <Label text="Account Management" styleClass="view-title"/>
+                <Label text="Manage and configure user credentials and roles for the Eggspress platform." styleClass="view-desc"/>
+            </VBox>
+            <Button text="Create Account" onAction="#handleShowCreatePopup" styleClass="button-primary" prefHeight="40.0"/>
+        </HBox>
 
+        <!-- Table displaying registered accounts and actions -->
         <VBox spacing="16.0" styleClass="content-card" VBox.vgrow="ALWAYS">
             <Label text="System Accounts" styleClass="card-title"/>
             <TableView fx:id="accountsTable" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="usernameColumn" text="Username" prefWidth="250.0"/>
-                    <TableColumn fx:id="passwordColumn" text="Password" prefWidth="250.0"/>
+                    <TableColumn fx:id="usernameColumn" text="NAME" prefWidth="180.0"/>
+                    <TableColumn fx:id="passwordColumn" text="PASS" prefWidth="240.0"/>
+                    <TableColumn fx:id="roleColumn" text="ROLE" prefWidth="130.0"/>
+                    <TableColumn fx:id="actionColumn" text="ACTION" prefWidth="130.0"/>
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -40,15 +47,5 @@
             </TableView>
         </VBox>
 
-        <VBox spacing="16.0" styleClass="content-card">
-            <Label text="Create New Account" styleClass="card-title"/>
-            <HBox spacing="12.0" alignment="CENTER_LEFT">
-                <TextField fx:id="newUsernameField" promptText="New Username" styleClass="text-input-modern" HBox.hgrow="ALWAYS"/>
-                <TextField fx:id="newPasswordField" promptText="New Password" styleClass="text-input-modern" HBox.hgrow="ALWAYS"/>
-                <Button text="Create Account" onAction="#handleCreateAccount" styleClass="button-primary" prefHeight="44.0"/>
-            </HBox>
-        </VBox>
-
     </VBox>
 </VBox>
-
