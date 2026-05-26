@@ -355,12 +355,12 @@ public class DashboardController implements NotificationListener {
             popupContent = new VBox();
             popupContent.getStyleClass().add("notification-popup-container");
             popupContent.setPrefWidth(360);
-            popupContent.setMinWidth(360);
-            popupContent.setMaxWidth(360);
+            popupContent.setMinWidth(280);
+            popupContent.setMaxWidth(Double.MAX_VALUE);
             popupContent.setPrefHeight(450);
-            popupContent.setMinHeight(450);
-            popupContent.setMaxHeight(450);
-            makeResizable(popupContent);
+            popupContent.setMinHeight(200);
+            popupContent.setMaxHeight(Double.MAX_VALUE);
+            makeResizable(popupContent, notificationPopup);
 
             // Popup nodes live in a separate scene graph and do not inherit the
             // main application's stylesheets. Load them explicitly so all CSS
@@ -652,7 +652,7 @@ public class DashboardController implements NotificationListener {
         }
     }
 
-    private void makeResizable(Region region) {
+    private void makeResizable(Region region, Popup popup) {
         region.setOnMouseMoved(e -> {
             if (isResizing) return;
             double x = e.getX();
@@ -662,7 +662,7 @@ public class DashboardController implements NotificationListener {
             boolean nearRight = (x >= w - 10);
             boolean nearLeft = (x <= 10);
             boolean nearBottom = (y >= h - 10);
-            
+
             if (nearLeft && nearBottom) {
                 region.setCursor(javafx.scene.Cursor.SW_RESIZE);
             } else if (nearRight && nearBottom) {
@@ -686,17 +686,17 @@ public class DashboardController implements NotificationListener {
             boolean nearRight = (x >= w - 10);
             boolean nearLeft = (x <= 10);
             boolean nearBottom = (y >= h - 10);
-            
+
             if (nearRight || nearLeft || nearBottom) {
                 isResizing = true;
                 startX = e.getScreenX();
                 startY = e.getScreenY();
-                startWidth = region.getWidth();
-                startHeight = region.getHeight();
-                if (region.getScene() != null && region.getScene().getWindow() != null) {
-                    startWinX = region.getScene().getWindow().getX();
-                }
-                
+                // Guard against 0 during early layout pass — fall back to pref dimensions
+                startWidth  = (region.getWidth()  > 0) ? region.getWidth()  : region.getPrefWidth();
+                startHeight = (region.getHeight() > 0) ? region.getHeight() : region.getPrefHeight();
+                // Capture the popup window X position for left-edge repositioning
+                startWinX = (popup != null && popup.isShowing()) ? popup.getX() : 0;
+
                 if (nearLeft && nearBottom) {
                     resizeType = "SW";
                 } else if (nearRight && nearBottom) {
@@ -714,33 +714,33 @@ public class DashboardController implements NotificationListener {
 
         region.setOnMouseDragged(e -> {
             if (!isResizing) return;
-            
+
             double deltaX = e.getScreenX() - startX;
             double deltaY = e.getScreenY() - startY;
-            
-            // Sizing constraints matching the minimum (360) and maximum (800) limits
-            double minW = 360;
+
+            // Width: clamp between 280px minimum and 800px maximum
+            double minW = 280;
             double maxW = 800;
-            
+
             if ("E".equals(resizeType) || "SE".equals(resizeType)) {
                 double newWidth = Math.max(minW, Math.min(maxW, startWidth + deltaX));
                 region.setPrefWidth(newWidth);
             }
-            
+
             if ("W".equals(resizeType) || "SW".equals(resizeType)) {
-                double maxNewWidth = startWidth - deltaX;
-                double constrainedWidth = Math.max(minW, Math.min(maxW, maxNewWidth));
-                double actualDeltaW = constrainedWidth - startWidth;
-                region.setPrefWidth(constrainedWidth);
-                if (region.getScene() != null && region.getScene().getWindow() != null) {
-                    region.getScene().getWindow().setX(startWinX - actualDeltaW);
+                double newWidth = Math.max(minW, Math.min(maxW, startWidth - deltaX));
+                double actualDeltaW = newWidth - startWidth;
+                region.setPrefWidth(newWidth);
+                // Reposition the popup window (not the main app window) to anchor left edge
+                if (popup != null && popup.isShowing()) {
+                    popup.setX(startWinX - actualDeltaW);
                 }
             }
-            
-            // Sizing constraints matching the minimum (450) and maximum (900) limits
-            double minH = 450;
+
+            // Height: clamp between 200px minimum and 900px maximum
+            double minH = 200;
             double maxH = 900;
-            
+
             if ("S".equals(resizeType) || "SE".equals(resizeType) || "SW".equals(resizeType)) {
                 double newHeight = Math.max(minH, Math.min(maxH, startHeight + deltaY));
                 region.setPrefHeight(newHeight);
