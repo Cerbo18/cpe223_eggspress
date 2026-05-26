@@ -48,25 +48,25 @@ public class AcountMgmtController {
         String password = newPasswordField.getText().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            NotificationService.notificationWarning("Username and Password cannot be empty.", false);
+            NotificationService.notificationWarning("Username and Password cannot be empty.", false, 2);
             return;
         }
 
         // Validate characters
         if (!username.matches("^[a-zA-Z0-9._@-]+$")) {
-            NotificationService.notificationWarning("Username contains invalid characters. Only alphanumeric, dots, underscores, dashes, and @ are allowed.", false);
+            NotificationService.notificationWarning("Username contains invalid characters. Only alphanumeric, dots, underscores, dashes, and @ are allowed.", false, 2);
             return;
         }
 
         if (!password.matches("^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\",./<>?]+$")) {
-            NotificationService.notificationWarning("Password contains invalid characters. No spaces or control characters are allowed.", false);
+            NotificationService.notificationWarning("Password contains invalid characters. No spaces or control characters are allowed.", false, 2);
             return;
         }
 
         // Check if user already exists
         for (User u : UserRepository.getStaticUsers()) {
             if (u.getUsername().equalsIgnoreCase(username)) {
-                NotificationService.notificationWarning("Account '" + username + "' already exists.", false);
+                NotificationService.notificationWarning("Account '" + username + "' already exists.", false, 2);
                 return;
             }
         }

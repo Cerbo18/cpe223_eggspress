@@ -59,7 +59,6 @@ public class NotificationService {
             System.out.println("Started Notification database sync poller (3s interval).");
         }
     }
-
     private void pollForNewNotifications() {
         String sql = "SELECT * FROM notifications WHERE id > ? ORDER BY id ASC";
         try (Connection conn = DatabaseConfig.getConnection();
@@ -73,7 +72,8 @@ public class NotificationService {
                         rs.getString("level"),
                         rs.getString("message"),
                         false,
-                        rs.getString("username")
+                        rs.getString("username"),
+                        rs.getInt("priority")
                     );
                     
                     if (n.getId() > lastKnownId) {
@@ -103,9 +103,9 @@ public class NotificationService {
         listeners.remove(listener);
     }
 
-    public void publish(String level, String message, boolean isGlobal) {
+    public void publish(String level, String message, boolean isGlobal, int priority) {
         String targetUser = isGlobal ? null : SessionManager.getCurrentUsername();
-        Notification notification = new Notification(level, message, targetUser);
+        Notification notification = new Notification(level, message, targetUser, priority);
         
         // Save to DB (creates timestamp and generated ID)
         repository.save(notification);
@@ -123,9 +123,13 @@ public class NotificationService {
         }
     }
 
+    public void publish(String level, String message, boolean isGlobal) {
+        publish(level, message, isGlobal, 1);
+    }
+
     public void publish(String level, String message) {
         // By default, preserve backward compatibility by publishing globally
-        publish(level, message, true);
+        publish(level, message, true, 1);
     }
 
     // ---------------------------------------------------------
@@ -147,6 +151,13 @@ public class NotificationService {
     }
 
     /**
+     * Publishes an Info notification with explicit scope and priority.
+     */
+    public static void notificationInfo(String message, boolean isGlobal, int priority) {
+        getInstance().publish("Info", message, isGlobal, priority);
+    }
+
+    /**
      * Publishes a Warning notification. Global to all users by default.
      */
     public static void notificationWarning(String message) {
@@ -161,6 +172,13 @@ public class NotificationService {
     }
 
     /**
+     * Publishes a Warning notification with explicit scope and priority.
+     */
+    public static void notificationWarning(String message, boolean isGlobal, int priority) {
+        getInstance().publish("Warning", message, isGlobal, priority);
+    }
+
+    /**
      * Publishes a Critical notification. Global to all users by default.
      */
     public static void notificationCritical(String message) {
@@ -172,6 +190,13 @@ public class NotificationService {
      */
     public static void notificationCritical(String message, boolean isGlobal) {
         getInstance().publish("Critical", message, isGlobal);
+    }
+
+    /**
+     * Publishes a Critical notification with explicit scope and priority.
+     */
+    public static void notificationCritical(String message, boolean isGlobal, int priority) {
+        getInstance().publish("Critical", message, isGlobal, priority);
     }
 
     public List<Notification> getAllNotifications() {

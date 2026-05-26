@@ -431,7 +431,15 @@ public class DashboardController implements NotificationListener {
         simCritical.getStyleClass().addAll("notification-sim-btn", "critical");
         simCritical.setOnAction(e -> NotificationService.notificationCritical("Simulated emergency: Coop A temperature exceeded 35°C!"));
 
-        testBox.getChildren().addAll(testLbl, simInfo, simWarning, simCritical);
+        Button simLowInfo = new Button("Low Info");
+        simLowInfo.getStyleClass().addAll("notification-sim-btn", "info");
+        simLowInfo.setOnAction(e -> NotificationService.notificationInfo("Simulated low info: Non-blocking log created.", false, 2));
+
+        Button simLowWarning = new Button("Low Warning");
+        simLowWarning.getStyleClass().addAll("notification-sim-btn", "warning");
+        simLowWarning.setOnAction(e -> NotificationService.notificationWarning("Simulated low warning: Screen refreshed.", false, 2));
+
+        testBox.getChildren().addAll(testLbl, simInfo, simWarning, simCritical, simLowInfo, simLowWarning);
         popupContent.getChildren().add(testBox);
     }
 
@@ -505,6 +513,16 @@ public class DashboardController implements NotificationListener {
             progressTimeline.stop();
             if (toastContainer != null) {
                 toastContainer.getChildren().remove(toast);
+            }
+            if (notification.getPriority() == 1) {
+                String currentUsername = SessionManager.getCurrentUsername();
+                NotificationService.getInstance().markAsReadForUser(currentUsername, notification.getId());
+                Platform.runLater(() -> {
+                    updateUnreadBadgeCount();
+                    if (notificationPopup != null && notificationPopup.isShowing()) {
+                        refreshNotificationPopupContent();
+                    }
+                });
             }
         });
 

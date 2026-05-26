@@ -154,13 +154,13 @@ public class AutomationController {
     private void handleSendWater() {
         InventoryItem selectedWater = waterSourceComboBox.getSelectionModel().getSelectedItem();
         if (selectedWater == null) {
-            NotificationService.notificationWarning("Error: Please select a water source from the inventory.", false);
+            NotificationService.notificationWarning("Please select a water source from the inventory.", false, 2);
             return;
         }
 
         String amountText = waterAmountField.getText();
         if (amountText == null || amountText.trim().isEmpty()) {
-            NotificationService.notificationWarning("Error: Please enter a water amount.", false);
+            NotificationService.notificationWarning("Please enter a water amount.", false, 2);
             return;
         }
 
@@ -168,17 +168,17 @@ public class AutomationController {
         try {
             amount = Double.parseDouble(amountText);
         } catch (NumberFormatException e) {
-            NotificationService.notificationWarning("Error: Invalid amount. Please enter a valid number.", false);
+            NotificationService.notificationWarning("Please enter a valid numeric water amount.", false, 2);
             return;
         }
 
         if (amount <= 0) {
-            NotificationService.notificationWarning("Error: Amount must be greater than zero.", false);
+            NotificationService.notificationWarning("Water amount must be greater than zero.", false, 2);
             return;
         }
 
         if (selectedWater.getQuantity() < amount) {
-            NotificationService.notificationWarning("Error: Insufficient stock. Available: " + selectedWater.getQuantity() + " " + selectedWater.getUnit(), false);
+            NotificationService.notificationWarning("Insufficient stock available: " + selectedWater.getQuantity() + " " + selectedWater.getUnit() + ".", false, 2);
             return;
         }
 
@@ -186,7 +186,7 @@ public class AutomationController {
         boolean updateSuccess = FarmRepository.updateInventoryQuantity(selectedWater.getId(), updatedQuantity);
 
         if (!updateSuccess) {
-            NotificationService.notificationWarning("Error: Failed to update inventory database records.", false);
+            NotificationService.notificationWarning("Failed to update inventory database records.", false, 2);
             return;
         }
 
@@ -214,23 +214,23 @@ public class AutomationController {
         if (time == null || time.trim().isEmpty() ||
             feedingType == null || feedingType.trim().isEmpty() ||
             status == null || status.trim().isEmpty()) {
-            NotificationService.notificationWarning("Error: All fields are required.", false);
+            NotificationService.notificationWarning("All fields are required to create a schedule.", false, 2);
             return;
         }
 
         // Validate characters
         if (!time.matches("^[a-zA-Z0-9\\s:]+$")) {
-            NotificationService.notificationWarning("Error: Time contains invalid characters. Only alphanumeric, spaces, and colons are allowed.", false);
+            NotificationService.notificationWarning("Time contains invalid characters. Use only alphanumeric, spaces, and colons.", false, 2);
             return;
         }
 
         if (!feedingType.matches("^[a-zA-Z0-9\\s._-]+$")) {
-            NotificationService.notificationWarning("Error: Feeding Type contains invalid characters. Only alphanumeric, spaces, dots, dashes, and underscores are allowed.", false);
+            NotificationService.notificationWarning("Feeding Type contains invalid characters. Use only alphanumeric, spaces, dots, dashes, and underscores.", false, 2);
             return;
         }
 
         if (!status.matches("^[a-zA-Z\\s]+$")) {
-            NotificationService.notificationWarning("Error: Status contains invalid characters. Only letters and spaces are allowed.", false);
+            NotificationService.notificationWarning("Status contains invalid characters. Use only letters and spaces.", false, 2);
             return;
         }
 
@@ -267,7 +267,7 @@ public class AutomationController {
 
         // Validation: Check if the user actually clicked a row before pressing delete
         if (selectedSchedule == null) {
-            NotificationService.notificationWarning("Error: Please select a schedule from the table to delete.", false);
+            NotificationService.notificationWarning("Please select a schedule from the table to delete.", false, 2);
             return;
         }
 
@@ -282,7 +282,7 @@ public class AutomationController {
             // Optional: Reset table selection focus
             scheduleTable.getSelectionModel().clearSelection();
         } else {
-            NotificationService.notificationWarning("Error: Failed to delete schedule record from database.", false);
+            NotificationService.notificationWarning("Failed to delete schedule record from database.", false, 2);
         }
     }
 }
