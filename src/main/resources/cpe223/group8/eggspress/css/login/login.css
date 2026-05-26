@@ -3,9 +3,9 @@
 */
 
 .login-headerbar {
-    -fx-min-height: 48px;
-    -fx-pref-height: 48px;
-    -fx-max-height: 48px;
+    -fx-min-height: 64px;
+    -fx-pref-height: 64px;
+    -fx-max-height: 64px;
     -fx-alignment: center-left;
     -fx-padding: 6px 16px;
 }

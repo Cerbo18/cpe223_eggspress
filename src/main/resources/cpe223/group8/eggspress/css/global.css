@@ -83,9 +83,9 @@
 
 /* Custom HeaderBar Structural Styling for Inner Views */
 .app-headerbar {
-    -fx-min-height: 32px;
-    -fx-pref-height: 32px;
-    -fx-max-height: 32px;
+    -fx-min-height: 42px;
+    -fx-pref-height: 42px;
+    -fx-max-height: 42px;
     -fx-alignment: center-left;
     -fx-padding: 0px 16px;
 }
@@ -426,5 +426,85 @@
 .context-menu .separator .line {
     -fx-border-color: -fx-separator-color transparent transparent transparent;
     -fx-border-width: 1px 0 0 0;
+}
+
+/* =========================================================================
+   Minimalist Global ScrollBar Overrides
+   Makes all scroll indicators thin, rounded, translucent, and modern.
+   ========================================================================= */
+
+/* The ScrollBar container itself */
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 8px;
+    -fx-min-height: 8px;
+    -fx-max-height: 8px;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 8px;
+    -fx-min-width: 8px;
+    -fx-max-width: 8px;
+}
+
+/* The track background - make it transparent */
+.scroll-bar .track {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+/* The thumb (the draggable indicator) - thin, subtle, translucent, and rounded */
+.scroll-bar .thumb {
+    -fx-background-color: rgba(134, 134, 139, 0.35); /* Subtle translucent grey */
+    -fx-background-insets: 0;
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar:horizontal .thumb {
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-radius: 4px;
+}
+
+/* Hover & active states for the thumb */
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(134, 134, 139, 0.65); /* Darker translucent grey on hover */
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: rgba(57, 181, 74, 0.85); /* Accent brand primary on press */
+}
+
+/* Hide the increment & decrement arrow buttons entirely */
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0 0 0 0;
+    -fx-shape: " ";
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0 0 0 0;
+    -fx-shape: " ";
+}
+
+/* Corner cell where horizontal and vertical scrollbars meet */
+.scroll-pane .corner,
+.table-view .corner {
+    -fx-background-color: transparent;
 }
 
