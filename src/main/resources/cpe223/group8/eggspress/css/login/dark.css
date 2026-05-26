@@ -23,3 +23,14 @@
 .login-footer {
     -fx-background-color: #161617;
 }
+
+/* Dark theme overrides for theme toggle button */
+.sidebar-action-btn:hover .sidebar-toggle-icon,
+.sidebar-action-btn:pressed .sidebar-toggle-icon {
+    -fx-stroke: #f5f5f7;
+}
+
+.sidebar-action-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-text-fill: -fx-text-primary-color;
+}

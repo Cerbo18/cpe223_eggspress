@@ -240,6 +240,6 @@ public class InventoryController {
     }
 
     private void showError(String message) {
-        NotificationService.notificationWarning(message, false);
+        NotificationService.notificationWarning(message, false, 2);
     }
 }

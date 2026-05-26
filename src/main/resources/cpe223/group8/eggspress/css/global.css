@@ -13,6 +13,25 @@
     -fx-font-family: "System", "Segoe UI", "Helvetica Neue", Arial;
 }
 
+/* =========================================================================
+   Brand Logo Inline SVG Path Styles
+   Applied to SVGPath nodes embedded directly in FXML for crisp DPI-independent rendering.
+   ========================================================================= */
+
+/* Green filled wordmark / icon body paths */
+.wordmark-path {
+    -fx-fill: #39b54a;
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0;
+}
+
+/* White filled detail paths (e.g. chicken illustration inside the egg icon) */
+.combination-mark-white-path {
+    -fx-fill: #ffffff;
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0;
+}
+
 /* Base input field */
 .text-input-modern {
     -fx-background-color: -fx-input-bg-color;
@@ -64,9 +83,9 @@
 
 /* Custom HeaderBar Structural Styling for Inner Views */
 .app-headerbar {
-    -fx-min-height: 32px;
-    -fx-pref-height: 32px;
-    -fx-max-height: 32px;
+    -fx-min-height: 42px;
+    -fx-pref-height: 42px;
+    -fx-max-height: 42px;
     -fx-alignment: center-left;
     -fx-padding: 0px 16px;
 }
@@ -172,7 +191,7 @@
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #f5f5f7;
+    -fx-background-color: -fx-background-color;
     -fx-background-radius: 8px 8px 0px 0px;
 }
 
@@ -190,9 +209,11 @@
     -fx-alignment: center-left;
 }
 
-.table-view .table-row-cell {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #f5f5f7;
+.table-view .table-row-cell,
+.table-view .table-row-cell:odd,
+.table-view .table-row-cell:even {
+    -fx-background-color: -fx-card-bg-color;
+    -fx-border-color: -fx-background-color;
     -fx-border-width: 0 0 1px 0;
     -fx-cell-size: 40px;
 }
@@ -214,6 +235,15 @@
 .table-view .table-cell {
     -fx-border-color: transparent;
     -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.table-view .table-cell .text {
+    -fx-fill: -fx-text-primary-color;
+}
+
+.table-view .table-row-cell:filled:selected .table-cell {
+    -fx-text-fill: -fx-brand-primary;
 }
 
 .table-view:focused .table-row-cell:focused .table-cell {
@@ -225,16 +255,18 @@
     -fx-accent: transparent;
 }
 
-/* Maintain custom status colors under selection states */
 .table-view .table-row-cell:filled:selected .status-optimal .text,
+.table-view .table-cell.status-optimal .text,
 .status-optimal .text {
     -fx-fill: -fx-brand-primary;
 }
 .table-view .table-row-cell:filled:selected .status-monitoring .text,
+.table-view .table-cell.status-monitoring .text,
 .status-monitoring .text {
     -fx-fill: #ff9500;
 }
 .table-view .table-row-cell:filled:selected .status-inactive .text,
+.table-view .table-cell.status-inactive .text,
 .status-inactive .text {
     -fx-fill: #86868b;
 }
@@ -267,7 +299,7 @@
 }
 
 .combo-box-popup .list-view {
-    -fx-background-color: #ffffff;
+    -fx-background-color: -fx-input-bg-color;
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
     -fx-border-color: -fx-input-border-color;
@@ -337,12 +369,142 @@
 }
 
 .chart-horizontal-grid-lines {
-    -fx-stroke: #f5f5f7;
+    -fx-stroke: -fx-separator-color;
     -fx-stroke-dash-array: 2px, 2px;
 }
 
 .chart-vertical-grid-lines {
-    -fx-stroke: #f5f5f7;
+    -fx-stroke: -fx-separator-color;
     -fx-stroke-dash-array: 2px, 2px;
+}
+
+/* Context Menu & MenuBar Dropdown Styling */
+.context-menu {
+    -fx-background-color: -fx-input-bg-color;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: -fx-input-border-color;
+    -fx-border-width: 1px;
+    -fx-effect: -fx-overlay-shadow;
+    -fx-padding: 4px;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 6px 12px;
+    -fx-background-radius: 4px;
+}
+
+.menu-item .label {
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-font-size: 13px;
+}
+
+.menu-item:hover,
+.menu-item:focused {
+    -fx-background-color: rgba(57, 181, 74, 0.08);
+}
+
+.menu-item:hover .label,
+.menu-item:focused .label {
+    -fx-text-fill: -fx-brand-primary;
+}
+
+.menu-item:disabled {
+    -fx-opacity: 0.4;
+}
+
+.menu-item:disabled .label {
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+/* Separator inside context menus */
+.context-menu .separator {
+    -fx-padding: 4px 0px;
+}
+
+.context-menu .separator .line {
+    -fx-border-color: -fx-separator-color transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+}
+
+/* =========================================================================
+   Minimalist Global ScrollBar Overrides
+   Makes all scroll indicators thin, rounded, translucent, and modern.
+   ========================================================================= */
+
+/* The ScrollBar container itself */
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 8px;
+    -fx-min-height: 8px;
+    -fx-max-height: 8px;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 8px;
+    -fx-min-width: 8px;
+    -fx-max-width: 8px;
+}
+
+/* The track background - make it transparent */
+.scroll-bar .track {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+/* The thumb (the draggable indicator) - thin, subtle, translucent, and rounded */
+.scroll-bar .thumb {
+    -fx-background-color: rgba(134, 134, 139, 0.35); /* Subtle translucent grey */
+    -fx-background-insets: 0;
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar:horizontal .thumb {
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-radius: 4px;
+}
+
+/* Hover & active states for the thumb */
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(134, 134, 139, 0.65); /* Darker translucent grey on hover */
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: rgba(57, 181, 74, 0.85); /* Accent brand primary on press */
+}
+
+/* Hide the increment & decrement arrow buttons entirely */
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0 0 0 0;
+    -fx-shape: " ";
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0 0 0 0;
+    -fx-shape: " ";
+}
+
+/* Corner cell where horizontal and vertical scrollbars meet */
+.scroll-pane .corner,
+.table-view .corner {
+    -fx-background-color: transparent;
 }
 

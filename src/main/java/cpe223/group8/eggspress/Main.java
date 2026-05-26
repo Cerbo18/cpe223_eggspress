@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.layout.HeaderBar;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,11 +19,15 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.initStyle(StageStyle.EXTENDED);
+        HeaderBar.setPrefButtonHeight(stage, 64.0);
 
         // 1. Initialize the SQLite database tables before loading the login view
         DatabaseConfig.initializeDatabase();
 
-        scene = new Scene(loadFXML("login"), 760, 520);
+        Parent loginRoot = loadFXML("login");
+        cpe223.group8.eggspress.services.ThemeManager.applyTheme(loginRoot);
+        scene = new Scene(loginRoot, 760, 520);
+        cpe223.group8.eggspress.services.ThemeManager.applySceneFill(scene);
         stage.setMinWidth(720);
         stage.setMinHeight(576);
         
@@ -52,7 +57,19 @@ public class Main extends Application {
     }
 
     public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+        Parent root = loadFXML(fxml);
+        cpe223.group8.eggspress.services.ThemeManager.applyTheme(root);
+        scene.setRoot(root);
+        cpe223.group8.eggspress.services.ThemeManager.applySceneFill(scene);
+
+        Stage stage = (Stage) scene.getWindow();
+        if (stage != null) {
+            if ("login".equals(fxml)) {
+                HeaderBar.setPrefButtonHeight(stage, 64.0);
+            } else {
+                HeaderBar.setPrefButtonHeight(stage, 42.0);
+            }
+        }
     }
 
     private static Parent loadFXML(String fxml) throws IOException {

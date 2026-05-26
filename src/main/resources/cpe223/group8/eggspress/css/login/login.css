@@ -3,9 +3,9 @@
 */
 
 .login-headerbar {
-    -fx-min-height: 48px;
-    -fx-pref-height: 48px;
-    -fx-max-height: 48px;
+    -fx-min-height: 64px;
+    -fx-pref-height: 64px;
+    -fx-max-height: 64px;
     -fx-alignment: center-left;
     -fx-padding: 6px 16px;
 }
@@ -33,4 +33,46 @@
 .login-footer {
     -fx-border-color: transparent;
     -fx-border-width: 0px;
+}
+
+/* Sidebar action button styles (theme toggle button) */
+.sidebar-action-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-padding: 6px 8px;
+    -fx-background-radius: 6px;
+    -fx-alignment: center;
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+.sidebar-action-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.06);
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.sidebar-action-btn:pressed {
+    -fx-background-color: rgba(0, 0, 0, 0.12);
+}
+
+.sidebar-action-btn:disabled {
+    -fx-opacity: 0.4;
+}
+
+/* SVG icon strokes for the sidebar toggle button */
+.sidebar-toggle-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #86868b;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
+
+.sidebar-action-btn:hover .sidebar-toggle-icon {
+    -fx-stroke: #1d1d1f;
+}
+
+.sidebar-action-btn:pressed .sidebar-toggle-icon {
+    -fx-stroke: #1d1d1f;
 }
