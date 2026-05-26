@@ -140,12 +140,45 @@ public class DashboardController implements NotificationListener {
             }
         });
 
+        // Register keyboard shortcuts when scene becomes available
+        if (splitPane != null) {
+            splitPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    setupKeyboardAccelerators(newScene);
+                }
+            });
+        }
+
         // Initialize Notifications
         if (notificationBadge != null) {
             notificationBadge.setMinWidth(Region.USE_PREF_SIZE);
         }
         NotificationService.getInstance().addListener(this);
         updateUnreadBadgeCount();
+    }
+
+    private void setupKeyboardAccelerators(javafx.scene.Scene scene) {
+        if (scene == null) return;
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT1, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(this::handleOverview)
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT2, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(this::handleAccountManagement)
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT3, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(this::handleInventoryManagement)
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT4, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(this::handleAutomationManagement)
+        );
+        scene.getAccelerators().put(
+            new javafx.scene.input.KeyCodeCombination(javafx.scene.input.KeyCode.DIGIT5, javafx.scene.input.KeyCombination.CONTROL_DOWN),
+            () -> Platform.runLater(() -> handleViewLayout(null))
+        );
     }
 
     @Override
