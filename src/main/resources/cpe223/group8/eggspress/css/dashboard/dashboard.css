@@ -2,15 +2,18 @@
    Eggspress Dashboard View Structural Stylesheet
 */
 
-.dashboard-split-pane {
+.dashboard-split-pane,
+.split-pane {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-padding: 0;
     -fx-border-color: transparent;
     -fx-border-width: 0px;
+    -fx-box-border: transparent;
 }
 
-.dashboard-split-pane > .split-pane-divider {
+.dashboard-split-pane > .split-pane-divider,
+.split-pane > .split-pane-divider {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-padding: 0;

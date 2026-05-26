@@ -5,7 +5,11 @@ import cpe223.group8.eggspress.models.User;
 import cpe223.group8.eggspress.repository.UserRepository;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.shape.SVGPath;
+import javafx.application.Platform;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -47,6 +51,12 @@ public class LoginController {
 
     @FXML
     private HeaderBar headerBar;
+
+    @FXML
+    private Button themeToggleBtn;
+
+    @FXML
+    private SVGPath themeToggleIcon;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -98,6 +108,16 @@ public class LoginController {
                 }
             });
         }
+
+        Platform.runLater(() -> {
+            if (themeToggleIcon != null) {
+                if (cpe223.group8.eggspress.services.ThemeManager.isDarkMode()) {
+                    themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
+                } else {
+                    themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
+                }
+            }
+        });
     }
 
     @FXML
@@ -250,6 +270,27 @@ public class LoginController {
             messageLabel.setText("Invalid credentials. Try again.");
             errorContainer.setVisible(true);
             errorContainer.setManaged(true);
+        }
+    }
+
+    @FXML
+    private void handleToggleTheme() {
+        boolean dark = !cpe223.group8.eggspress.services.ThemeManager.isDarkMode();
+        cpe223.group8.eggspress.services.ThemeManager.setDarkMode(dark);
+
+        // Apply theme to the current login root scene
+        if (themeToggleBtn != null && themeToggleBtn.getScene() != null) {
+            Parent root = themeToggleBtn.getScene().getRoot();
+            cpe223.group8.eggspress.services.ThemeManager.applyTheme(root);
+        }
+
+        // Update toggle button icon path (Moon for Light Mode, Sun for Dark Mode)
+        if (themeToggleIcon != null) {
+            if (dark) {
+                themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
+            } else {
+                themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
+            }
         }
     }
 }
