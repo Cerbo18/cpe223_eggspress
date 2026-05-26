@@ -90,6 +90,19 @@ public class DatabaseConfig {
             );
         """;
 
+        String createMonthlyConsumptionLogsTable = """
+            CREATE TABLE IF NOT EXISTS monthly_consumption_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                month_year TEXT NOT NULL UNIQUE,
+                flock_count INTEGER NOT NULL,
+                estimated_feed REAL NOT NULL,
+                estimated_water REAL NOT NULL,
+                actual_feed REAL NOT NULL,
+                actual_water REAL NOT NULL,
+                logged_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+            );
+        """;
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             
@@ -101,6 +114,7 @@ public class DatabaseConfig {
             stmt.execute(createCoopsTable);
             stmt.execute(createNotificationsTable);
             stmt.execute(createUserNotificationStatesTable);
+            stmt.execute(createMonthlyConsumptionLogsTable);
             
             // Dynamic column migration for existing notifications table
             try {
