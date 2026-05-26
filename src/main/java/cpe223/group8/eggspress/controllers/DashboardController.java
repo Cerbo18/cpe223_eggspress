@@ -155,6 +155,16 @@ public class DashboardController implements NotificationListener {
         }
         NotificationService.getInstance().addListener(this);
         updateUnreadBadgeCount();
+
+        // Install premium themed tooltips on navigation and action controls
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(themeToggleBtn, "Switch visual theme mode");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(notificationBtn, "View system alerts and notifications");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(toggleButton, "Collapse or expand left navigation sidebar");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(overviewBtn, "Overview dashboard metrics and telemetry");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(accountMgmtBtn, "Manage staff and database access credentials");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(inventoryBtn, "Monitor feed, water, and flock resources");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(automationBtn, "Configure environmental rules and schedules");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(layoutBtn, "Interactive coop layouts and map blueprint");
     }
 
     private void setupKeyboardAccelerators(javafx.scene.Scene scene) {
