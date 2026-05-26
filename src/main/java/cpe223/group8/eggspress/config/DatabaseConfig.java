@@ -68,6 +68,15 @@ public class DatabaseConfig {
             );
         """;
 
+        String createGrowthTable = """
+            CREATE TABLE IF NOT EXISTS chicken_growth (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                record_date TEXT NOT NULL UNIQUE,
+                flock_count INTEGER NOT NULL,
+                average_weight REAL NOT NULL
+            );
+        """;
+
         String createNotificationsTable = """
             CREATE TABLE IF NOT EXISTS notifications (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,6 +121,7 @@ public class DatabaseConfig {
             stmt.execute(createSchedulesTable);
             stmt.execute(createAutomationsTable);
             stmt.execute(createCoopsTable);
+            stmt.execute(createGrowthTable);
             stmt.execute(createNotificationsTable);
             stmt.execute(createUserNotificationStatesTable);
             stmt.execute(createMonthlyConsumptionLogsTable);
@@ -165,6 +175,29 @@ public class DatabaseConfig {
                     """;
                     stmt.execute(seedCoops);
                     System.out.println("Default chicken coops successfully seeded.");
+                }
+            }
+
+            // 5. NEW: Check and seed chicken growth history over the years
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM chicken_growth")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    String seedGrowth = """
+                        INSERT INTO chicken_growth (record_date, flock_count, average_weight) VALUES 
+                        ('2021-01-15', 500, 1.2),
+                        ('2021-07-15', 620, 1.4),
+                        ('2022-01-15', 800, 1.3),
+                        ('2022-07-15', 950, 1.5),
+                        ('2023-01-15', 1100, 1.4),
+                        ('2023-07-15', 1250, 1.6),
+                        ('2024-01-15', 1300, 1.5),
+                        ('2024-07-15', 1420, 1.7),
+                        ('2025-01-15', 1500, 1.6),
+                        ('2025-07-15', 1650, 1.8),
+                        ('2026-01-15', 1720, 1.7),
+                        ('2026-05-15', 1800, 1.9);
+                    """;
+                    stmt.execute(seedGrowth);
+                    System.out.println("Default chicken growth historical logs successfully seeded.");
                 }
             }
             
