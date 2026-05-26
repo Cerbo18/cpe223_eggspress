@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="cpe223.group8.eggspress.controllers.AcountMgmtController"
+      fx:controller="cpe223.group8.eggspress.controllers.AccountMgmtController"
       prefHeight="600.0" prefWidth="800.0"
       styleClass="view-root-container">
     <stylesheets>
