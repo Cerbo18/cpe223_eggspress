@@ -243,6 +243,19 @@
                                 </graphic>
                             </Button>
 
+                            <Button fx:id="developerBtn" text="Developer Panel" styleClass="sidebar-menu-btn" onAction="#handleDeveloperPanel" visible="false" managed="false">
+                                <graphic>
+                                    <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
+                                        <Group>
+                                            <SVGPath styleClass="sidebar-menu-icon" content="M9 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                            <SVGPath styleClass="sidebar-menu-icon" content="M12 5v10" />
+                                            <SVGPath styleClass="sidebar-menu-icon" content="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                            <SVGPath styleClass="sidebar-menu-icon" content="M19 5v10M5 5h14" />
+                                        </Group>
+                                    </StackPane>
+                                </graphic>
+                            </Button>
+
                             <Region VBox.vgrow="ALWAYS" />
 
                             <!-- Bottom controls -->
