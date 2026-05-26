@@ -94,13 +94,14 @@
     -fx-stroke: #f5f5f7;
 }
 
-/* Dark theme notification panel — Fluent 2 dark surface elevation.
-   - Surface: #292929 (Layer/Rest dark)
-   - Stroke: rgba(255,255,255,0.0837) — Fluent 2 NeutralStroke1Rest dark
-   - Shadow: elevated for dark ambient reduction */
+/* Dark theme notification panel — Flat border outline for separation.
+   - Surface: #292929
+   - Stroke: rgba(255, 255, 255, 0.22) for high contrast and clear visibility
+   - Width: 1.5px */
 .notification-popup-container {
     -fx-background-color: #292929;
-    -fx-border-color: rgba(255, 255, 255, 0.084);
+    -fx-border-color: rgba(255, 255, 255, 0.22);
+    -fx-border-width: 1.5px;
 }
 
 .notification-title {

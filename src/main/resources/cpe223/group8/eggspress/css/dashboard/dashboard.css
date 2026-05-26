@@ -317,15 +317,15 @@
     -fx-translate-y: -8px;
 }
 
-/* Notification dropdown panel — Fluent 2 Elevation 8 (Flyout surface).
-   - Surface: #FFFFFF (Layer/Rest in Fluent 2 color system)
-   - Stroke: rgba(0,0,0,0.0578) — Fluent 2 NeutralStroke1Rest
-   - Shadow: 0px 4px 8px rgba(0,0,0,0.14) — Fluent 2 shadow2 elevation token
-   - Corner radius: 8px — Fluent 2 "medium" radius token */
+/* Notification dropdown panel — Flat border outline for separation.
+   - Surface: #FFFFFF
+   - Stroke: rgba(0, 0, 0, 0.16) for high contrast and clear visibility
+   - Width: 1.5px
+   - Corner radius: 8px */
 .notification-popup-container {
     -fx-background-color: #ffffff;
-    -fx-border-color: rgba(0, 0, 0, 0.058);
-    -fx-border-width: 1px;
+    -fx-border-color: rgba(0, 0, 0, 0.16);
+    -fx-border-width: 1.5px;
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
     -fx-padding: 12px;

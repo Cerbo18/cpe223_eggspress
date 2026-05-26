@@ -260,7 +260,7 @@ To maintain a high-quality, professional codebase, all code documentation and in
 ### 3. Microsoft Fluent 2 Elevation Standard
 The application follows the Fluent 2 depth hierarchy standard using opaque high-contrast background surfaces paired with calibrated dropshadow tokens to separate overlapping components:
 *   **Elevation 4 (Card / Push Toast)**: Uses dropshadow `dropshadow(gaussian, rgba(0, 0, 0, 0.14), 8, 0, 0, 2)` (Light Mode) or `dropshadow(gaussian, rgba(0, 0, 0, 0.28), 8, 0, 0, 2)` (Dark Mode) with an `8px` corner radius.
-*   **Elevation 8 (Notification Panel / Flyout)**: Uses dropshadow `dropshadow(gaussian, rgba(0, 0, 0, 0.14), 16, 0, 0, 4)` (Light Mode) or `dropshadow(gaussian, rgba(0, 0, 0, 0.28), 16, 0, 0, 4)` (Dark Mode) with an `8px` corner radius.
+*   **Elevation 8 (Notification Panel / Flyout)**: Uses a noticeable flat outline border (`1.5px` width; `rgba(0, 0, 0, 0.16)` in light mode, `rgba(255, 255, 255, 0.22)` in dark mode) to avoid JavaFX popup clipping issues while retaining clear visual separation, with an `8px` corner radius.
 
 ---
 
