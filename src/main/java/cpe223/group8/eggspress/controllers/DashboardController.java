@@ -72,6 +72,9 @@ public class DashboardController implements NotificationListener {
     private Button layoutBtn;
 
     @FXML
+    private Button developerBtn;
+
+    @FXML
     private Button notificationBtn;
 
     @FXML
@@ -169,6 +172,10 @@ public class DashboardController implements NotificationListener {
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(inventoryBtn, "Monitor feed, water, and flock resources");
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(automationBtn, "Configure environmental rules and schedules");
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(layoutBtn, "Interactive coop layouts and map blueprint");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(developerBtn, "Open developer mock injector and diagnostics console");
+
+        // Restore Developer Panel menu button status based on cached preferences
+        toggleDeveloperModeSidebarButton(cpe223.group8.eggspress.services.PreferencesManager.isDeveloperMode());
     }
 
     private void setupKeyboardAccelerators(javafx.scene.Scene scene) {
@@ -309,7 +316,17 @@ public class DashboardController implements NotificationListener {
     }
 
     public void toggleDeveloperModeSidebarButton(boolean enable) {
-        // Will be fully implemented in Developer Mode Scope
+        Platform.runLater(() -> {
+            if (developerBtn != null) {
+                developerBtn.setVisible(enable);
+                developerBtn.setManaged(enable);
+            }
+        });
+    }
+
+    @FXML
+    private void handleDeveloperPanel() {
+        loadView("developer");
     }
 
 
@@ -773,6 +790,7 @@ public class DashboardController implements NotificationListener {
         clearActiveStyle(inventoryBtn);
         clearActiveStyle(automationBtn);
         clearActiveStyle(layoutBtn);
+        clearActiveStyle(developerBtn);
 
         // Set the current view button as active
         if ("overview".equals(fxmlName)) {
@@ -785,6 +803,8 @@ public class DashboardController implements NotificationListener {
             setActiveStyle(automationBtn);
         } else if ("layout".equals(fxmlName)) {
             setActiveStyle(layoutBtn);
+        } else if ("developer".equals(fxmlName)) {
+            setActiveStyle(developerBtn);
         }
 
         try {
