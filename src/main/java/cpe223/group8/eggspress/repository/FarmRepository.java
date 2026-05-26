@@ -66,6 +66,46 @@ public class FarmRepository {
         }
     }
 
+    // 2b. Fetch an inventory item by ID
+    public static InventoryItem getInventoryItemById(String id) {
+        String sql = "SELECT * FROM inventory WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new InventoryItem(
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getDouble("quantity"),
+                        rs.getString("unit")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 2c. Update a schedule's status in SQLite
+    public static boolean updateScheduleStatus(String time, String feedingType, String category, String newStatus) {
+        String sql = "UPDATE schedules SET status = ? WHERE time = ? AND feeding_type = ? AND category = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newStatus);
+            pstmt.setString(2, time);
+            pstmt.setString(3, feedingType);
+            pstmt.setString(4, category);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating schedule status: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // 3. Fetch all recorded automation schedules
     public static List<FeedingSchedule> getAllSchedules() {
         List<FeedingSchedule> schedules = new ArrayList<>();
@@ -486,5 +526,44 @@ public class FarmRepository {
             e.printStackTrace();
         }
         return history;
+    }
+
+    public static int getCoopsCount() {
+        String sql = "SELECT COUNT(*) FROM coops";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static boolean injectDeveloperMockStocks() {
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("UPDATE inventory SET quantity = quantity + 100 WHERE id = 'INV001';");
+            stmt.execute("UPDATE inventory SET quantity = quantity + 200 WHERE id = 'INV002';");
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean injectDeveloperMockSchedule() {
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement()) {
+            String insertSql = "INSERT INTO schedules (category, time, feeding_type, status) VALUES " +
+                               "('Broiler', '16:00', 'Mixed Grain', 'Pending');";
+            stmt.execute(insertSql);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

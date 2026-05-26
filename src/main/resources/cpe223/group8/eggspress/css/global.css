@@ -120,6 +120,12 @@
     -fx-text-fill: #39b54a;
 }
 
+.feedback-error {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff3b30;
+}
+
 /* Premium Content Card Layouts */
 .content-card {
     -fx-background-color: -fx-card-bg-color;

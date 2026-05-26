@@ -7,6 +7,12 @@ import cpe223.group8.eggspress.models.Automation;
 import cpe223.group8.eggspress.repository.FarmRepository;
 import cpe223.group8.eggspress.services.NotificationService;
 
+import cpe223.group8.eggspress.simulation.CoopTelemetry;
+import cpe223.group8.eggspress.simulation.AutomationService;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -64,12 +70,41 @@ public class AutomationController {
     @FXML
     private TextField scheduleStatusField;
 
+    // Live Telemetry Table
+    @FXML
+    private TableView<CoopTelemetry> telemetryTable;
+
+    @FXML
+    private TableColumn<CoopTelemetry, String> telemetryCoopCol;
+
+    @FXML
+    private TableColumn<CoopTelemetry, Double> telemetryTempCol;
+
+    @FXML
+    private TableColumn<CoopTelemetry, Double> telemetryHumidCol;
+
+    @FXML
+    private TableColumn<CoopTelemetry, String> telemetryFanCol;
+
+    @FXML
+    private TableColumn<CoopTelemetry, String> telemetryMisterCol;
+
+    @FXML
+    private TableColumn<CoopTelemetry, String> telemetryFeederCol;
+
+    private Timeline telemetryPoller;
+
 
 
     public void initialize() {
-        // 1. Force Location Selection Setup (Avoid FXML parsing duplication bugs)
+        // 1. Setup dynamic Location Selection from SQLite active coops
         locationComboBox.getItems().clear();
-        locationComboBox.setItems(FXCollections.observableArrayList("Main Coop A", "Breeding Barn B", "Chicks Facility"));
+        for (cpe223.group8.eggspress.models.ChickenHouse coop : FarmRepository.getAllCoops()) {
+            locationComboBox.getItems().add(coop.getName());
+        }
+        if (locationComboBox.getItems().isEmpty()) {
+            locationComboBox.setItems(FXCollections.observableArrayList("Main Coop A", "Breeding Barn B", "Chicks Facility"));
+        }
         locationComboBox.getSelectionModel().selectFirst();
 
         // 2. Setup Schedule Category Dropdown Options
@@ -81,6 +116,14 @@ public class AutomationController {
         timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
         feedingTypeCol.setCellValueFactory(new PropertyValueFactory<>("feedingType"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        // 3b. Configure Telemetry Table Column mappings
+        telemetryCoopCol.setCellValueFactory(new PropertyValueFactory<>("coopName"));
+        telemetryTempCol.setCellValueFactory(new PropertyValueFactory<>("temperature"));
+        telemetryHumidCol.setCellValueFactory(new PropertyValueFactory<>("humidity"));
+        telemetryFanCol.setCellValueFactory(new PropertyValueFactory<>("fanSpeed"));
+        telemetryMisterCol.setCellValueFactory(new PropertyValueFactory<>("misterStatus"));
+        telemetryFeederCol.setCellValueFactory(new PropertyValueFactory<>("feederStatus"));
 
         // 4. Force-Seed fresh simulations if no manual items exist
         seedSimulatedSchedules();
@@ -100,8 +143,18 @@ public class AutomationController {
             }
         });
 
-        // 6. Finally, fetch and render everything to the table view
+        // 6. Fetch and render everything to the table views initially
         refreshScheduleTable();
+        telemetryTable.setItems(FXCollections.observableArrayList(AutomationService.getInstance().getAllTelemetry()));
+
+        // 7. Setup a dynamic 2-second poller to keep both the machinery states, temp/humidity, and schedule tables updated
+        telemetryPoller = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
+            telemetryTable.setItems(FXCollections.observableArrayList(AutomationService.getInstance().getAllTelemetry()));
+            refreshScheduleTable();
+            refreshWaterSources();
+        }));
+        telemetryPoller.setCycleCount(Timeline.INDEFINITE);
+        telemetryPoller.play();
     }
 
     private void seedSimulatedSchedules() {
@@ -248,6 +301,9 @@ public class AutomationController {
 
     @FXML
     private void handleBackToDashboard() {
+        if (telemetryPoller != null) {
+            telemetryPoller.stop();
+        }
         DashboardController dashboard = DashboardController.getInstance();
         if (dashboard != null) {
             dashboard.loadView("overview");

@@ -15,6 +15,9 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -133,6 +136,7 @@ public class LayoutController implements Initializable {
     private ChickenHouse selectedCoop = null;
     private boolean isEditMode = false;
     private final Random random = new Random();
+    private Timeline telemetryPoller;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -156,6 +160,15 @@ public class LayoutController implements Initializable {
         // Initial loading of coops list and growth history
         refreshCoopsMap();
         refreshGrowthChart();
+
+        // Setup dynamic poller to sync telemetry values in real-time
+        telemetryPoller = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
+            if (selectedCoop != null) {
+                updateTelemetryUI(selectedCoop);
+            }
+        }));
+        telemetryPoller.setCycleCount(Timeline.INDEFINITE);
+        telemetryPoller.play();
     }
 
     private void refreshCoopsMap() {
@@ -210,28 +223,8 @@ public class LayoutController implements Initializable {
 
         FlockMetric.setText(coop.getFlockCount() + " Birds");
 
-        // Simulate sensor telemetry based on coop status
-        double baseTemp = 24.2;
-        double baseHumid = 60.0;
-        String ventStatus = "ACTIVE";
-
-        if ("Monitoring".equalsIgnoreCase(coop.getStatus())) {
-            baseTemp = 28.5; // elevated temp
-            baseHumid = 72.0; // high humidity
-            ventStatus = "MAX SPEED";
-        } else if ("Inactive".equalsIgnoreCase(coop.getStatus())) {
-            baseTemp = 18.0; // cool
-            baseHumid = 45.0; // dry
-            ventStatus = "STANDBY";
-        }
-
-        // Random jitter for realism
-        double temp = baseTemp + (random.nextDouble() - 0.5) * 1.5;
-        double humid = baseHumid + (random.nextDouble() - 0.5) * 5.0;
-
-        TempMetric.setText(String.format("%.1f °C", temp));
-        HumidMetric.setText(String.format("%.1f %%", humid));
-        VentMetric.setText(ventStatus);
+        // Sync with live data from AutomationService
+        updateTelemetryUI(coop);
 
         // Enable header update button now that a coop is selected
         if (UpdateCoopHeaderBtn != null) {
@@ -240,6 +233,15 @@ public class LayoutController implements Initializable {
 
         // Highlight selected card in container
         refreshCoopsMap();
+    }
+
+    private void updateTelemetryUI(ChickenHouse coop) {
+        cpe223.group8.eggspress.simulation.CoopTelemetry telemetry = cpe223.group8.eggspress.simulation.AutomationService.getInstance().getTelemetryForCoop(coop.getId());
+        if (telemetry != null) {
+            TempMetric.setText(String.format("%.1f °C", telemetry.getTemperature()));
+            HumidMetric.setText(String.format("%.1f %%", telemetry.getHumidity()));
+            VentMetric.setText(telemetry.getFanSpeed());
+        }
     }
 
     @FXML
@@ -525,6 +527,9 @@ public class LayoutController implements Initializable {
 
     @FXML
     private void handleBack(ActionEvent event) throws IOException {
+        if (telemetryPoller != null) {
+            telemetryPoller.stop();
+        }
         DashboardController dashboard = DashboardController.getInstance();
         if (dashboard != null) {
             dashboard.loadView("overview");

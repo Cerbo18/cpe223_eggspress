@@ -20,6 +20,30 @@ public class DatabaseConfig {
         }
     }
 
+    public static boolean testConnection() {
+        try (Connection conn = getConnection()) {
+            return conn != null && !conn.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static void resetDatabase() throws SQLException {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("DROP TABLE IF EXISTS inventory;");
+            stmt.execute("DROP TABLE IF EXISTS coops;");
+            stmt.execute("DROP TABLE IF EXISTS schedules;");
+            stmt.execute("DROP TABLE IF EXISTS automations;");
+            stmt.execute("DROP TABLE IF EXISTS user_notification_states;");
+            stmt.execute("DROP TABLE IF EXISTS notifications;");
+            stmt.execute("DROP TABLE IF EXISTS users;");
+            stmt.execute("DROP TABLE IF EXISTS chicken_growth;");
+            stmt.execute("DROP TABLE IF EXISTS monthly_consumption_logs;");
+        }
+        initializeDatabase();
+    }
+
     public static void initializeDatabase() {
         String createUserTable = """
             CREATE TABLE IF NOT EXISTS users (
