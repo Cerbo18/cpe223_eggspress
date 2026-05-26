@@ -81,6 +81,9 @@ public class DashboardController implements NotificationListener {
     private Button themeToggleBtn;
 
     @FXML
+    private Button settingsBtn;
+
+    @FXML
     private SVGPath themeToggleIcon;
 
     private Parent currentSubView;
@@ -158,6 +161,7 @@ public class DashboardController implements NotificationListener {
 
         // Install premium themed tooltips on navigation and action controls
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(themeToggleBtn, "Switch visual theme mode");
+        cpe223.group8.eggspress.services.TooltipHelper.installTooltip(settingsBtn, "Open application configurations and database state settings");
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(notificationBtn, "View system alerts and notifications");
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(toggleButton, "Collapse or expand left navigation sidebar");
         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(overviewBtn, "Overview dashboard metrics and telemetry");
@@ -243,6 +247,15 @@ public class DashboardController implements NotificationListener {
     private void handleToggleTheme() {
         boolean dark = !cpe223.group8.eggspress.services.ThemeManager.isDarkMode();
         cpe223.group8.eggspress.services.ThemeManager.setDarkMode(dark);
+        
+        applyVisualThemeChange();
+        
+        // Dynamically save the toggled starting theme
+        cpe223.group8.eggspress.services.PreferencesManager.setStartingTheme(dark ? "DARK" : "LIGHT");
+    }
+
+    public void applyVisualThemeChange() {
+        boolean dark = cpe223.group8.eggspress.services.ThemeManager.isDarkMode();
 
         // 1. Apply theme to dashboard root (includes sidebar, header, etc.)
         if (splitPane != null && splitPane.getScene() != null) {
@@ -263,14 +276,42 @@ public class DashboardController implements NotificationListener {
         // 4. Update toggle button icon path (Moon for Light Mode, Sun for Dark Mode)
         if (themeToggleIcon != null) {
             if (dark) {
-                // Dark mode is now active; show Sun icon to switch back to Light Mode
                 themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
             } else {
-                // Light mode is now active; show Moon icon to switch back to Dark Mode
                 themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
             }
         }
     }
+
+    @FXML
+    private void handleSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/settings.fxml"));
+            Parent root = loader.load();
+            cpe223.group8.eggspress.services.ThemeManager.applyTheme(root);
+
+            javafx.stage.Stage settingsStage = new javafx.stage.Stage();
+            settingsStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            if (splitPane != null && splitPane.getScene() != null) {
+                settingsStage.initOwner(splitPane.getScene().getWindow());
+            }
+            settingsStage.setTitle("Settings");
+            settingsStage.setResizable(false);
+
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            cpe223.group8.eggspress.services.ThemeManager.applySceneFill(scene);
+            settingsStage.setScene(scene);
+            settingsStage.showAndWait();
+        } catch (IOException e) {
+            System.err.println("Error loading settings modal: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void toggleDeveloperModeSidebarButton(boolean enable) {
+        // Will be fully implemented in Developer Mode Scope
+    }
+
 
     @FXML
     private void handleToggleNotificationPopup() {
@@ -488,6 +529,25 @@ public class DashboardController implements NotificationListener {
 
     private void showPushToast(Notification notification) {
         if (contentArea == null) return;
+
+        // Check if push toasts are enabled in user configurations
+        if (!cpe223.group8.eggspress.services.PreferencesManager.isPushToastsEnabled()) {
+            return;
+        }
+
+        // Apply severity level priority filtering
+        String severityFilter = cpe223.group8.eggspress.services.PreferencesManager.getToastPriorityFilter();
+        String notificationLevel = notification.getLevel() != null ? notification.getLevel().toUpperCase() : "INFO";
+        if ("CRITICAL".equals(severityFilter)) {
+            if (!"CRITICAL".equals(notificationLevel)) {
+                return;
+            }
+        } else if ("WARNING".equals(severityFilter)) {
+            if ("INFO".equals(notificationLevel)) {
+                return;
+            }
+        }
+
         ensureToastContainer();
 
         VBox toast = new VBox(0);

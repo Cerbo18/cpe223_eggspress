@@ -127,7 +127,7 @@
                      </Button>
 
                     <!-- Settings Button -->
-                    <Button styleClass="sidebar-action-btn" text="" disable="true">
+                    <Button fx:id="settingsBtn" styleClass="sidebar-action-btn" text="" onAction="#handleSettings">
                         <graphic>
                             <StackPane minWidth="24.0" prefWidth="24.0" minHeight="24.0" prefHeight="24.0" alignment="CENTER">
                                 <Group scaleX="0.8" scaleY="0.8">
