@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="420.0" prefHeight="280.0" spacing="20.0" 
+      alignment="TOP_LEFT" styleClass="content-card"
+      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="cpe223.group8.eggspress.controllers.EditAccountModalController">
+    <stylesheets>
+        <URL value="@../css/global.css" />
+        <URL value="@../css/light.css" />
+        <URL value="@../css/acountMgmt/acountMgmt.css" />
+    </stylesheets>
+    
+    <padding>
+        <Insets top="24.0" right="24.0" bottom="24.0" left="24.0" />
+    </padding>
+
+    <!-- Header -->
+    <VBox spacing="4.0">
+        <Label text="Edit Account Role" styleClass="modal-title" />
+        <Label text="Modify user security clearance roles across the active platform." styleClass="modal-desc" />
+    </VBox>
+
+    <!-- Form Fields -->
+    <VBox spacing="14.0" VBox.vgrow="ALWAYS">
+        <!-- Username (Read-Only) -->
+        <VBox styleClass="modal-field-container">
+            <Label text="Username" styleClass="form-label" />
+            <TextField fx:id="usernameField" editable="false" styleClass="text-input-modern" maxWidth="Infinity" style="-fx-opacity: 0.8;" />
+        </VBox>
+
+        <!-- Role Selector -->
+        <VBox styleClass="modal-field-container">
+            <Label text="Access Role" styleClass="form-label" />
+            <ComboBox fx:id="roleSelector" styleClass="combo-box-modern" maxWidth="Infinity" />
+        </VBox>
+    </VBox>
+
+    <!-- Actions Footer -->
+    <HBox spacing="12.0" alignment="BOTTOM_RIGHT">
+        <Button text="Cancel" onAction="#handleCancel" styleClass="button-secondary" prefWidth="100.0" />
+        <Button text="Save Changes" onAction="#handleSave" styleClass="button-primary" prefWidth="150.0" />
+    </HBox>
+</VBox>

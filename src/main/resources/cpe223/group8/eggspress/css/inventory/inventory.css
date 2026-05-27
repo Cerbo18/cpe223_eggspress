@@ -1,8 +1,88 @@
 /*
    Eggspress Inventory Screen Structural Stylesheet
+   Governs layout alignments, TabPane designs, and adequacy pill capsules
 */
 
 .view-root-container {
     -fx-background-color: transparent;
 }
+
+/* =========================================================================
+   Modern TabPane Styling
+   Customizes the tab header area, tab buttons, and active selection states
+   ========================================================================= */
+
+.modern-tab-pane {
+    -fx-background-color: transparent;
+}
+
+.modern-tab-pane .tab-header-area {
+    -fx-padding: 0px 0px 4px 0px;
+    -fx-background-color: transparent;
+}
+
+.modern-tab-pane .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.modern-tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6px 6px 0px 0px;
+    -fx-border-color: transparent transparent -fx-input-border-color transparent;
+    -fx-border-width: 0px 0px 2px 0px;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+}
+
+.modern-tab-pane .tab .tab-label {
+    -fx-text-fill: -fx-text-secondary-color;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+.modern-tab-pane .tab:hover {
+    -fx-background-color: rgba(57, 181, 74, 0.03);
+    -fx-border-color: transparent transparent rgba(57, 181, 74, 0.3) transparent;
+}
+
+.modern-tab-pane .tab:selected {
+    -fx-border-color: transparent transparent -fx-brand-primary transparent;
+    -fx-border-width: 0px 0px 2.5px 0px;
+}
+
+.modern-tab-pane .tab:selected .tab-label {
+    -fx-text-fill: -fx-brand-primary;
+}
+
+/* Remove default focus indicators and blue rings on focused tab buttons */
+.modern-tab-pane .tab:focused {
+    -fx-focus-color: transparent;
+}
+
+.modern-tab-pane .tab .focus-indicator {
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-background-color: transparent;
+}
+
+/* =========================================================================
+   Planner Card & Estimator Layouts
+   ========================================================================= */
+
+.estimator-stat-box {
+    -fx-background-color: transparent;
+    -fx-padding: 4px 0px;
+}
+
+.estimator-badge-card {
+    -fx-background-color: -fx-card-bg-color;
+    -fx-border-color: -fx-card-border-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 14px 18px;
+}
+
+/* Redundant table action buttons and adequacy badge capsules have been relocated to global.css to be shared with automation.fxml */
 

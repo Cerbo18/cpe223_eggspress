@@ -5,6 +5,7 @@ import cpe223.group8.eggspress.models.Notification;
 import cpe223.group8.eggspress.services.NotificationListener;
 import cpe223.group8.eggspress.services.NotificationService;
 import cpe223.group8.eggspress.services.SessionManager;
+import cpe223.group8.eggspress.services.SvgIconHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -138,9 +139,9 @@ public class DashboardController implements NotificationListener {
                 cpe223.group8.eggspress.services.ThemeManager.applyTheme(root);
                 if (themeToggleIcon != null) {
                     if (cpe223.group8.eggspress.services.ThemeManager.isDarkMode()) {
-                        themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
+                        themeToggleIcon.setContent(SvgIconHelper.THEME_SUN_PATH);
                     } else {
-                        themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
+                        themeToggleIcon.setContent(SvgIconHelper.THEME_MOON_PATH);
                     }
                 }
             }
@@ -291,9 +292,9 @@ public class DashboardController implements NotificationListener {
         // 4. Update toggle button icon path (Moon for Light Mode, Sun for Dark Mode)
         if (themeToggleIcon != null) {
             if (dark) {
-                themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
+                themeToggleIcon.setContent(SvgIconHelper.THEME_SUN_PATH);
             } else {
-                themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
+                themeToggleIcon.setContent(SvgIconHelper.THEME_MOON_PATH);
             }
         }
     }
@@ -411,10 +412,7 @@ public class DashboardController implements NotificationListener {
         
         Button markAllBtn = new Button("Mark All Read");
         markAllBtn.getStyleClass().add("notification-action-btn");
-        markAllBtn.setGraphic(createSvgIcon(
-            "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0",
-            "M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"
-        ));
+        markAllBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.CHECK_ALL, "notification-icon-path"));
         markAllBtn.setOnAction(e -> {
             NotificationService.getInstance().markAllAsReadForUser(currentUsername);
             updateUnreadBadgeCount();
@@ -423,11 +421,7 @@ public class DashboardController implements NotificationListener {
 
         Button clearBtn = new Button("Clear All");
         clearBtn.getStyleClass().add("notification-action-btn");
-        clearBtn.setGraphic(createSvgIcon(
-            "M8 6h12",
-            "M6 12h12",
-            "M4 18h12"
-        ));
+        clearBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.CLEAR_ALL, "notification-icon-path"));
         clearBtn.setOnAction(e -> {
             NotificationService.getInstance().clearAllForUser(currentUsername);
             updateUnreadBadgeCount();
@@ -460,18 +454,10 @@ public class DashboardController implements NotificationListener {
                 Label levelLabel = new Label(n.getLevel().toUpperCase());
                 levelLabel.getStyleClass().addAll("notification-level-badge", n.getLevel().toLowerCase());
                 if ("warning".equalsIgnoreCase(n.getLevel()) || "critical".equalsIgnoreCase(n.getLevel())) {
-                    levelLabel.setGraphic(createSvgIcon(
-                        "M12 9v4",
-                        "M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0",
-                        "M12 16h.01"
-                    ));
+                    levelLabel.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.WARNING, "notification-icon-path"));
                     levelLabel.setGraphicTextGap(4);
                 } else if ("info".equalsIgnoreCase(n.getLevel())) {
-                    levelLabel.setGraphic(createSvgIcon(
-                        "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0",
-                        "M12 8v4",
-                        "M12 16h.01"
-                    ));
+                    levelLabel.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.INFO, "notification-icon-path"));
                     levelLabel.setGraphicTextGap(4);
                 }
                 
@@ -496,11 +482,7 @@ public class DashboardController implements NotificationListener {
                 if (!n.isRead()) {
                     Button readBtn = new Button();
                     readBtn.getStyleClass().add("notification-read-btn");
-                    readBtn.setGraphic(createSvgIcon(
-                        "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0",
-                        "M11.102 17.957c-3.204 -.307 -5.904 -2.294 -8.102 -5.957c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6a19.5 19.5 0 0 1 -.663 1.032",
-                        "M15 19l2 2l4 -4"
-                    ));
+                    readBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.MARK_READ, "notification-icon-path"));
                     readBtn.setOnAction(e -> {
                         NotificationService.getInstance().markAsReadForUser(currentUsername, n.getId());
                         updateUnreadBadgeCount();
@@ -556,17 +538,9 @@ public class DashboardController implements NotificationListener {
         Label levelLabel = new Label();
         levelLabel.getStyleClass().addAll("notification-level-badge", notification.getLevel().toLowerCase());
         if ("warning".equalsIgnoreCase(notification.getLevel()) || "critical".equalsIgnoreCase(notification.getLevel())) {
-            levelLabel.setGraphic(createSvgIcon(
-                "M12 9v4",
-                "M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0",
-                "M12 16h.01"
-            ));
+            levelLabel.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.WARNING, "notification-icon-path"));
         } else {
-            levelLabel.setGraphic(createSvgIcon(
-                "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0",
-                "M12 8v4",
-                "M12 16h.01"
-            ));
+            levelLabel.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.INFO, "notification-icon-path"));
         }
 
         Label msgLabel = new Label(notification.getMessage());
@@ -580,10 +554,7 @@ public class DashboardController implements NotificationListener {
         // Dismiss button
         Button closeBtn = new Button();
         closeBtn.getStyleClass().add("notification-toast-close-btn");
-        closeBtn.setGraphic(createSvgIcon(
-            "M18 6l-12 12",
-            "M6 6l12 12"
-        ));
+        closeBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.CLOSE, "notification-icon-path"));
 
         content.getChildren().addAll(levelLabel, msgLabel, spacer, closeBtn);
 
@@ -875,30 +846,5 @@ public class DashboardController implements NotificationListener {
     @FXML
     private void handleViewLayout(ActionEvent event) {
         loadView("layout");
-    }
-
-    private javafx.scene.Group createSvgIcon(String path1) {
-        return createSvgIcon(new String[]{path1});
-    }
-
-    private javafx.scene.Group createSvgIcon(String path1, String path2) {
-        return createSvgIcon(new String[]{path1, path2});
-    }
-
-    private javafx.scene.Group createSvgIcon(String path1, String path2, String path3) {
-        return createSvgIcon(new String[]{path1, path2, path3});
-    }
-
-    private javafx.scene.Group createSvgIcon(String[] paths) {
-        javafx.scene.Group group = new javafx.scene.Group();
-        group.setScaleX(0.7);
-        group.setScaleY(0.7);
-        for (String path : paths) {
-            javafx.scene.shape.SVGPath svgPath = new javafx.scene.shape.SVGPath();
-            svgPath.setContent(path);
-            svgPath.getStyleClass().add("notification-icon-path");
-            group.getChildren().add(svgPath);
-        }
-        return group;
     }
 }

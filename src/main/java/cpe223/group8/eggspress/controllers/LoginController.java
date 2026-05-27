@@ -3,6 +3,7 @@ package cpe223.group8.eggspress.controllers;
 import cpe223.group8.eggspress.Main;
 import cpe223.group8.eggspress.models.User;
 import cpe223.group8.eggspress.repository.UserRepository;
+import cpe223.group8.eggspress.services.SvgIconHelper;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -112,9 +113,9 @@ public class LoginController {
         Platform.runLater(() -> {
             if (themeToggleIcon != null) {
                 if (cpe223.group8.eggspress.services.ThemeManager.isDarkMode()) {
-                    themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
+                    themeToggleIcon.setContent(SvgIconHelper.THEME_SUN_PATH);
                 } else {
-                    themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
+                    themeToggleIcon.setContent(SvgIconHelper.THEME_MOON_PATH);
                 }
             }
             if (themeToggleBtn != null) {
@@ -290,9 +291,9 @@ public class LoginController {
         // Update toggle button icon path (Moon for Light Mode, Sun for Dark Mode)
         if (themeToggleIcon != null) {
             if (dark) {
-                themeToggleIcon.setContent("M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7");
+                themeToggleIcon.setContent(SvgIconHelper.THEME_SUN_PATH);
             } else {
-                themeToggleIcon.setContent("M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008");
+                themeToggleIcon.setContent(SvgIconHelper.THEME_MOON_PATH);
             }
         }
     }

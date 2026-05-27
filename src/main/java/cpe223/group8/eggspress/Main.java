@@ -24,6 +24,9 @@ public class Main extends Application {
         // 1. Initialize the SQLite database tables before loading the login view
         DatabaseConfig.initializeDatabase();
 
+        // 1b. Start the automated farm operations and telemetry simulator background service
+        cpe223.group8.eggspress.simulation.AutomationService.getInstance().start();
+
         // 2. Initialize default starting theme from persistent user configurations
         boolean isDarkTheme = "DARK".equalsIgnoreCase(cpe223.group8.eggspress.services.PreferencesManager.getStartingTheme());
         cpe223.group8.eggspress.services.ThemeManager.setDarkMode(isDarkTheme);
@@ -79,6 +82,12 @@ public class Main extends Application {
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("views/" + fxml + ".fxml"));
         return fxmlLoader.load();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        cpe223.group8.eggspress.simulation.AutomationService.getInstance().stop();
+        super.stop();
     }
 
     public static void main(String[] args) {

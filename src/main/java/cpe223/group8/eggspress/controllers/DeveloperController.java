@@ -1,16 +1,14 @@
 package cpe223.group8.eggspress.controllers;
 
-import cpe223.group8.eggspress.config.DatabaseConfig;
 import cpe223.group8.eggspress.services.NotificationService;
+import cpe223.group8.eggspress.repository.UserRepository;
+import cpe223.group8.eggspress.repository.FarmRepository;
+import cpe223.group8.eggspress.repository.NotificationRepository;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -59,43 +57,19 @@ public class DeveloperController {
     private void handleRefreshCounts() {
         log("Querying database table counts...");
         
-        int usersCount = 0;
-        int inventoryCount = 0;
-        int coopsCount = 0;
-        int alertsCount = 0;
+        int usersCount = UserRepository.getUsersCount();
+        int inventoryCount = FarmRepository.getInventoryCount();
+        int coopsCount = FarmRepository.getCoopsCount();
+        int alertsCount = NotificationRepository.getNotificationsCount();
 
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement stmt = conn.createStatement()) {
+        Platform.runLater(() -> {
+            usersCountLabel.setText(String.valueOf(usersCount));
+            inventoryCountLabel.setText(String.valueOf(inventoryCount));
+            coopsCountLabel.setText(String.valueOf(coopsCount));
+            alertsCountLabel.setText(String.valueOf(alertsCount));
+        });
 
-            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {
-                if (rs.next()) usersCount = rs.getInt(1);
-            }
-            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM inventory")) {
-                if (rs.next()) inventoryCount = rs.getInt(1);
-            }
-            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM coops")) {
-                if (rs.next()) coopsCount = rs.getInt(1);
-            }
-            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM notifications")) {
-                if (rs.next()) alertsCount = rs.getInt(1);
-            }
-
-            final int u = usersCount;
-            final int i = inventoryCount;
-            final int c = coopsCount;
-            final int a = alertsCount;
-
-            Platform.runLater(() -> {
-                usersCountLabel.setText(String.valueOf(u));
-                inventoryCountLabel.setText(String.valueOf(i));
-                coopsCountLabel.setText(String.valueOf(c));
-                alertsCountLabel.setText(String.valueOf(a));
-            });
-
-            log("Summary loaded: users=" + u + ", inventory=" + i + ", coops=" + c + ", alerts=" + a);
-        } catch (SQLException e) {
-            log("CRITICAL error refreshing record counts: " + e.getMessage());
-        }
+        log("Summary loaded: users=" + usersCount + ", inventory=" + inventoryCount + ", coops=" + coopsCount + ", alerts=" + alertsCount);
     }
 
     @FXML
@@ -110,19 +84,13 @@ public class DeveloperController {
     private void handleInjectMockStocks() {
         log("Injecting mock stock telemetry quantities into inventory database...");
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement stmt = conn.createStatement()) {
-            
-            // Add 100 kg to Grains stock and 200 L to Water stock
-            stmt.execute("UPDATE inventory SET quantity = quantity + 100 WHERE id = 'INV001';");
-            stmt.execute("UPDATE inventory SET quantity = quantity + 200 WHERE id = 'INV002';");
-            
+        boolean success = FarmRepository.injectDeveloperMockStocks();
+        if (success) {
             log("Telemetry successfully injected: INV001 (+100kg), INV002 (+200L).");
             NotificationService.notificationInfo("Developer Telemetry: Stock quantity increments successfully processed.");
-            
             handleRefreshCounts();
-        } catch (SQLException e) {
-            log("Error injecting mock stocks: " + e.getMessage());
+        } else {
+            log("Error injecting mock stocks.");
         }
     }
 
@@ -141,19 +109,13 @@ public class DeveloperController {
     private void handleInjectMockSchedules() {
         log("Injecting simulated schedule feeding task...");
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement stmt = conn.createStatement()) {
-            
-            String insertSql = "INSERT INTO schedules (category, time, feeding_type, status) VALUES " +
-                               "('Broiler', '16:00', 'Mixed Grain', 'Pending');";
-            stmt.execute(insertSql);
-            
+        boolean success = FarmRepository.injectDeveloperMockSchedule();
+        if (success) {
             log("Mock schedule successfully appended to database records.");
             NotificationService.notificationInfo("Developer Telemetry: New feeding schedule seeded.");
-            
             handleRefreshCounts();
-        } catch (SQLException e) {
-            log("Error seeding mock schedule: " + e.getMessage());
+        } else {
+            log("Error seeding mock schedule.");
         }
     }
 
@@ -192,4 +154,3 @@ public class DeveloperController {
         handleRefreshCounts();
     }
 }
-

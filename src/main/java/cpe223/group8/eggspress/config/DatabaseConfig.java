@@ -20,12 +20,37 @@ public class DatabaseConfig {
         }
     }
 
+    public static boolean testConnection() {
+        try (Connection conn = getConnection()) {
+            return conn != null && !conn.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static void resetDatabase() throws SQLException {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("DROP TABLE IF EXISTS inventory;");
+            stmt.execute("DROP TABLE IF EXISTS coops;");
+            stmt.execute("DROP TABLE IF EXISTS schedules;");
+            stmt.execute("DROP TABLE IF EXISTS automations;");
+            stmt.execute("DROP TABLE IF EXISTS user_notification_states;");
+            stmt.execute("DROP TABLE IF EXISTS notifications;");
+            stmt.execute("DROP TABLE IF EXISTS users;");
+            stmt.execute("DROP TABLE IF EXISTS chicken_growth;");
+            stmt.execute("DROP TABLE IF EXISTS monthly_consumption_logs;");
+        }
+        initializeDatabase();
+    }
+
     public static void initializeDatabase() {
         String createUserTable = """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
+                password TEXT NOT NULL,
+                role TEXT DEFAULT 'Staff'
             );
         """;
 
@@ -68,6 +93,15 @@ public class DatabaseConfig {
             );
         """;
 
+        String createGrowthTable = """
+            CREATE TABLE IF NOT EXISTS chicken_growth (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                record_date TEXT NOT NULL UNIQUE,
+                flock_count INTEGER NOT NULL,
+                average_weight REAL NOT NULL
+            );
+        """;
+
         String createNotificationsTable = """
             CREATE TABLE IF NOT EXISTS notifications (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -90,6 +124,19 @@ public class DatabaseConfig {
             );
         """;
 
+        String createMonthlyConsumptionLogsTable = """
+            CREATE TABLE IF NOT EXISTS monthly_consumption_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                month_year TEXT NOT NULL UNIQUE,
+                flock_count INTEGER NOT NULL,
+                estimated_feed REAL NOT NULL,
+                estimated_water REAL NOT NULL,
+                actual_feed REAL NOT NULL,
+                actual_water REAL NOT NULL,
+                logged_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+            );
+        """;
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             
@@ -99,8 +146,10 @@ public class DatabaseConfig {
             stmt.execute(createSchedulesTable);
             stmt.execute(createAutomationsTable);
             stmt.execute(createCoopsTable);
+            stmt.execute(createGrowthTable);
             stmt.execute(createNotificationsTable);
             stmt.execute(createUserNotificationStatesTable);
+            stmt.execute(createMonthlyConsumptionLogsTable);
             
             // Dynamic column migration for existing notifications table
             try {
@@ -115,11 +164,19 @@ public class DatabaseConfig {
             } catch (SQLException e) {
                 // Column already exists, safe to ignore
             }
+
+            // Dynamic column migration for existing users table
+            try {
+                stmt.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'Staff';");
+                System.out.println("Migrated: added role column to users table.");
+            } catch (SQLException e) {
+                // Column already exists, safe to ignore
+            }
             
             // 2. Check and seed standard admin user
             try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {
                 if (rs.next() && rs.getInt(1) == 0) {
-                    stmt.execute("INSERT INTO users (username, password) VALUES ('admin', '123');");
+                    stmt.execute("INSERT INTO users (username, password, role) VALUES ('admin', '123', 'Admin');");
                     System.out.println("Default 'admin' user successfully seeded.");
                 }
             }
@@ -129,9 +186,9 @@ public class DatabaseConfig {
                 if (rs.next() && rs.getInt(1) == 0) {
                     String seedInventory = """
                         INSERT INTO inventory (id, name, category, quantity, unit) VALUES 
-                        ('INV001', 'Grains', 'Feed', 500.0, 'kg'),
-                        ('INV002', 'Water', 'Hydration', 1200.0, 'L'),
-                        ('INV003', 'Layers Feed', 'Feed', 250.0, 'kg'),
+                        ('INV001', 'Grains', 'Feed', 3000.0, 'kg'),
+                        ('INV002', 'Water', 'Hydration', 9478.5, 'L'),
+                        ('INV003', 'Layers Feed', 'Feed', 1549.68, 'kg'),
                         ('INV004', 'Vitamins', 'Medical', 15.0, 'L');
                     """;
                     stmt.execute(seedInventory);
@@ -145,12 +202,35 @@ public class DatabaseConfig {
                     String seedCoops = """
                         INSERT INTO coops (id, name, flock_count, status) VALUES 
                         ('COOP001', 'Main Coop A', 450, 'Optimal'),
-                        ('COOP002', 'Chicls Facility', 320, 'Optimal'),
+                        ('COOP002', 'Chicks Facility', 320, 'Optimal'),
                         ('COOP003', 'Coop B', 400, 'Monitoring'),
                         ('COOP004', 'Breeding Barn', 250, 'Optimal');
                     """;
                     stmt.execute(seedCoops);
                     System.out.println("Default chicken coops successfully seeded.");
+                }
+            }
+
+            // 5. NEW: Check and seed chicken growth history over the years
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM chicken_growth")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    String seedGrowth = """
+                        INSERT INTO chicken_growth (record_date, flock_count, average_weight) VALUES 
+                        ('2021-01-15', 500, 1.2),
+                        ('2021-07-15', 620, 1.4),
+                        ('2022-01-15', 800, 1.3),
+                        ('2022-07-15', 950, 1.5),
+                        ('2023-01-15', 1100, 1.4),
+                        ('2023-07-15', 1250, 1.6),
+                        ('2024-01-15', 1300, 1.5),
+                        ('2024-07-15', 1420, 1.7),
+                        ('2025-01-15', 1500, 1.6),
+                        ('2025-07-15', 1650, 1.8),
+                        ('2026-01-15', 1720, 1.7),
+                        ('2026-05-15', 1800, 1.9);
+                    """;
+                    stmt.execute(seedGrowth);
+                    System.out.println("Default chicken growth historical logs successfully seeded.");
                 }
             }
             

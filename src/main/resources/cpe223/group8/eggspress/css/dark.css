@@ -22,6 +22,10 @@
     -fx-overlay-border: rgba(255, 255, 255, 0.08);
     -fx-overlay-shadow: dropshadow(three-pass-box, rgba(0, 0, 0, 0.32), 24, 0, 0, 8);
     -fx-separator-color: rgba(255, 255, 255, 0.06);
+    
+    /* Table row selection & hover colors */
+    -fx-table-selection-color: rgba(245, 245, 247, 0.12);
+    -fx-table-hover-color: rgba(245, 245, 247, 0.06);
 }
 
 /* HeaderBar styling */

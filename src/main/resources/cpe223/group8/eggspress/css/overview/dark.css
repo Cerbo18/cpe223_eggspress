@@ -1,39 +1,20 @@
 /*
-   Eggspress Overview View Dark Theme Styling
+   Eggspress Overview View Dark Theme Visual Styling
+   Defines color tokens, elevated card borders, and ambient drop shadows for dark backgrounds.
 */
-
-.welcome-banner {
-    -fx-background-color: -fx-card-bg-color;
-    -fx-border-color: -fx-card-border-color;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.28), 24, 0, 0, 4);
-}
-
-.welcome-banner-title {
-    -fx-text-fill: -fx-text-primary-color;
-}
-
-.welcome-banner-desc {
-    -fx-text-fill: -fx-text-secondary-color;
-}
-
-.stat-grid-title {
-    -fx-text-fill: -fx-text-primary-color;
-}
 
 .stat-card {
     -fx-background-color: -fx-card-bg-color;
     -fx-border-color: -fx-card-border-color;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.24), 16, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.28), 16, 0, 0, 2);
 }
 
-.stat-title {
-    -fx-text-fill: -fx-text-secondary-color;
+/* Dark theme track strokes for radial progress indicators */
+.radial-track {
+    -fx-stroke: #3a3a3c;
 }
 
-.stat-value {
-    -fx-text-fill: -fx-text-primary-color;
-}
-
-.stat-indicator {
-    -fx-text-fill: -fx-brand-primary;
+.telemetry-row {
+    -fx-background-color: #242426;
+    -fx-border-color: rgba(255, 255, 255, 0.04);
 }

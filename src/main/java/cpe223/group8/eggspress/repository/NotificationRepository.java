@@ -247,4 +247,18 @@ public class NotificationRepository implements BaseRepository<Notification> {
             e.printStackTrace();
         }
     }
+
+    public static int getNotificationsCount() {
+        String sql = "SELECT COUNT(*) FROM notifications";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

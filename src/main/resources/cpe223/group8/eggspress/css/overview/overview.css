@@ -1,58 +1,136 @@
 /*
    Eggspress Overview View Structural Stylesheet
+   Defines spatial constraints, margins, grid structures, and element alignment.
 */
 
 .overview-content-pane {
-    -fx-padding: 28px;
+    -fx-padding: 24px;
+    -fx-spacing: 20px;
+}
+
+/* Horizontal multi-pane split container layout */
+.overview-split-container {
     -fx-spacing: 24px;
 }
 
-.welcome-banner {
-    -fx-background-radius: 16px;
-    -fx-border-radius: 16px;
-    -fx-border-width: 1px;
-    -fx-padding: 24px 28px;
+/* Left analytics pane containing summary metrics and dynamic chart */
+.overview-left-pane {
+    -fx-spacing: 20px;
 }
 
-.welcome-banner-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-}
-
-.welcome-banner-desc {
-    -fx-font-size: 13px;
+/* Right monitoring pane containing coops table and sensor details */
+.overview-right-pane {
+    -fx-spacing: 20px;
+    -fx-min-width: 350px;
+    -fx-pref-width: 350px;
+    -fx-max-width: 350px;
 }
 
 .stat-grid-title {
-    -fx-font-size: 16px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-padding: 8px 0px 0px 4px;
+    -fx-padding: 4px 0px 0px 2px;
+    -fx-text-fill: -fx-text-primary-color;
 }
 
-.stat-card {
-    -fx-background-radius: 16px;
-    -fx-border-radius: 16px;
+/* Container holding the row of 4 circular radial gauges */
+.radial-row-card {
+    -fx-padding: 20px 24px;
+    -fx-spacing: 28px;
+    -fx-alignment: center;
+}
+
+/* StackPane container layout for single radial progress gauge */
+.radial-container {
+    -fx-min-width: 120px;
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+    -fx-min-height: 120px;
+    -fx-pref-height: 120px;
+    -fx-max-height: 120px;
+}
+
+/* Background circular path Arc track */
+.radial-track {
+    -fx-fill: transparent;
+    -fx-stroke-width: 8px;
+}
+
+/* Active progress path Arc stroke */
+.radial-progress {
+    -fx-fill: transparent;
+    -fx-stroke-width: 8px;
+    -fx-stroke-line-cap: round;
+}
+
+/* Centered value text label inside circular progress */
+.radial-value {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+/* Centered title text label inside circular progress */
+.radial-title {
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+/* State stroke coloring for circular progress gauges */
+.radial-progress.status-optimal {
+    -fx-stroke: -fx-brand-primary;
+}
+
+.radial-progress.status-monitoring {
+    -fx-stroke: #ff9500;
+}
+
+.radial-progress.status-inactive {
+    -fx-stroke: #ff3b30;
+}
+
+/* Real-time telemetry monitoring card structure */
+.telemetry-details-card {
+    -fx-spacing: 16px;
+}
+
+.telemetry-card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.telemetry-card-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+/* Telemetry parameters grid listing */
+.telemetry-grid {
+    -fx-spacing: 12px;
+}
+
+.telemetry-row {
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
     -fx-border-width: 1px;
-    -fx-padding: 20px;
 }
 
-.stat-title {
-    -fx-font-size: 12px;
+.telemetry-label {
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-secondary-color;
 }
 
-.stat-value {
-    -fx-font-size: 26px;
+.telemetry-value {
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-padding: 6px 0px;
+    -fx-text-fill: -fx-text-primary-color;
 }
 
-.stat-indicator {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-}
-
-/* Status text coloring */
+/* Status text coloring for standard states */
 .status-optimal {
     -fx-text-fill: -fx-brand-primary;
     -fx-font-weight: bold;
