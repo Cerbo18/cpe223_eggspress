@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
@@ -60,6 +61,37 @@ public class AutomationController {
         timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
         feedingTypeCol.setCellValueFactory(new PropertyValueFactory<>("feedingType"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        // Custom status capsule styling matching the Inventory Management standard
+        statusCol.setCellFactory(col -> new TableCell<FeedingSchedule, String>() {
+            private final Label statusLabel = new Label();
+            {
+                statusLabel.getStyleClass().add("status-capsule");
+                setAlignment(javafx.geometry.Pos.CENTER);
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    statusLabel.setText(item);
+                    statusLabel.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-critical", "status-inactive");
+                    if ("Completed".equalsIgnoreCase(item)) {
+                        statusLabel.getStyleClass().add("status-optimal");
+                    } else if ("Pending".equalsIgnoreCase(item)) {
+                        statusLabel.getStyleClass().add("status-monitoring");
+                    } else if ("Scheduled".equalsIgnoreCase(item)) {
+                        statusLabel.getStyleClass().add("status-inactive");
+                    } else if ("Failed".equalsIgnoreCase(item)) {
+                        statusLabel.getStyleClass().add("status-critical");
+                    }
+                    setGraphic(statusLabel);
+                }
+            }
+        });
+
 
         // 2. Setup Action Column cell factory for inline Edit and Delete actions
         actionCol.setCellFactory(col -> new TableCell<FeedingSchedule, Void>() {
