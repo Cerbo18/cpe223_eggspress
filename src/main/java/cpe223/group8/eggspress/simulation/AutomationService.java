@@ -229,14 +229,39 @@ public class AutomationService {
         }
     }
 
+    private static LocalTime parseScheduleTime(String timeStr) {
+        if (timeStr == null) return null;
+        timeStr = timeStr.trim().toUpperCase();
+        
+        // Try HH:mm (24 hours format, e.g. 14:35)
+        try {
+            return LocalTime.parse(timeStr, DateTimeFormatter.ofPattern("HH:mm"));
+        } catch (Exception e1) {
+            // Try H:mm
+            try {
+                return LocalTime.parse(timeStr, DateTimeFormatter.ofPattern("H:mm"));
+            } catch (Exception e2) {
+                // Try hh:mm a (12 hours format, e.g. 08:30 AM)
+                try {
+                    return LocalTime.parse(timeStr, DateTimeFormatter.ofPattern("hh:mm a"));
+                } catch (Exception e3) {
+                    try {
+                        return LocalTime.parse(timeStr, DateTimeFormatter.ofPattern("h:mm a"));
+                    } catch (Exception e4) {
+                        System.err.println("Could not parse schedule time: " + timeStr);
+                        return null;
+                    }
+                }
+            }
+        }
+    }
+
     private void processScheduledEvents() {
         List<FeedingSchedule> schedules = FarmRepository.getAllSchedules();
         List<ChickenHouse> coops = FarmRepository.getAllCoops();
         if (coops.isEmpty()) return;
 
         LocalTime now = LocalTime.now();
-        String timeStr12 = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
-        String timeStr24 = now.format(DateTimeFormatter.ofPattern("HH:mm"));
 
         for (FeedingSchedule schedule : schedules) {
             String status = schedule.getStatus();
@@ -253,11 +278,21 @@ public class AutomationService {
             if (isPending) {
                 shouldExecute = true;
             }
-            // Rule 2: "Scheduled" items execute when system clock hour & minute matches
+            // Rule 2: "Scheduled" items execute if the current system clock time matches or has passed the scheduled time
             else if (isScheduled) {
-                String schedTime = schedule.getTime().trim().toUpperCase();
-                if (schedTime.equalsIgnoreCase(timeStr12) || schedTime.equalsIgnoreCase(timeStr24)) {
-                    shouldExecute = true;
+                LocalTime schedTime = parseScheduleTime(schedule.getTime());
+                if (schedTime != null) {
+                    if (!now.isBefore(schedTime)) {
+                        shouldExecute = true;
+                    }
+                } else {
+                    // Fallback to exact match logic if parsing somehow fails
+                    String timeStr12 = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
+                    String timeStr24 = now.format(DateTimeFormatter.ofPattern("HH:mm"));
+                    String schedTimeStr = schedule.getTime().trim().toUpperCase();
+                    if (schedTimeStr.equalsIgnoreCase(timeStr12) || schedTimeStr.equalsIgnoreCase(timeStr24)) {
+                        shouldExecute = true;
+                    }
                 }
             }
 

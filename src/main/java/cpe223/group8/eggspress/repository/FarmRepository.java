@@ -106,6 +106,27 @@ public class FarmRepository {
         }
     }
 
+    // 2d. Update an entire schedule inside SQLite
+    public static boolean updateSchedule(FeedingSchedule oldSched, FeedingSchedule newSched) {
+        String sql = "UPDATE schedules SET category = ?, time = ?, feeding_type = ?, status = ? WHERE category = ? AND time = ? AND feeding_type = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newSched.getCategory());
+            pstmt.setString(2, newSched.getTime());
+            pstmt.setString(3, newSched.getFeedingType());
+            pstmt.setString(4, newSched.getStatus());
+            
+            pstmt.setString(5, oldSched.getCategory());
+            pstmt.setString(6, oldSched.getTime());
+            pstmt.setString(7, oldSched.getFeedingType());
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating schedule: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // 3. Fetch all recorded automation schedules
     public static List<FeedingSchedule> getAllSchedules() {
         List<FeedingSchedule> schedules = new ArrayList<>();
