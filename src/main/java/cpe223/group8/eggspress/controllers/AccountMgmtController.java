@@ -106,6 +106,21 @@ public class AccountMgmtController {
 
         // Configure custom CellFactory for Edit and Delete action controls
         actionColumn.setCellFactory(column -> new TableCell<>() {
+            private final Button editBtn = new Button();
+            private final Button deleteBtn = new Button();
+            private final HBox container = new HBox(8, editBtn, deleteBtn);
+
+            {
+                editBtn.getStyleClass().addAll("button-secondary", "table-action-btn");
+                editBtn.setGraphic(SvgIconHelper.createTableActionIcon(SvgIconHelper.IconType.EDIT, "table-btn-icon"));
+                cpe223.group8.eggspress.services.TooltipHelper.installTooltip(editBtn, "Edit user permission role");
+
+                deleteBtn.getStyleClass().addAll("button-danger", "table-action-btn");
+                deleteBtn.setGraphic(SvgIconHelper.createTableActionIcon(SvgIconHelper.IconType.DELETE, "table-btn-icon"));
+
+                container.setAlignment(javafx.geometry.Pos.CENTER);
+            }
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -113,31 +128,19 @@ public class AccountMgmtController {
                     setGraphic(null);
                 } else {
                     User user = getTableView().getItems().get(getIndex());
-                    HBox container = new HBox();
-                    container.getStyleClass().add("action-cell-container");
-
-                    // 1. Edit Role action button
-                    Button editBtn = new Button();
-                    editBtn.getStyleClass().add("action-btn-circle");
-                    editBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.EDIT, "table-svg-icon"));
-                    cpe223.group8.eggspress.services.TooltipHelper.installTooltip(editBtn, "Edit user permission role");
+                    
                     editBtn.setOnAction(event -> handleShowEditPopup(user));
-
-                    // 2. Delete User action button with safety lockout guards
-                    Button deleteBtn = new Button();
-                    deleteBtn.getStyleClass().add("delete-action-btn");
-                    deleteBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.DELETE, "table-svg-icon"));
                     
                     String currentUsername = SessionManager.getCurrentUsername();
                     if (user.getUsername().equalsIgnoreCase(currentUsername)) {
                         deleteBtn.setDisable(true);
                         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(deleteBtn, "Self-deletion is blocked to prevent admin lockout states");
                     } else {
+                        deleteBtn.setDisable(false);
                         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(deleteBtn, "Permanently remove user credentials");
                         deleteBtn.setOnAction(event -> handleDeleteUser(user));
                     }
 
-                    container.getChildren().addAll(editBtn, deleteBtn);
                     setGraphic(container);
                 }
             }
