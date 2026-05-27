@@ -136,7 +136,7 @@
                             <!-- Row 1: Temperature -->
                             <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
                                 <children>
-                                    <Label text="Temperature" styleClass="telemetry-label" />
+                                    <Label fx:id="detailLabelRow1" text="Temperature" styleClass="telemetry-label" />
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Label fx:id="detailTemp" text="--.- °C" styleClass="telemetry-value" />
                                 </children>
@@ -145,7 +145,7 @@
                             <!-- Row 2: Humidity -->
                             <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
                                 <children>
-                                    <Label text="Humidity" styleClass="telemetry-label" />
+                                    <Label fx:id="detailLabelRow2" text="Humidity" styleClass="telemetry-label" />
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Label fx:id="detailHumid" text="--.- %" styleClass="telemetry-value" />
                                 </children>
@@ -154,7 +154,7 @@
                             <!-- Row 3: Fan Speed -->
                             <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
                                 <children>
-                                    <Label text="Ventilation Fan" styleClass="telemetry-label" />
+                                    <Label fx:id="detailLabelRow3" text="Ventilation Fan" styleClass="telemetry-label" />
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Label fx:id="detailFan" text="------" styleClass="telemetry-value" />
                                 </children>
@@ -163,7 +163,7 @@
                             <!-- Row 4: Mister Status -->
                             <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
                                 <children>
-                                    <Label text="Mister Status" styleClass="telemetry-label" />
+                                    <Label fx:id="detailLabelRow4" text="Mister Status" styleClass="telemetry-label" />
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Label fx:id="detailMister" text="------" styleClass="telemetry-value" />
                                 </children>
@@ -172,7 +172,7 @@
                             <!-- Row 5: Feeder Status -->
                             <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
                                 <children>
-                                    <Label text="Automatic Feeder" styleClass="telemetry-label" />
+                                    <Label fx:id="detailLabelRow5" text="Automatic Feeder" styleClass="telemetry-label" />
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Label fx:id="detailFeeder" text="------" styleClass="telemetry-value" />
                                 </children>

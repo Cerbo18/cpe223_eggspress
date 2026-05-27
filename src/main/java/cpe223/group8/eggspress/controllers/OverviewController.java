@@ -81,6 +81,21 @@ public class OverviewController {
     @FXML
     private Label detailFeeder;
 
+    @FXML
+    private Label detailLabelRow1;
+
+    @FXML
+    private Label detailLabelRow2;
+
+    @FXML
+    private Label detailLabelRow3;
+
+    @FXML
+    private Label detailLabelRow4;
+
+    @FXML
+    private Label detailLabelRow5;
+
     // FXML Radial Progress Arcs
     @FXML
     private Arc tempProgress;
@@ -290,6 +305,20 @@ public class OverviewController {
             detailsTitle.setText(selected.getName() + " Telemetry");
             detailsSubtitle.setText("Real-time sensor feed for " + selected.getId());
 
+            // Reset dynamic labels to climate parameters
+            detailLabelRow1.setText("Temperature");
+            detailLabelRow2.setText("Humidity");
+            detailLabelRow3.setText("Ventilation Fan");
+            detailLabelRow4.setText("Mister Status");
+            detailLabelRow5.setText("Automatic Feeder");
+
+            // Clear status styling from all values in the grid to prevent styles leaking
+            detailTemp.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+            detailHumid.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+            detailFan.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+            detailMister.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+            detailFeeder.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+
             CoopTelemetry telemetry = AutomationService.getInstance().getTelemetryForCoop(selected.getId());
             if (telemetry != null) {
                 detailTemp.setText(String.format("%.1f °C", telemetry.getTemperature()));
@@ -305,57 +334,51 @@ public class OverviewController {
                 detailFeeder.setText("STANDBY");
             }
         } else {
-            detailsTitle.setText("Farm-Wide Aggregate Averages");
-            detailsSubtitle.setText("Live composite telemetry feed from farm networks");
+            detailsTitle.setText("Farm Operations Summary");
+            detailsSubtitle.setText("Overview of all active structures and resources");
+
+            // Reset dynamic labels to operations metrics
+            detailLabelRow1.setText("Total Flock Size");
+            detailLabelRow2.setText("Coops Status");
+            detailLabelRow3.setText("Active Schedules");
+            detailLabelRow4.setText("Inventory Items");
+            detailLabelRow5.setText("System Status");
+
+            // Clear status styling from all values in the grid to prevent styles leaking
+            detailTemp.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+            detailHumid.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+            detailFan.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+            detailMister.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
+            detailFeeder.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
 
             List<ChickenHouse> coops = FarmRepository.getAllCoops();
-            if (coops.isEmpty()) {
-                detailTemp.setText("--.- °C");
-                detailHumid.setText("--.- %");
-                detailFan.setText("STANDBY");
-                detailMister.setText("STANDBY");
-                detailFeeder.setText("STANDBY");
-                return;
-            }
-
-            double sumTemp = 0;
-            double sumHumid = 0;
-            int activeFans = 0;
-            int activeMisters = 0;
-            int activeFeeders = 0;
-            int totalTelemetry = 0;
-
+            int totalFlock = 0;
+            int optimalCount = 0;
+            int monitoringCount = 0;
+            int inactiveCount = 0;
             for (ChickenHouse coop : coops) {
-                CoopTelemetry telemetry = AutomationService.getInstance().getTelemetryForCoop(coop.getId());
-                if (telemetry != null) {
-                    sumTemp += telemetry.getTemperature();
-                    sumHumid += telemetry.getHumidity();
-                    if (!"STANDBY".equalsIgnoreCase(telemetry.getFanSpeed())) {
-                        activeFans++;
-                    }
-                    if ("ACTIVE".equalsIgnoreCase(telemetry.getMisterStatus())) {
-                        activeMisters++;
-                    }
-                    if ("ACTIVE".equalsIgnoreCase(telemetry.getFeederStatus())) {
-                        activeFeeders++;
-                    }
-                    totalTelemetry++;
+                totalFlock += coop.getFlockCount();
+                String st = coop.getStatus();
+                if ("Optimal".equalsIgnoreCase(st)) {
+                    optimalCount++;
+                } else if ("Monitoring".equalsIgnoreCase(st)) {
+                    monitoringCount++;
+                } else {
+                    inactiveCount++;
                 }
             }
 
-            if (totalTelemetry > 0) {
-                detailTemp.setText(String.format("%.1f °C", sumTemp / totalTelemetry));
-                detailHumid.setText(String.format("%.1f %%", sumHumid / totalTelemetry));
-                detailFan.setText(activeFans + " / " + totalTelemetry + " ACTIVE");
-                detailMister.setText(activeMisters + " / " + totalTelemetry + " ACTIVE");
-                detailFeeder.setText(activeFeeders + " / " + totalTelemetry + " ACTIVE");
-            } else {
-                detailTemp.setText("--.- °C");
-                detailHumid.setText("--.- %");
-                detailFan.setText("STANDBY");
-                detailMister.setText("STANDBY");
-                detailFeeder.setText("STANDBY");
-            }
+            int scheduleCount = FarmRepository.getAllSchedules().size();
+            int inventoryCount = FarmRepository.getAllInventory().size();
+
+            detailTemp.setText(String.format("%,d Birds", totalFlock));
+            detailHumid.setText(String.format("%d Opt | %d Mon | %d Inact", optimalCount, monitoringCount, inactiveCount));
+            detailFan.setText(String.format("%d Active", scheduleCount));
+            detailMister.setText(String.format("%d Items in Stock", inventoryCount));
+            detailFeeder.setText("ONLINE");
+
+            // Style system status to green
+            detailFeeder.getStyleClass().add("status-optimal");
         }
     }
 
