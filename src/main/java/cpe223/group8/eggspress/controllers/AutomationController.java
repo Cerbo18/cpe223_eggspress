@@ -6,6 +6,7 @@ import cpe223.group8.eggspress.repository.FarmRepository;
 import cpe223.group8.eggspress.services.NotificationService;
 import cpe223.group8.eggspress.services.ThemeManager;
 import cpe223.group8.eggspress.services.TooltipHelper;
+import cpe223.group8.eggspress.services.SvgIconHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -53,9 +54,6 @@ public class AutomationController {
 
     private Timeline telemetryPoller;
 
-    private static final String EDIT_PATH = "M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1 M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415 M16 5l3 3";
-    private static final String DELETE_PATH = "M4 7h16 M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12 M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3 M10 12l4 4m0 -4l-4 4";
-
     public void initialize() {
         // 1. Configure Table Column mappings
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
@@ -71,7 +69,7 @@ public class AutomationController {
 
             {
                 editBtn.getStyleClass().addAll("button-secondary", "table-action-btn");
-                editBtn.setGraphic(createSVGIcon(EDIT_PATH, "table-btn-icon"));
+                editBtn.setGraphic(SvgIconHelper.createTableActionIcon(SvgIconHelper.IconType.EDIT, "table-btn-icon"));
                 TooltipHelper.installTooltip(editBtn, "Edit Schedule");
                 editBtn.setOnAction(e -> {
                     FeedingSchedule item = getTableView().getItems().get(getIndex());
@@ -79,7 +77,7 @@ public class AutomationController {
                 });
 
                 deleteBtn.getStyleClass().addAll("button-danger", "table-action-btn");
-                deleteBtn.setGraphic(createSVGIcon(DELETE_PATH, "table-btn-icon"));
+                deleteBtn.setGraphic(SvgIconHelper.createTableActionIcon(SvgIconHelper.IconType.DELETE, "table-btn-icon"));
                 TooltipHelper.installTooltip(deleteBtn, "Delete Schedule");
                 deleteBtn.setOnAction(e -> {
                     FeedingSchedule item = getTableView().getItems().get(getIndex());
@@ -235,24 +233,4 @@ public class AutomationController {
         }
     }
 
-    private StackPane createSVGIcon(String pathContent, String styleClass) {
-        SVGPath path = new SVGPath();
-        path.setContent(pathContent);
-        path.getStyleClass().add(styleClass);
-        
-        Group group = new Group(path);
-        group.setScaleX(0.65);
-        group.setScaleY(0.65);
-        
-        StackPane wrapper = new StackPane(group);
-        wrapper.setMinWidth(14);
-        wrapper.setPrefWidth(14);
-        wrapper.setMaxWidth(14);
-        wrapper.setMinHeight(14);
-        wrapper.setPrefHeight(14);
-        wrapper.setMaxHeight(14);
-        wrapper.setAlignment(javafx.geometry.Pos.CENTER);
-        
-        return wrapper;
-    }
 }

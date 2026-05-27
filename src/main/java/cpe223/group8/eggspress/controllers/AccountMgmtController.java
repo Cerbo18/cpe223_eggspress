@@ -5,6 +5,7 @@ import cpe223.group8.eggspress.models.User;
 import cpe223.group8.eggspress.repository.UserRepository;
 import cpe223.group8.eggspress.services.NotificationService;
 import cpe223.group8.eggspress.services.SessionManager;
+import cpe223.group8.eggspress.services.SvgIconHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -27,21 +28,6 @@ import java.util.Set;
  * user deletions, and invoking modal screens.
  */
 public class AccountMgmtController {
-
-    // User-provided SVG Path constants for pixel-perfect dpi-independent icon rendering
-    private static final String EYE_PATH = "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0 M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6";
-    private static final String EYE_OFF_PATH_1 = "M10.585 10.587a2 2 0 0 0 2.829 2.828";
-    private static final String EYE_OFF_PATH_2 = "M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87";
-    private static final String EYE_OFF_PATH_3 = "M3 3l18 18";
-
-    private static final String EDIT_PATH_1 = "M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1";
-    private static final String EDIT_PATH_2 = "M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415";
-    private static final String EDIT_PATH_3 = "M16 5l3 3";
-
-    private static final String TRASH_PATH_1 = "M4 7h16";
-    private static final String TRASH_PATH_2 = "M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12";
-    private static final String TRASH_PATH_3 = "M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3";
-    private static final String TRASH_PATH_4 = "M10 12l4 4m0 -4l-4 4";
 
     @FXML
     private TableView<User> accountsTable;
@@ -90,11 +76,11 @@ public class AccountMgmtController {
                     // Bind visual display depending on unmasked state cache
                     if (revealedUsernames.contains(user.getUsername())) {
                         label.setText(password);
-                        toggleBtn.setGraphic(createSvgIcon(EYE_OFF_PATH_1, EYE_OFF_PATH_2, EYE_OFF_PATH_3));
+                        toggleBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.EYE_OFF, "table-svg-icon"));
                         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(toggleBtn, "Mask password characters");
                     } else {
                         label.setText("••••••••");
-                        toggleBtn.setGraphic(createSvgIcon(EYE_PATH));
+                        toggleBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.EYE, "table-svg-icon"));
                         cpe223.group8.eggspress.services.TooltipHelper.installTooltip(toggleBtn, "Reveal password characters");
                     }
 
@@ -133,14 +119,14 @@ public class AccountMgmtController {
                     // 1. Edit Role action button
                     Button editBtn = new Button();
                     editBtn.getStyleClass().add("action-btn-circle");
-                    editBtn.setGraphic(createSvgIcon(EDIT_PATH_1, EDIT_PATH_2, EDIT_PATH_3));
+                    editBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.EDIT, "table-svg-icon"));
                     cpe223.group8.eggspress.services.TooltipHelper.installTooltip(editBtn, "Edit user permission role");
                     editBtn.setOnAction(event -> handleShowEditPopup(user));
 
                     // 2. Delete User action button with safety lockout guards
                     Button deleteBtn = new Button();
                     deleteBtn.getStyleClass().add("delete-action-btn");
-                    deleteBtn.setGraphic(createSvgIcon(TRASH_PATH_1, TRASH_PATH_2, TRASH_PATH_3, TRASH_PATH_4));
+                    deleteBtn.setGraphic(SvgIconHelper.createGroupIcon(SvgIconHelper.IconType.DELETE, "table-svg-icon"));
                     
                     String currentUsername = SessionManager.getCurrentUsername();
                     if (user.getUsername().equalsIgnoreCase(currentUsername)) {
@@ -266,18 +252,4 @@ public class AccountMgmtController {
         accountsTable.setItems(list);
     }
 
-    // Creates SVG group graphics to preserve crisp outlines across varying DPI scalings
-    private javafx.scene.Group createSvgIcon(String... paths) {
-        javafx.scene.Group group = new javafx.scene.Group();
-        // Scale elements to keep table cell actions reasonably proportioned
-        group.setScaleX(0.7);
-        group.setScaleY(0.7);
-        for (String path : paths) {
-            javafx.scene.shape.SVGPath svgPath = new javafx.scene.shape.SVGPath();
-            svgPath.setContent(path);
-            svgPath.getStyleClass().add("table-svg-icon");
-            group.getChildren().add(svgPath);
-        }
-        return group;
-    }
 }
