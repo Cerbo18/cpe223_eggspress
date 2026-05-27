@@ -685,5 +685,106 @@
     -fx-alignment: center;
 }
 
+/* =========================================================================
+   Modern DatePicker Popup & Calendar Custom Styling
+   Ensures the calendar respects dark mode and light mode seamlessly.
+   ========================================================================= */
+
+.date-picker-popup {
+    -fx-background-color: -fx-card-bg-color;
+    -fx-border-color: -fx-input-border-color;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 16, 0, 0, 4);
+    -fx-padding: 8px;
+}
+
+/* Month and Year Navigation Header */
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 4px;
+}
+
+.date-picker-popup > .month-year-pane > .label {
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.date-picker-popup > .month-year-pane > .button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-radius: 4px;
+    -fx-padding: 4px 8px;
+}
+
+.date-picker-popup > .month-year-pane > .button:hover {
+    -fx-background-color: rgba(120, 120, 128, 0.15);
+}
+
+.date-picker-popup > .month-year-pane > .button > .left-arrow,
+.date-picker-popup > .month-year-pane > .button > .right-arrow {
+    -fx-background-color: -fx-text-primary-color;
+}
+
+/* Calendar Day Grid */
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: transparent;
+    -fx-padding: 4px;
+}
+
+/* Day Names (Mon, Tue, etc.) & Week Numbers */
+.date-picker-popup > .calendar-grid > .day-name-cell,
+.date-picker-popup > .calendar-grid > .week-number-cell {
+    -fx-text-fill: -fx-text-secondary-color;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-padding: 6px;
+}
+
+/* Individual Date Cells */
+.date-picker-popup > .calendar-grid > .date-cell {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-padding: 6px;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+}
+
+.date-picker-popup > .calendar-grid > .date-cell:hover {
+    -fx-background-color: rgba(57, 181, 74, 0.12);
+    -fx-text-fill: -fx-brand-primary;
+}
+
+/* Today's Cell Highlight */
+.date-picker-popup > .calendar-grid > .today {
+    -fx-border-color: -fx-brand-primary;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-text-fill: -fx-brand-primary;
+}
+
+/* Selected Date Highlight */
+.date-picker-popup > .calendar-grid > .selected {
+    -fx-background-color: -fx-brand-primary;
+    -fx-text-fill: white;
+}
+
+.date-picker-popup > .calendar-grid > .selected:hover {
+    -fx-background-color: -fx-brand-primary-hover;
+    -fx-text-fill: white;
+}
+
+/* Off-month dates (Previous / Next Month) styling */
+.date-picker-popup > .calendar-grid > .previous-month,
+.date-picker-popup > .calendar-grid > .next-month {
+    -fx-text-fill: -fx-text-secondary-color;
+    -fx-opacity: 0.45;
+}
+
+
 
 

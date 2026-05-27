@@ -64,8 +64,7 @@ public class LayoutController implements Initializable {
     @FXML
     private Button DeleteCoopBtn;
 
-    @FXML
-    private Button UpdateCoopHeaderBtn;
+
 
     @FXML
     private Button AddCoopToggleBtn;
@@ -152,10 +151,7 @@ public class LayoutController implements Initializable {
         StartDatePicker.setValue(LocalDate.of(2021, 1, 1));
         EndDatePicker.setValue(LocalDate.now());
 
-        // Disable header update button until a coop is selected
-        if (UpdateCoopHeaderBtn != null) {
-            UpdateCoopHeaderBtn.setDisable(true);
-        }
+
 
         // Initial loading of coops list and growth history
         refreshCoopsMap();
@@ -226,10 +222,7 @@ public class LayoutController implements Initializable {
         // Sync with live data from AutomationService
         updateTelemetryUI(coop);
 
-        // Enable header update button now that a coop is selected
-        if (UpdateCoopHeaderBtn != null) {
-            UpdateCoopHeaderBtn.setDisable(false);
-        }
+
 
         // Highlight selected card in container
         refreshCoopsMap();
@@ -264,10 +257,7 @@ public class LayoutController implements Initializable {
                     NoSelectionPane.setVisible(true);
                     NoSelectionPane.setManaged(true);
                     
-                    // Disable header update button since no coop is selected anymore
-                    if (UpdateCoopHeaderBtn != null) {
-                        UpdateCoopHeaderBtn.setDisable(true);
-                    }
+
 
                     refreshCoopsMap();
                 } else {

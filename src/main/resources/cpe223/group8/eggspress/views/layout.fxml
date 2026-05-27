@@ -35,7 +35,7 @@
                             <Label text="Chicken Farm Layout &amp; Metrics" styleClass="view-title" />
                             <Label text="Interactive blueprint of coops and facilities, coupled with live stock metrics." styleClass="view-desc" />
                         </VBox>
-                        <Button fx:id="UpdateCoopHeaderBtn" onAction="#handleUpdateFlock" styleClass="btn-secondary" text="Update Flock" />
+                        <Button fx:id="AddCoopToggleBtn" onAction="#toggleAddForm" styleClass="button-primary" text="+ Add Coop" />
                     </children>
                 </HBox>
 
@@ -55,8 +55,6 @@
                                 <HBox alignment="CENTER_LEFT">
                                     <children>
                                         <Label text="Farm Facility Map" styleClass="card-title" HBox.hgrow="ALWAYS" />
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Button fx:id="AddCoopToggleBtn" onAction="#toggleAddForm" styleClass="btn-primary" text="+ Add Coop" />
                                     </children>
                                 </HBox>
                                 <ScrollPane fitToWidth="true" minHeight="280.0" styleClass="map-scroll" VBox.vgrow="ALWAYS">
@@ -119,11 +117,11 @@
                                                 <Region VBox.vgrow="ALWAYS" />
                                                 <VBox spacing="12.0">
                                                     <children>
-                                                        <Button fx:id="UpdateFlockBtn" onAction="#handleUpdateFlock" styleClass="btn-primary" text="Update Flock Population (Born/Lost)" maxWidth="Infinity" />
+                                                        <Button fx:id="UpdateFlockBtn" onAction="#handleUpdateFlock" styleClass="button-primary" text="Update Flock Population (Born/Lost)" maxWidth="Infinity" />
                                                         <HBox spacing="12.0">
                                                             <children>
-                                                                <Button fx:id="EditCoopBtn" onAction="#handleEditCoop" styleClass="btn-secondary" text="Edit Coop Details" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-                                                                <Button fx:id="DeleteCoopBtn" onAction="#handleDeleteCoop" styleClass="btn-danger" text="Remove Coop" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                                                <Button fx:id="EditCoopBtn" onAction="#handleEditCoop" styleClass="button-secondary" text="Edit Coop Details" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                                                <Button fx:id="DeleteCoopBtn" onAction="#handleDeleteCoop" styleClass="button-danger" text="Remove Coop" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
                                                             </children>
                                                         </HBox>
                                                     </children>
@@ -140,7 +138,7 @@
                                              <children>
                                                  <Label fx:id="FormTitleLabel" text="New Chicken Coop Registration" styleClass="card-title" />
                                                  <Region HBox.hgrow="ALWAYS" />
-                                                 <Button onAction="#cancelAddForm" styleClass="btn-secondary" text="Cancel" />
+                                                 <Button onAction="#cancelAddForm" styleClass="button-secondary" text="Cancel" />
                                              </children>
                                          </HBox>
                                          <VBox spacing="14.0" VBox.vgrow="ALWAYS">
@@ -162,7 +160,7 @@
                                                      <ComboBox fx:id="NewCoopStatusCombo" promptText="Select Status" styleClass="form-combo-box" maxWidth="Infinity" />
                                                  </VBox>
                                                  <Region VBox.vgrow="ALWAYS" />
-                                                 <Button fx:id="SaveCoopBtn" onAction="#saveNewCoop" styleClass="btn-success" text="Save Coop Blueprint" maxWidth="Infinity" />
+                                                 <Button fx:id="SaveCoopBtn" onAction="#saveNewCoop" styleClass="button-primary" text="Save Coop Blueprint" maxWidth="Infinity" />
                                              </children>
                                          </VBox>
                                      </children>
@@ -175,7 +173,7 @@
                                              <children>
                                                  <Label fx:id="FlockFormTitleLabel" text="Update Flock Population" styleClass="card-title" />
                                                  <Region HBox.hgrow="ALWAYS" />
-                                                 <Button onAction="#cancelFlockForm" styleClass="btn-secondary" text="Cancel" />
+                                                 <Button onAction="#cancelFlockForm" styleClass="button-secondary" text="Cancel" />
                                              </children>
                                          </HBox>
                                          <VBox spacing="14.0" VBox.vgrow="ALWAYS">
@@ -201,7 +199,7 @@
                                                      <DatePicker fx:id="FlockUpdateDatePicker" styleClass="modern-date-picker" maxWidth="Infinity" />
                                                  </VBox>
                                                  <Region VBox.vgrow="ALWAYS" />
-                                                 <Button fx:id="SaveFlockUpdateBtn" onAction="#saveFlockUpdate" styleClass="btn-success" text="Record Flock Update" maxWidth="Infinity" />
+                                                 <Button fx:id="SaveFlockUpdateBtn" onAction="#saveFlockUpdate" styleClass="button-primary" text="Record Flock Update" maxWidth="Infinity" />
                                              </children>
                                          </VBox>
                                      </children>
@@ -233,7 +231,7 @@
                                         <VBox spacing="4.0" alignment="BOTTOM_CENTER">
                                             <children>
                                                 <Region prefHeight="16.0" />
-                                                <Button onAction="#handleFilterGrowth" styleClass="btn-secondary" text="Apply Filter" />
+                                                <Button onAction="#handleFilterGrowth" styleClass="button-secondary" text="Apply Filter" />
                                             </children>
                                         </VBox>
                                     </children>
