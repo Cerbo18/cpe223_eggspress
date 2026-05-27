@@ -1,39 +1,20 @@
 /*
-   Eggspress Overview View Light Theme Styling
+   Eggspress Overview View Light Theme Visual Styling
+   Defines color tokens, borders, and drop shadow depths for light backgrounds.
 */
-
-.welcome-banner {
-    -fx-background-color: -fx-card-bg-color;
-    -fx-border-color: -fx-card-border-color;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.015), 24, 0, 0, 4);
-}
-
-.welcome-banner-title {
-    -fx-text-fill: -fx-text-primary-color;
-}
-
-.welcome-banner-desc {
-    -fx-text-fill: -fx-text-secondary-color;
-}
-
-.stat-grid-title {
-    -fx-text-fill: -fx-text-primary-color;
-}
 
 .stat-card {
     -fx-background-color: -fx-card-bg-color;
     -fx-border-color: -fx-card-border-color;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.015), 16, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.02), 16, 0, 0, 2);
 }
 
-.stat-title {
-    -fx-text-fill: -fx-text-secondary-color;
+/* Light theme track strokes for radial progress indicators */
+.radial-track {
+    -fx-stroke: #e9ecef;
 }
 
-.stat-value {
-    -fx-text-fill: -fx-text-primary-color;
-}
-
-.stat-indicator {
-    -fx-text-fill: -fx-brand-primary;
+.telemetry-row {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: rgba(0, 0, 0, 0.04);
 }

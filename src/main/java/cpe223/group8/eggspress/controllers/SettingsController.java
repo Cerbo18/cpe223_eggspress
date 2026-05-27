@@ -11,10 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 /**
  * Controller to handle application settings, database diagnostics,
  * and user preferences persistence.
@@ -75,21 +71,15 @@ public class SettingsController {
     private void handleTestConnection() {
         statusLabel.setVisible(true);
         statusLabel.getStyleClass().removeAll("feedback-error", "feedback-message");
-        
-        try (Connection conn = DatabaseConfig.getConnection()) {
-            if (conn != null && !conn.isClosed()) {
-                statusLabel.setText("Database connection tested successfully. Status: Optimal.");
-                statusLabel.getStyleClass().add("feedback-message");
-                statusLabel.setStyle("-fx-text-fill: #39b54a;");
-            } else {
-                statusLabel.setText("Failed to establish active database connection. Status: Offline.");
-                statusLabel.getStyleClass().add("feedback-error");
-                statusLabel.setStyle("-fx-text-fill: #ff3b30;");
-            }
-        } catch (SQLException e) {
-            statusLabel.setText("Database connection error: " + e.getMessage());
+        statusLabel.setStyle(""); // Clear any old inline styles
+
+        boolean success = DatabaseConfig.testConnection();
+        if (success) {
+            statusLabel.setText("Database connection tested successfully. Status: Optimal.");
+            statusLabel.getStyleClass().add("feedback-message");
+        } else {
+            statusLabel.setText("Failed to establish active database connection. Status: Offline.");
             statusLabel.getStyleClass().add("feedback-error");
-            statusLabel.setStyle("-fx-text-fill: #ff3b30;");
         }
     }
 
@@ -97,28 +87,15 @@ public class SettingsController {
     private void handleResetDatabase() {
         statusLabel.setVisible(true);
         statusLabel.getStyleClass().removeAll("feedback-error", "feedback-message");
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement stmt = conn.createStatement()) {
-            
-            // Perform safe table clear migration
-            stmt.execute("DROP TABLE IF EXISTS inventory;");
-            stmt.execute("DROP TABLE IF EXISTS coops;");
-            stmt.execute("DROP TABLE IF EXISTS schedules;");
-            stmt.execute("DROP TABLE IF EXISTS automations;");
-            stmt.execute("DROP TABLE IF EXISTS user_notification_states;");
-            stmt.execute("DROP TABLE IF EXISTS notifications;");
-            
-            // Re-seed all tables
-            DatabaseConfig.initializeDatabase();
-            
+        statusLabel.setStyle(""); // Clear any old inline styles
+
+        try {
+            DatabaseConfig.resetDatabase();
             statusLabel.setText("Database tables successfully reset and reseeded.");
             statusLabel.getStyleClass().add("feedback-message");
-            statusLabel.setStyle("-fx-text-fill: #39b54a;");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             statusLabel.setText("Failed to reset database: " + e.getMessage());
             statusLabel.getStyleClass().add("feedback-error");
-            statusLabel.setStyle("-fx-text-fill: #ff3b30;");
         }
     }
 

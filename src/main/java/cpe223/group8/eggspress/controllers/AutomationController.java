@@ -2,38 +2,35 @@ package cpe223.group8.eggspress.controllers;
 
 import cpe223.group8.eggspress.Main;
 import cpe223.group8.eggspress.models.FeedingSchedule;
-import cpe223.group8.eggspress.models.InventoryItem;
-import cpe223.group8.eggspress.models.Automation;
 import cpe223.group8.eggspress.repository.FarmRepository;
 import cpe223.group8.eggspress.services.NotificationService;
-
+import cpe223.group8.eggspress.services.ThemeManager;
+import cpe223.group8.eggspress.services.TooltipHelper;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.StringConverter;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.Group;
+import javafx.stage.Stage;
+import javafx.stage.Modality;
+import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
 import java.util.List;
-import javafx.event.ActionEvent;
 
 public class AutomationController {
-
-    @FXML
-    private ComboBox<String> locationComboBox;
-
-    @FXML
-    private ComboBox<InventoryItem> waterSourceComboBox;
-
-    @FXML
-    private TextField waterAmountField;
-
-
 
     // Feeding Schedule Table
     @FXML
@@ -51,98 +48,83 @@ public class AutomationController {
     @FXML
     private TableColumn<FeedingSchedule, String> statusCol;
 
-    // Add Schedule Fields
     @FXML
-    private ComboBox<String> scheduleCategoryComboBox;
+    private TableColumn<FeedingSchedule, Void> actionCol;
 
-    @FXML
-    private TextField scheduleTimeField;
+    private Timeline telemetryPoller;
 
-    @FXML
-    private TextField scheduleFeedingTypeField;
-
-    @FXML
-    private TextField scheduleStatusField;
-
-
+    private static final String EDIT_PATH = "M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1 M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415 M16 5l3 3";
+    private static final String DELETE_PATH = "M4 7h16 M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12 M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3 M10 12l4 4m0 -4l-4 4";
 
     public void initialize() {
-        // 1. Force Location Selection Setup (Avoid FXML parsing duplication bugs)
-        locationComboBox.getItems().clear();
-        locationComboBox.setItems(FXCollections.observableArrayList("Main Coop A", "Breeding Barn B", "Chicks Facility"));
-        locationComboBox.getSelectionModel().selectFirst();
-
-        // 2. Setup Schedule Category Dropdown Options
-        scheduleCategoryComboBox.setItems(FXCollections.observableArrayList("Water", "Grains", "Feed", "Others"));
-        scheduleCategoryComboBox.getSelectionModel().selectFirst();
-
-        // 3. Configure Table Column mappings FIRST
+        // 1. Configure Table Column mappings
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
         timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
         feedingTypeCol.setCellValueFactory(new PropertyValueFactory<>("feedingType"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // 4. Force-Seed fresh simulations if no manual items exist
-        seedSimulatedSchedules();
+        // 2. Setup Action Column cell factory for inline Edit and Delete actions
+        actionCol.setCellFactory(col -> new TableCell<FeedingSchedule, Void>() {
+            private final Button editBtn = new Button();
+            private final Button deleteBtn = new Button();
+            private final HBox container = new HBox(8, editBtn, deleteBtn);
 
-        // 5. Populate and convert Water Source elements from active database
-        refreshWaterSources();
-        waterSourceComboBox.setConverter(new StringConverter<InventoryItem>() {
-            @Override
-            public String toString(InventoryItem item) {
-                if (item == null) return "";
-                return item.getId() + " - " + item.getName() + " (" + item.getQuantity() + " " + item.getUnit() + ")";
+            {
+                editBtn.getStyleClass().addAll("button-secondary", "table-action-btn");
+                editBtn.setGraphic(createSVGIcon(EDIT_PATH, "table-btn-icon"));
+                TooltipHelper.installTooltip(editBtn, "Edit Schedule");
+                editBtn.setOnAction(e -> {
+                    FeedingSchedule item = getTableView().getItems().get(getIndex());
+                    handleOpenEditScheduleModal(item);
+                });
+
+                deleteBtn.getStyleClass().addAll("button-danger", "table-action-btn");
+                deleteBtn.setGraphic(createSVGIcon(DELETE_PATH, "table-btn-icon"));
+                TooltipHelper.installTooltip(deleteBtn, "Delete Schedule");
+                deleteBtn.setOnAction(e -> {
+                    FeedingSchedule item = getTableView().getItems().get(getIndex());
+                    handleConfirmDelete(item);
+                });
+                
+                container.setAlignment(javafx.geometry.Pos.CENTER);
             }
 
             @Override
-            public InventoryItem fromString(String string) {
-                return null;
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(container);
+                }
             }
         });
 
-        // 6. Finally, fetch and render everything to the table view
+        // 3. Force-Seed fresh simulations if no manual items exist
+        seedSimulatedSchedules();
+
+        // 4. Fetch and render schedules to the table view initially
         refreshScheduleTable();
+
+        // 5. Setup a dynamic 2-second poller to keep the schedule table updated
+        telemetryPoller = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
+            refreshScheduleTable();
+        }));
+        telemetryPoller.setCycleCount(Timeline.INDEFINITE);
+        telemetryPoller.play();
     }
 
     private void seedSimulatedSchedules() {
         List<FeedingSchedule> existingSchedules = FarmRepository.getAllSchedules();
         
-        // If it only contains your 1 manual schedule or is empty, seed the rest!
+        // If it contains <= 1 schedules, seed standard ones to ensure nice starter state
         if (existingSchedules.size() <= 1) {
             System.out.println("Seeding fresh automated simulations into SQLite...");
             
-            // Optional: You can clear old stale rows here if needed via a repository method
-            FarmRepository.addSchedule(new FeedingSchedule("Water", "06:00 AM", "Automated Refill", "Completed"));
-            FarmRepository.addSchedule(new FeedingSchedule("Grains", "08:30 AM", "Standard Broiler Feed", "Completed"));
-            FarmRepository.addSchedule(new FeedingSchedule("Feed", "12:00 PM", "High-Protein Mix", "Pending"));
-            FarmRepository.addSchedule(new FeedingSchedule("Water", "04:30 PM", "Hydration Top-Up", "Scheduled"));
-        }
-    }
-    /**
-     * Checks if the schedules table has existing entries. 
-     * If empty, it pushes a simulated automated timeline into the SQLite DB.
-     */
-    private void checkForSimulatedSchedules() {
-        List<FeedingSchedule> existingSchedules = FarmRepository.getAllSchedules();
-        
-        if (existingSchedules.isEmpty()) {
-            System.out.println("No schedules detected. Seeding automated simulations into Database...");
-            
-            FarmRepository.addSchedule(new FeedingSchedule("Water", "06:00 AM", "Automated Refill", "Completed"));
-            FarmRepository.addSchedule(new FeedingSchedule("Grains", "08:30 AM", "Standard Broiler Feed", "Completed"));
-            FarmRepository.addSchedule(new FeedingSchedule("Feed", "12:00 PM", "High-Protein Mix", "Pending"));
-            FarmRepository.addSchedule(new FeedingSchedule("Water", "04:30 PM", "Hydration Top-Up", "Scheduled"));
-        }
-    }
-
-    private void refreshWaterSources() {
-        ObservableList<InventoryItem> waterItems = FXCollections.observableArrayList(
-            FarmRepository.getInventoryByCategory("Hydration")
-        );
-        
-        waterSourceComboBox.setItems(waterItems);
-        if (!waterItems.isEmpty()) {
-            waterSourceComboBox.getSelectionModel().selectFirst();
+            FarmRepository.addSchedule(new FeedingSchedule("Water", "06:00", "Automated Refill", "Completed"));
+            FarmRepository.addSchedule(new FeedingSchedule("Grains", "08:30", "Standard Broiler Feed", "Completed"));
+            FarmRepository.addSchedule(new FeedingSchedule("Feed", "12:00", "High-Protein Mix", "Pending"));
+            FarmRepository.addSchedule(new FeedingSchedule("Water", "16:30", "Hydration Top-Up", "Scheduled"));
         }
     }
 
@@ -151,103 +133,96 @@ public class AutomationController {
     }
 
     @FXML
-    private void handleSendWater() {
-        InventoryItem selectedWater = waterSourceComboBox.getSelectionModel().getSelectedItem();
-        if (selectedWater == null) {
-            NotificationService.notificationWarning("Please select a water source from the inventory.", false, 2);
-            return;
-        }
-
-        String amountText = waterAmountField.getText();
-        if (amountText == null || amountText.trim().isEmpty()) {
-            NotificationService.notificationWarning("Please enter a water amount.", false, 2);
-            return;
-        }
-
-        double amount;
+    private void handleOpenCreateScheduleModal() {
         try {
-            amount = Double.parseDouble(amountText);
-        } catch (NumberFormatException e) {
-            NotificationService.notificationWarning("Please enter a valid numeric water amount.", false, 2);
-            return;
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createScheduleModal.fxml"));
+            Parent root = loader.load();
+            ThemeManager.applyTheme(root);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            if (scheduleTable != null && scheduleTable.getScene() != null) {
+                stage.initOwner(scheduleTable.getScene().getWindow());
+            }
+            stage.setTitle("Add Feeding Schedule");
+            stage.setResizable(false);
+
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            ThemeManager.applySceneFill(scene);
+            stage.setScene(scene);
+            stage.showAndWait();
+
+            // Refresh table view after popup closes
+            refreshScheduleTable();
+        } catch (IOException e) {
+            System.err.println("Error loading create schedule modal stage: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        if (amount <= 0) {
-            NotificationService.notificationWarning("Water amount must be greater than zero.", false, 2);
-            return;
-        }
-
-        if (selectedWater.getQuantity() < amount) {
-            NotificationService.notificationWarning("Insufficient stock available: " + selectedWater.getQuantity() + " " + selectedWater.getUnit() + ".", false, 2);
-            return;
-        }
-
-        double updatedQuantity = selectedWater.getQuantity() - amount;
-        boolean updateSuccess = FarmRepository.updateInventoryQuantity(selectedWater.getId(), updatedQuantity);
-
-        if (!updateSuccess) {
-            NotificationService.notificationWarning("Failed to update inventory database records.", false, 2);
-            return;
-        }
-
-        selectedWater.setQuantity(updatedQuantity);
-        NotificationService.getInstance().checkInventoryThresholds(selectedWater);
-        
-        String autoId = "AUTO-" + (FarmRepository.getAutomationCount() + 1);
-        String location = locationComboBox.getSelectionModel().getSelectedItem();
-        Automation log = new Automation(autoId, selectedWater.getName(), location, amount, "Success");
-        FarmRepository.addAutomationLog(log);
-
-        NotificationService.notificationInfo("Success: Dispatched " + amount + " " + selectedWater.getUnit() + " to " + location + ".");
-        waterAmountField.clear();
-
-        refreshWaterSources();
     }
 
-    @FXML
-    private void handleCreateSchedule() {
-        String category = scheduleCategoryComboBox.getSelectionModel().getSelectedItem();
-        String time = scheduleTimeField.getText();
-        String feedingType = scheduleFeedingTypeField.getText();
-        String status = scheduleStatusField.getText();
+    private void handleOpenEditScheduleModal(FeedingSchedule schedule) {
+        if (schedule == null) return;
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/editScheduleModal.fxml"));
+            Parent root = loader.load();
+            ThemeManager.applyTheme(root);
 
-        if (time == null || time.trim().isEmpty() ||
-            feedingType == null || feedingType.trim().isEmpty() ||
-            status == null || status.trim().isEmpty()) {
-            NotificationService.notificationWarning("All fields are required to create a schedule.", false, 2);
-            return;
+            EditScheduleModalController controller = loader.getController();
+            controller.setSchedule(schedule);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            if (scheduleTable != null && scheduleTable.getScene() != null) {
+                stage.initOwner(scheduleTable.getScene().getWindow());
+            }
+            stage.setTitle("Edit Feeding Schedule");
+            stage.setResizable(false);
+
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            ThemeManager.applySceneFill(scene);
+            stage.setScene(scene);
+            stage.showAndWait();
+
+            // Refresh table view after popup closes
+            refreshScheduleTable();
+        } catch (IOException e) {
+            System.err.println("Error loading edit schedule modal stage: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void handleConfirmDelete(FeedingSchedule schedule) {
+        if (schedule == null) return;
+
+        // Display a themed confirmation alert box to verify deletion approval
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        ThemeManager.applyTheme(alert.getDialogPane());
+        alert.setTitle("Confirm Deletion");
+        alert.setHeaderText("Delete Feeding Schedule");
+        alert.setContentText(String.format("Are you sure you want to delete '%s' permanently?", schedule.getFeedingType()));
+
+        if (scheduleTable != null && scheduleTable.getScene() != null) {
+            alert.initOwner(scheduleTable.getScene().getWindow());
         }
 
-        // Validate characters
-        if (!time.matches("^[a-zA-Z0-9\\s:]+$")) {
-            NotificationService.notificationWarning("Time contains invalid characters. Use only alphanumeric, spaces, and colons.", false, 2);
-            return;
-        }
-
-        if (!feedingType.matches("^[a-zA-Z0-9\\s._-]+$")) {
-            NotificationService.notificationWarning("Feeding Type contains invalid characters. Use only alphanumeric, spaces, dots, dashes, and underscores.", false, 2);
-            return;
-        }
-
-        if (!status.matches("^[a-zA-Z\\s]+$")) {
-            NotificationService.notificationWarning("Status contains invalid characters. Use only letters and spaces.", false, 2);
-            return;
-        }
-
-        FeedingSchedule newSchedule = new FeedingSchedule(category, time, feedingType, status);
-        FarmRepository.addSchedule(newSchedule);
-
-        NotificationService.notificationInfo("Created schedule: " + category + " at " + time);
-        
-        scheduleTimeField.clear();
-        scheduleFeedingTypeField.clear();
-        scheduleStatusField.clear();
-
-        refreshScheduleTable();
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                boolean success = FarmRepository.removeSchedule(schedule);
+                if (success) {
+                    NotificationService.notificationInfo(String.format("Deleted schedule: %s at %s.", schedule.getCategory(), schedule.getTime()));
+                    refreshScheduleTable();
+                } else {
+                    NotificationService.notificationWarning("Failed to delete schedule record from database.", false, 2);
+                }
+            }
+        });
     }
 
     @FXML
     private void handleBackToDashboard() {
+        if (telemetryPoller != null) {
+            telemetryPoller.stop();
+        }
         DashboardController dashboard = DashboardController.getInstance();
         if (dashboard != null) {
             dashboard.loadView("overview");
@@ -260,29 +235,24 @@ public class AutomationController {
         }
     }
 
-    @FXML
-    private void handleDeleteButton(ActionEvent event) {
-        // Get the currently selected schedule item from the table view
-        FeedingSchedule selectedSchedule = scheduleTable.getSelectionModel().getSelectedItem();
-
-        // Validation: Check if the user actually clicked a row before pressing delete
-        if (selectedSchedule == null) {
-            NotificationService.notificationWarning("Please select a schedule from the table to delete.", false, 2);
-            return;
-        }
-
-        // Fire the deletion method in the repository to clean SQLite
-        boolean success = FarmRepository.removeSchedule(selectedSchedule);
-
-        if (success) {
-            // If database deletion works, pull it out of the UI table list immediately
-            scheduleTable.getItems().remove(selectedSchedule);
-            NotificationService.notificationInfo("Deleted schedule: " + selectedSchedule.getCategory() + " at " + selectedSchedule.getTime());
-
-            // Optional: Reset table selection focus
-            scheduleTable.getSelectionModel().clearSelection();
-        } else {
-            NotificationService.notificationWarning("Failed to delete schedule record from database.", false, 2);
-        }
+    private StackPane createSVGIcon(String pathContent, String styleClass) {
+        SVGPath path = new SVGPath();
+        path.setContent(pathContent);
+        path.getStyleClass().add(styleClass);
+        
+        Group group = new Group(path);
+        group.setScaleX(0.65);
+        group.setScaleY(0.65);
+        
+        StackPane wrapper = new StackPane(group);
+        wrapper.setMinWidth(14);
+        wrapper.setPrefWidth(14);
+        wrapper.setMaxWidth(14);
+        wrapper.setMinHeight(14);
+        wrapper.setPrefHeight(14);
+        wrapper.setMaxHeight(14);
+        wrapper.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        return wrapper;
     }
 }

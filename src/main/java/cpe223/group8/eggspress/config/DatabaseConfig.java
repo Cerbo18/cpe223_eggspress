@@ -20,6 +20,30 @@ public class DatabaseConfig {
         }
     }
 
+    public static boolean testConnection() {
+        try (Connection conn = getConnection()) {
+            return conn != null && !conn.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static void resetDatabase() throws SQLException {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("DROP TABLE IF EXISTS inventory;");
+            stmt.execute("DROP TABLE IF EXISTS coops;");
+            stmt.execute("DROP TABLE IF EXISTS schedules;");
+            stmt.execute("DROP TABLE IF EXISTS automations;");
+            stmt.execute("DROP TABLE IF EXISTS user_notification_states;");
+            stmt.execute("DROP TABLE IF EXISTS notifications;");
+            stmt.execute("DROP TABLE IF EXISTS users;");
+            stmt.execute("DROP TABLE IF EXISTS chicken_growth;");
+            stmt.execute("DROP TABLE IF EXISTS monthly_consumption_logs;");
+        }
+        initializeDatabase();
+    }
+
     public static void initializeDatabase() {
         String createUserTable = """
             CREATE TABLE IF NOT EXISTS users (
@@ -68,6 +92,15 @@ public class DatabaseConfig {
             );
         """;
 
+        String createGrowthTable = """
+            CREATE TABLE IF NOT EXISTS chicken_growth (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                record_date TEXT NOT NULL UNIQUE,
+                flock_count INTEGER NOT NULL,
+                average_weight REAL NOT NULL
+            );
+        """;
+
         String createNotificationsTable = """
             CREATE TABLE IF NOT EXISTS notifications (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -90,6 +123,19 @@ public class DatabaseConfig {
             );
         """;
 
+        String createMonthlyConsumptionLogsTable = """
+            CREATE TABLE IF NOT EXISTS monthly_consumption_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                month_year TEXT NOT NULL UNIQUE,
+                flock_count INTEGER NOT NULL,
+                estimated_feed REAL NOT NULL,
+                estimated_water REAL NOT NULL,
+                actual_feed REAL NOT NULL,
+                actual_water REAL NOT NULL,
+                logged_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+            );
+        """;
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             
@@ -99,8 +145,10 @@ public class DatabaseConfig {
             stmt.execute(createSchedulesTable);
             stmt.execute(createAutomationsTable);
             stmt.execute(createCoopsTable);
+            stmt.execute(createGrowthTable);
             stmt.execute(createNotificationsTable);
             stmt.execute(createUserNotificationStatesTable);
+            stmt.execute(createMonthlyConsumptionLogsTable);
             
             // Dynamic column migration for existing notifications table
             try {
@@ -151,6 +199,29 @@ public class DatabaseConfig {
                     """;
                     stmt.execute(seedCoops);
                     System.out.println("Default chicken coops successfully seeded.");
+                }
+            }
+
+            // 5. NEW: Check and seed chicken growth history over the years
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM chicken_growth")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    String seedGrowth = """
+                        INSERT INTO chicken_growth (record_date, flock_count, average_weight) VALUES 
+                        ('2021-01-15', 500, 1.2),
+                        ('2021-07-15', 620, 1.4),
+                        ('2022-01-15', 800, 1.3),
+                        ('2022-07-15', 950, 1.5),
+                        ('2023-01-15', 1100, 1.4),
+                        ('2023-07-15', 1250, 1.6),
+                        ('2024-01-15', 1300, 1.5),
+                        ('2024-07-15', 1420, 1.7),
+                        ('2025-01-15', 1500, 1.6),
+                        ('2025-07-15', 1650, 1.8),
+                        ('2026-01-15', 1720, 1.7),
+                        ('2026-05-15', 1800, 1.9);
+                    """;
+                    stmt.execute(seedGrowth);
+                    System.out.println("Default chicken growth historical logs successfully seeded.");
                 }
             }
             

@@ -57,6 +57,20 @@ public class UserRepository implements BaseRepository<User> {
         addStaticUser(entity);
     }
 
+    public static int getUsersCount() {
+        String sql = "SELECT COUNT(*) FROM users";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     @Override
     public User findById(int id) { return null; }
 

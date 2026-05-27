@@ -120,6 +120,12 @@
     -fx-text-fill: #39b54a;
 }
 
+.feedback-error {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff3b30;
+}
+
 /* Premium Content Card Layouts */
 .content-card {
     -fx-background-color: -fx-card-bg-color;
@@ -398,6 +404,22 @@
 .chart-vertical-grid-lines {
     -fx-stroke: -fx-separator-color;
     -fx-stroke-dash-array: 2px, 2px;
+}
+
+/* Legend styling overrides to ensure visibility in both theme modes */
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 0px 0px 0px;
+}
+
+.chart-legend-item {
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.chart-legend-item-label {
+    -fx-text-fill: -fx-text-primary-color;
 }
 
 /* Context Menu & MenuBar Dropdown Styling */

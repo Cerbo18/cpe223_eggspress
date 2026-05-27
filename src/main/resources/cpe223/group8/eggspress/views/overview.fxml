@@ -5,10 +5,17 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.shape.Arc?>
+<?import javafx.scene.Group?>
 
-<VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cpe223.group8.eggspress.controllers.OverviewController" styleClass="view-root-container">
+<VBox fx:id="viewRoot" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cpe223.group8.eggspress.controllers.OverviewController" styleClass="view-root-container">
     <stylesheets>
         <URL value="@../css/global.css" />
         <URL value="@../css/light.css" />
@@ -16,69 +23,164 @@
         <URL value="@../css/overview/light.css" />
     </stylesheets>
 
-    <VBox spacing="24.0" VBox.vgrow="ALWAYS" styleClass="overview-content-pane">
+    <HBox spacing="24.0" VBox.vgrow="ALWAYS" styleClass="overview-content-pane, overview-split-container">
         <padding>
-            <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
+            <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
         </padding>
 
-        <!-- Grid Title -->
-        <Label text="Live Farm Metrics" styleClass="stat-grid-title" />
+        <!-- LEFT PANEL: Metrics & Analytics -->
+        <VBox spacing="20.0" HBox.hgrow="ALWAYS" styleClass="overview-left-pane">
+            <!-- 1. Radial Metrics Row Card -->
+            <HBox styleClass="content-card, radial-row-card" HBox.hgrow="ALWAYS">
+                <children>
+                    <!-- Gauge 1: Temperature -->
+                    <StackPane styleClass="radial-container">
+                        <children>
+                            <Group>
+                                <Arc centerX="0" centerY="0" radiusX="40" radiusY="40" startAngle="90" length="360" fill="TRANSPARENT" styleClass="radial-track" />
+                                <Arc fx:id="tempProgress" centerX="0" centerY="0" radiusX="40" radiusY="40" startAngle="90" length="0" fill="TRANSPARENT" styleClass="radial-progress" />
+                            </Group>
+                            <VBox alignment="CENTER" spacing="2">
+                                <Label fx:id="tempValueLabel" text="--.- °C" styleClass="radial-value" />
+                                <Label text="TEMPERATURE" styleClass="radial-title" />
+                            </VBox>
+                        </children>
+                    </StackPane>
 
-        <!-- Stats Row -->
-        <HBox spacing="20.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-            <children>
-                <!-- Card 1: Coops -->
-                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="180.0">
-                    <children>
-                        <Label text="ACTIVE COOPS" styleClass="stat-title" />
-                        <Label fx:id="coopsStat" text="0 Coops" styleClass="stat-value" />
-                        <Label fx:id="coopsIndicator" text="● Loading..." styleClass="stat-indicator" />
-                    </children>
-                </VBox>
+                    <!-- Gauge 2: Humidity -->
+                    <StackPane styleClass="radial-container">
+                        <children>
+                            <Group>
+                                <Arc centerX="0" centerY="0" radiusX="40" radiusY="40" startAngle="90" length="360" fill="TRANSPARENT" styleClass="radial-track" />
+                                <Arc fx:id="humidProgress" centerX="0" centerY="0" radiusX="40" radiusY="40" startAngle="90" length="0" fill="TRANSPARENT" styleClass="radial-progress" />
+                            </Group>
+                            <VBox alignment="CENTER" spacing="2">
+                                <Label fx:id="humidValueLabel" text="--.- %" styleClass="radial-value" />
+                                <Label text="HUMIDITY" styleClass="radial-title" />
+                            </VBox>
+                        </children>
+                    </StackPane>
 
-                <!-- Card 2: Flock -->
-                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="180.0">
-                    <children>
-                        <Label text="TOTAL FLOCK" styleClass="stat-title" />
-                        <Label fx:id="flockStat" text="0 Birds" styleClass="stat-value" />
-                        <Label fx:id="flockIndicator" text="▲ Stable Stock" styleClass="stat-indicator" />
-                    </children>
-                </VBox>
+                    <!-- Gauge 3: Water Stock -->
+                    <StackPane styleClass="radial-container">
+                        <children>
+                            <Group>
+                                <Arc centerX="0" centerY="0" radiusX="40" radiusY="40" startAngle="90" length="360" fill="TRANSPARENT" styleClass="radial-track" />
+                                <Arc fx:id="waterProgress" centerX="0" centerY="0" radiusX="40" radiusY="40" startAngle="90" length="0" fill="TRANSPARENT" styleClass="radial-progress" />
+                            </Group>
+                            <VBox alignment="CENTER" spacing="2">
+                                <Label fx:id="waterValueLabel" text="--.- %" styleClass="radial-value" />
+                                <Label text="WATER STOCK" styleClass="radial-title" />
+                            </VBox>
+                        </children>
+                    </StackPane>
 
-                <!-- Card 3: Feed Stock -->
-                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="180.0">
-                    <children>
-                        <Label text="FEED STOCK" styleClass="stat-title" />
-                        <Label fx:id="feedStat" text="0 kg" styleClass="stat-value" />
-                        <Label fx:id="feedIndicator" text="● Loading..." styleClass="stat-indicator" />
-                    </children>
-                </VBox>
+                    <!-- Gauge 4: Feed Stock -->
+                    <StackPane styleClass="radial-container">
+                        <children>
+                            <Group>
+                                <Arc centerX="0" centerY="0" radiusX="40" radiusY="40" startAngle="90" length="360" fill="TRANSPARENT" styleClass="radial-track" />
+                                <Arc fx:id="feedProgress" centerX="0" centerY="0" radiusX="40" radiusY="40" startAngle="90" length="0" fill="TRANSPARENT" styleClass="radial-progress" />
+                            </Group>
+                            <VBox alignment="CENTER" spacing="2">
+                                <Label fx:id="feedValueLabel" text="--.- %" styleClass="radial-value" />
+                                <Label text="FEED STOCK" styleClass="radial-title" />
+                            </VBox>
+                        </children>
+                    </StackPane>
+                </children>
+            </HBox>
 
-                <!-- Card 4: Water Stock -->
-                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="180.0">
-                    <children>
-                        <Label text="WATER STOCK" styleClass="stat-title" />
-                        <Label fx:id="waterStat" text="0 L" styleClass="stat-value" />
-                        <Label fx:id="waterIndicator" text="● Loading..." styleClass="stat-indicator" />
-                    </children>
-                </VBox>
-            </children>
-        </HBox>
-
-        <!-- Live Coops Table -->
-        <VBox spacing="16.0" styleClass="content-card" VBox.vgrow="ALWAYS">
-            <Label text="Active Farm Buildings &amp; Coops" styleClass="card-title" />
-            <TableView fx:id="coopsTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="coopIdCol" prefWidth="120.0" text="Coop ID" />
-                    <TableColumn fx:id="coopNameCol" prefWidth="250.0" text="Building / Coop Name" />
-                    <TableColumn fx:id="coopFlockCol" prefWidth="150.0" text="Flock Size (Birds)" />
-                    <TableColumn fx:id="coopStatusCol" prefWidth="150.0" text="Operational Status" />
-                </columns>
-                <columnResizePolicy>
-                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                </columnResizePolicy>
-            </TableView>
+            <!-- 2. Environmental Analytics LineChart Card -->
+            <VBox spacing="12.0" styleClass="content-card" VBox.vgrow="ALWAYS">
+                <children>
+                    <Label fx:id="telemetryTime" text="Real Time Sensor | --:--:-- --" styleClass="card-title" />
+                    <LineChart fx:id="telemetryChart" VBox.vgrow="ALWAYS" animated="false" createSymbols="true">
+                        <xAxis>
+                            <CategoryAxis fx:id="telemetryXAxis" side="BOTTOM" label="Timeline (Sensor Poller Ticks)" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis fx:id="telemetryYAxis" side="LEFT" label="Metrics Readout" lowerBound="0.0" upperBound="100.0" forceZeroInRange="false" />
+                        </yAxis>
+                    </LineChart>
+                </children>
+            </VBox>
         </VBox>
-    </VBox>
+
+        <!-- RIGHT PANEL: Facilities & Monitoring -->
+        <VBox spacing="20.0" styleClass="overview-right-pane">
+            <!-- 1. Active Farm Buildings Table -->
+            <VBox spacing="12.0" styleClass="content-card" VBox.vgrow="ALWAYS" prefHeight="250.0">
+                <Label text="Active Farm Buildings &amp; Coops" styleClass="card-title" />
+                <TableView fx:id="coopsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="coopIdCol" prefWidth="90.0" text="Coop ID" />
+                        <TableColumn fx:id="coopNameCol" prefWidth="120.0" text="Coop Name" />
+                        <TableColumn fx:id="coopFlockCol" prefWidth="70.0" text="Flock" />
+                        <TableColumn fx:id="coopStatusCol" prefWidth="70.0" text="Status" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+            </VBox>
+
+            <!-- 2. Real-Time Telemetry Monitor detail card -->
+            <VBox spacing="16.0" styleClass="content-card, telemetry-details-card">
+                <children>
+                    <Label fx:id="detailsTitle" text="Farm-Wide Aggregate Averages" styleClass="telemetry-card-title" />
+                    <Label fx:id="detailsSubtitle" text="Live composite telemetry feed from farm networks" styleClass="telemetry-card-subtitle" />
+                    
+                    <VBox spacing="10.0" styleClass="telemetry-grid">
+                        <children>
+                            <!-- Row 1: Temperature -->
+                            <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
+                                <children>
+                                    <Label fx:id="detailLabelRow1" text="Temperature" styleClass="telemetry-label" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="detailTemp" text="--.- °C" styleClass="telemetry-value" />
+                                </children>
+                            </HBox>
+
+                            <!-- Row 2: Humidity -->
+                            <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
+                                <children>
+                                    <Label fx:id="detailLabelRow2" text="Humidity" styleClass="telemetry-label" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="detailHumid" text="--.- %" styleClass="telemetry-value" />
+                                </children>
+                            </HBox>
+
+                            <!-- Row 3: Fan Speed -->
+                            <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
+                                <children>
+                                    <Label fx:id="detailLabelRow3" text="Ventilation Fan" styleClass="telemetry-label" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="detailFan" text="------" styleClass="telemetry-value" />
+                                </children>
+                            </HBox>
+
+                            <!-- Row 4: Mister Status -->
+                            <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
+                                <children>
+                                    <Label fx:id="detailLabelRow4" text="Mister Status" styleClass="telemetry-label" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="detailMister" text="------" styleClass="telemetry-value" />
+                                </children>
+                            </HBox>
+
+                            <!-- Row 5: Feeder Status -->
+                            <HBox alignment="CENTER_LEFT" styleClass="telemetry-row">
+                                <children>
+                                    <Label fx:id="detailLabelRow5" text="Automatic Feeder" styleClass="telemetry-label" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="detailFeeder" text="------" styleClass="telemetry-value" />
+                                </children>
+                            </HBox>
+                        </children>
+                    </VBox>
+                </children>
+            </VBox>
+        </VBox>
+    </HBox>
 </VBox>
