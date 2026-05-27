@@ -1,3 +1,19 @@
 /*
    Eggspress Account Management Screen Light Theme Styling
 */
+
+.password-toggle-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.04);
+}
+
+.password-toggle-btn:pressed {
+    -fx-background-color: rgba(0, 0, 0, 0.08);
+}
+
+.action-btn-circle:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.04);
+}
+
+.action-btn-circle:pressed {
+    -fx-background-color: rgba(0, 0, 0, 0.08);
+}

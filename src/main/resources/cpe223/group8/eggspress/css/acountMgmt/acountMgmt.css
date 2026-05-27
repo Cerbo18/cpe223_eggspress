@@ -6,3 +6,111 @@
     -fx-background-color: transparent;
 }
 
+/* Password cell layout spacing */
+.password-cell-container {
+    -fx-alignment: center-left;
+    -fx-spacing: 8px;
+    -fx-padding: 0px 6px;
+}
+
+/* Password text label configuration */
+.password-text-label {
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-font-size: 13px;
+}
+
+/* Password reveal outline button */
+.password-toggle-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-input-border-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-text-fill: -fx-text-primary-color;
+    -fx-padding: 4px 8px;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+/* Action cell layout spacing */
+.action-cell-container {
+    -fx-alignment: center-left;
+    -fx-spacing: 8px;
+    -fx-padding: 0px 6px;
+}
+
+/* Table action button base */
+.action-btn-circle {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-input-border-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+.action-btn-circle:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Delete action button specific coloring */
+.delete-action-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: #ff3b30;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+.delete-action-btn:hover {
+    -fx-background-color: rgba(255, 59, 48, 0.08);
+}
+
+.delete-action-btn:pressed {
+    -fx-background-color: rgba(255, 59, 48, 0.16);
+}
+
+.delete-action-btn:disabled {
+    -fx-opacity: 0.3;
+    -fx-cursor: default;
+    -fx-border-color: -fx-input-border-color;
+    -fx-background-color: transparent;
+}
+
+/* Custom Table outline SVG configuration */
+.table-svg-icon {
+    -fx-fill: transparent;
+    -fx-stroke: -fx-text-primary-color;
+    -fx-stroke-width: 1.8px;
+    -fx-stroke-linecap: round;
+    -fx-stroke-linejoin: round;
+}
+
+.delete-action-btn .table-svg-icon {
+    -fx-stroke: #ff3b30;
+}
+
+.delete-action-btn:disabled .table-svg-icon {
+    -fx-stroke: -fx-text-secondary-color;
+}
+
+/* Form layouts inside popups */
+.modal-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary-color;
+}
+
+.modal-desc {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-text-secondary-color;
+}
+
+.modal-field-container {
+    -fx-spacing: 6px;
+}

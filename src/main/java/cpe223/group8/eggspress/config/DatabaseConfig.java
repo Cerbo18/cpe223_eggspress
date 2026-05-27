@@ -49,7 +49,8 @@ public class DatabaseConfig {
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
+                password TEXT NOT NULL,
+                role TEXT DEFAULT 'Staff'
             );
         """;
 
@@ -163,11 +164,19 @@ public class DatabaseConfig {
             } catch (SQLException e) {
                 // Column already exists, safe to ignore
             }
+
+            // Dynamic column migration for existing users table
+            try {
+                stmt.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'Staff';");
+                System.out.println("Migrated: added role column to users table.");
+            } catch (SQLException e) {
+                // Column already exists, safe to ignore
+            }
             
             // 2. Check and seed standard admin user
             try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {
                 if (rs.next() && rs.getInt(1) == 0) {
-                    stmt.execute("INSERT INTO users (username, password) VALUES ('admin', '123');");
+                    stmt.execute("INSERT INTO users (username, password, role) VALUES ('admin', '123', 'Admin');");
                     System.out.println("Default 'admin' user successfully seeded.");
                 }
             }
