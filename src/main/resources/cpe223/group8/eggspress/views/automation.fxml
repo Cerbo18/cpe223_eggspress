@@ -18,9 +18,8 @@
             <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
         </padding>
 
-        <VBox spacing="6.0">
-            <Label text="Automation &amp; Feeding Schedules" styleClass="view-title" />
-            <Label text="Configure and monitor automated feeding and hydration sequences." styleClass="view-desc" />
+        <VBox>
+            <Label text="Automation &amp; Schedules" styleClass="view-title" />
         </VBox>
 
         <!-- Main Feeding Schedule Card -->

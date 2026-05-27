@@ -25,9 +25,8 @@
             <Insets top="24.0" right="24.0" bottom="24.0" left="24.0"/>
         </padding>
 
-        <VBox spacing="6.0">
+        <VBox>
             <Label text="Inventory Management" styleClass="view-title"/>
-            <Label text="Track feed levels, water stock, supplements, and evaluate monthly consumption needs based on flock sizes." styleClass="view-desc"/>
         </VBox>
 
         <TabPane fx:id="inventoryTabPane" VBox.vgrow="ALWAYS" styleClass="modern-tab-pane" tabClosingPolicy="UNAVAILABLE">

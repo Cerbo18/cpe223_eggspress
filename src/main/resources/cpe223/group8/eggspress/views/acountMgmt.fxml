@@ -24,9 +24,8 @@
 
         <!-- Header containing Title area and Top-Right Create button -->
         <HBox alignment="CENTER_LEFT" spacing="20.0">
-            <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+            <VBox HBox.hgrow="ALWAYS">
                 <Label text="Account Management" styleClass="view-title"/>
-                <Label text="Manage and configure user credentials and roles for the Eggspress platform." styleClass="view-desc"/>
             </VBox>
             <Button text="Create Account" onAction="#handleShowCreatePopup" styleClass="button-primary" prefHeight="40.0"/>
         </HBox>

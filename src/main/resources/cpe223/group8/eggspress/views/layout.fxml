@@ -31,9 +31,8 @@
                 <!-- Header -->
                 <HBox alignment="CENTER_LEFT" spacing="12.0">
                     <children>
-                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                            <Label text="Chicken Farm Layout &amp; Metrics" styleClass="view-title" />
-                            <Label text="Interactive blueprint of coops and facilities, coupled with live stock metrics." styleClass="view-desc" />
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Label text="Chicken Farm Layout" styleClass="view-title" />
                         </VBox>
                         <Button fx:id="AddCoopToggleBtn" onAction="#toggleAddForm" styleClass="button-primary" text="+ Add Coop" />
                     </children>

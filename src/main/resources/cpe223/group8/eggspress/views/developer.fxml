@@ -29,9 +29,8 @@
         </padding>
 
         <!-- Header -->
-        <VBox spacing="6.0">
-            <Label text="Developer Console &amp; Diagnostics" styleClass="view-title" />
-            <Label text="Monitor database record states, stream diagnostic logs, and inject mock testing telemetry." styleClass="view-desc" />
+        <VBox>
+            <Label text="Developer Panel" styleClass="view-title" />
         </VBox>
 
         <!-- Top Row: Metrics & Actions Side-by-Side -->
