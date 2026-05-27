@@ -48,12 +48,12 @@
                                         
                                         <TableView fx:id="inventoryTable" VBox.vgrow="ALWAYS" minHeight="360.0">
                                             <columns>
-                                                <TableColumn fx:id="idColumn" text="ID" prefWidth="80.0"/>
+                                                <TableColumn fx:id="idColumn" text="ID" prefWidth="80.0" styleClass="centered-column"/>
                                                 <TableColumn fx:id="nameColumn" text="Name" prefWidth="200.0"/>
                                                 <TableColumn fx:id="categoryColumn" text="Category" prefWidth="120.0"/>
-                                                <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="120.0"/>
-                                                <TableColumn fx:id="unitColumn" text="Unit" prefWidth="100.0"/>
-                                                <TableColumn fx:id="actionColumn" text="Actions" prefWidth="160.0" style="-fx-alignment: CENTER;"/>
+                                                <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="120.0" styleClass="centered-column"/>
+                                                <TableColumn fx:id="unitColumn" text="Unit" prefWidth="100.0" styleClass="centered-column"/>
+                                                <TableColumn fx:id="actionColumn" text="Actions" prefWidth="160.0" styleClass="centered-column"/>
                                             </columns>
                                             <columnResizePolicy>
                                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -161,11 +161,11 @@
                                                 <TableView fx:id="monthlyLogsTable" VBox.vgrow="ALWAYS" minHeight="200.0">
                                                     <columns>
                                                         <TableColumn fx:id="logMonthCol" text="Month/Year" prefWidth="100.0"/>
-                                                        <TableColumn fx:id="logFlockCol" text="Birds" prefWidth="80.0"/>
-                                                        <TableColumn fx:id="logEstFeedCol" text="Est Feed (kg)" prefWidth="100.0"/>
-                                                        <TableColumn fx:id="logEstWaterCol" text="Est Water (L)" prefWidth="100.0"/>
-                                                        <TableColumn fx:id="logActFeedCol" text="Act Feed (kg)" prefWidth="100.0"/>
-                                                        <TableColumn fx:id="logActWaterCol" text="Act Water (L)" prefWidth="100.0"/>
+                                                        <TableColumn fx:id="logFlockCol" text="Birds" prefWidth="80.0" styleClass="centered-column"/>
+                                                        <TableColumn fx:id="logEstFeedCol" text="Est Feed (kg)" prefWidth="100.0" styleClass="centered-column"/>
+                                                        <TableColumn fx:id="logEstWaterCol" text="Est Water (L)" prefWidth="100.0" styleClass="centered-column"/>
+                                                        <TableColumn fx:id="logActFeedCol" text="Act Feed (kg)" prefWidth="100.0" styleClass="centered-column"/>
+                                                        <TableColumn fx:id="logActWaterCol" text="Act Water (L)" prefWidth="100.0" styleClass="centered-column"/>
                                                     </columns>
                                                     <columnResizePolicy>
                                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
