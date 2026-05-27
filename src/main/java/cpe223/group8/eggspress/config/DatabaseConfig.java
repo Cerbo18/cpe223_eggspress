@@ -186,9 +186,9 @@ public class DatabaseConfig {
                 if (rs.next() && rs.getInt(1) == 0) {
                     String seedInventory = """
                         INSERT INTO inventory (id, name, category, quantity, unit) VALUES 
-                        ('INV001', 'Grains', 'Feed', 500.0, 'kg'),
-                        ('INV002', 'Water', 'Hydration', 1200.0, 'L'),
-                        ('INV003', 'Layers Feed', 'Feed', 250.0, 'kg'),
+                        ('INV001', 'Grains', 'Feed', 3000.0, 'kg'),
+                        ('INV002', 'Water', 'Hydration', 9478.5, 'L'),
+                        ('INV003', 'Layers Feed', 'Feed', 1549.68, 'kg'),
                         ('INV004', 'Vitamins', 'Medical', 15.0, 'L');
                     """;
                     stmt.execute(seedInventory);
@@ -202,7 +202,7 @@ public class DatabaseConfig {
                     String seedCoops = """
                         INSERT INTO coops (id, name, flock_count, status) VALUES 
                         ('COOP001', 'Main Coop A', 450, 'Optimal'),
-                        ('COOP002', 'Chicls Facility', 320, 'Optimal'),
+                        ('COOP002', 'Chicks Facility', 320, 'Optimal'),
                         ('COOP003', 'Coop B', 400, 'Monitoring'),
                         ('COOP004', 'Breeding Barn', 250, 'Optimal');
                     """;

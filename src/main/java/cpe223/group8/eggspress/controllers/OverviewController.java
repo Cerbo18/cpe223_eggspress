@@ -455,24 +455,40 @@ public class OverviewController {
             }
         }
 
-        double waterPct = Math.max(0.0, Math.min(1.0, totalWater / 2000.0));
+        // Calculate dynamic committed stock requirements
+        int totalFlock = 0;
+        List<ChickenHouse> coops = FarmRepository.getAllCoops();
+        for (ChickenHouse coop : coops) {
+            if (coop.getStatus() != null && !"Inactive".equalsIgnoreCase(coop.getStatus().trim())) {
+                totalFlock += coop.getFlockCount();
+            }
+        }
+
+        double feedRequirement = totalFlock * 0.12 * 30; // 0.12 kg/day for 30 days
+        double waterRequirement = totalFlock * 0.25 * 30; // 0.25 L/day for 30 days
+
+        double waterPct = waterRequirement > 0 ? Math.max(0.0, Math.min(1.0, totalWater / waterRequirement)) : 0.0;
         waterProgress.setLength(waterPct * -360.0);
         waterValueLabel.setText(String.format("%.0f %%", waterPct * 100.0));
 
         waterProgress.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
-        if (totalWater > 500.0) {
+        if (waterPct >= 0.85) {
             waterProgress.getStyleClass().add("status-optimal");
+        } else if (waterPct >= 0.50) {
+            waterProgress.getStyleClass().add("status-monitoring");
         } else {
             waterProgress.getStyleClass().add("status-inactive");
         }
 
-        double feedPct = Math.max(0.0, Math.min(1.0, totalFeed / 1000.0));
+        double feedPct = feedRequirement > 0 ? Math.max(0.0, Math.min(1.0, totalFeed / feedRequirement)) : 0.0;
         feedProgress.setLength(feedPct * -360.0);
         feedValueLabel.setText(String.format("%.0f %%", feedPct * 100.0));
 
         feedProgress.getStyleClass().removeAll("status-optimal", "status-monitoring", "status-inactive");
-        if (totalFeed > 200.0) {
+        if (feedPct >= 0.85) {
             feedProgress.getStyleClass().add("status-optimal");
+        } else if (feedPct >= 0.50) {
+            feedProgress.getStyleClass().add("status-monitoring");
         } else {
             feedProgress.getStyleClass().add("status-inactive");
         }
