@@ -19,10 +19,33 @@ import javafx.scene.paint.Color;
 import javafx.scene.Group;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.layout.StackPane;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.shape.Line;
+import javafx.scene.Node;
 
 import java.io.IOException;
 
 public class InventoryController {
+
+    @FXML
+    private TabPane inventoryTabPane;
+
+    @FXML
+    private StackPane analyticsStackPane;
+
+    @FXML
+    private BarChart<String, Number> stockBarChart;
+
+    @FXML
+    private CategoryAxis stockXAxis;
+
+    @FXML
+    private NumberAxis stockYAxis;
+
+    private Line committedLineOverlay;
 
     @FXML
     private TableView<InventoryItem> inventoryTable;
@@ -176,6 +199,18 @@ public class InventoryController {
         refreshTable();
         refreshMonthlyLogs();
         calculateMonthlyEstimates();
+
+        // Setup stock chart sizing and listeners
+        updateStockChart();
+
+        // Listen to tab selection to refresh the chart dynamically
+        if (inventoryTabPane != null) {
+            inventoryTabPane.getSelectionModel().selectedIndexProperty().addListener((obs, oldIdx, newIdx) -> {
+                if (newIdx.intValue() == 2) {
+                    updateStockChart();
+                }
+            });
+        }
     }
 
     @FXML
@@ -450,6 +485,105 @@ public class InventoryController {
             calculateMonthlyEstimates();
         } else {
             showError("SQLite database failure removing selected log entry.");
+        }
+    }
+
+    private void updateStockChart() {
+        if (stockBarChart == null) return;
+        stockBarChart.getData().clear();
+
+        // 1. Fetch current stocks
+        double totalFeed = 0;
+        double totalWater = 0;
+        java.util.List<InventoryItem> items = FarmRepository.getAllInventory();
+        for (InventoryItem item : items) {
+            String cat = item.getCategory() != null ? item.getCategory().toLowerCase() : "";
+            String name = item.getName() != null ? item.getName().toLowerCase() : "";
+            if (cat.contains("feed") || cat.contains("grain")) {
+                totalFeed += item.getQuantity();
+            } else if (cat.contains("water") || cat.contains("hydration") || name.contains("water")) {
+                totalWater += item.getQuantity();
+            }
+        }
+
+        // 2. Fetch active flock and compute requirements
+        int totalFlock = 0;
+        java.util.List<ChickenHouse> coops = FarmRepository.getAllCoops();
+        for (ChickenHouse coop : coops) {
+            if (coop.getStatus() != null && !"Inactive".equalsIgnoreCase(coop.getStatus().trim())) {
+                totalFlock += coop.getFlockCount();
+            }
+        }
+
+        double feedRequirement = totalFlock * 0.12 * 30; // 0.12 kg/day for 30 days
+        double waterRequirement = totalFlock * 0.25 * 30; // 0.25 L/day for 30 days
+
+        double feedPct = feedRequirement > 0 ? (totalFeed / feedRequirement) * 100.0 : 0.0;
+        double waterPct = waterRequirement > 0 ? (totalWater / waterRequirement) * 100.0 : 0.0;
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Current Stock Adequacy");
+        series.getData().add(new XYChart.Data<>("Feed (Grains & Layers)", feedPct));
+        series.getData().add(new XYChart.Data<>("Water (Hydration)", waterPct));
+
+        stockBarChart.getData().add(series);
+
+        // Styling the bars dynamically
+        for (XYChart.Data<String, Number> data : series.getData()) {
+            Node bar = data.getNode();
+            if (bar != null) {
+                if ("Feed (Grains & Layers)".equals(data.getXValue())) {
+                    bar.setStyle("-fx-bar-fill: -fx-brand-primary;");
+                } else {
+                    bar.setStyle("-fx-bar-fill: #007aff;"); // Beautiful blue for water
+                }
+            }
+        }
+
+        // Position the 100% overlay line precisely
+        javafx.application.Platform.runLater(this::drawCommittedLine);
+    }
+
+    private void drawCommittedLine() {
+        if (analyticsStackPane == null || stockBarChart == null || stockYAxis == null) return;
+
+        if (committedLineOverlay != null) {
+            analyticsStackPane.getChildren().remove(committedLineOverlay);
+        }
+
+        Node plotArea = stockBarChart.lookup(".chart-plot-background");
+        if (plotArea != null) {
+            double plotHeight = plotArea.getLayoutBounds().getHeight();
+            double plotWidth = plotArea.getLayoutBounds().getWidth();
+
+            // Y position of 100% relative to yAxis
+            double y100 = stockYAxis.getDisplayPosition(100.0);
+
+            committedLineOverlay = new Line(0, y100, plotWidth, y100);
+            committedLineOverlay.setStroke(Color.web("#ff3b30")); // premium red/orange
+            committedLineOverlay.setStrokeWidth(2.0);
+            committedLineOverlay.getStrokeDashArray().addAll(6.0, 4.0);
+            committedLineOverlay.setManaged(false); // don't affect parent layouts
+            committedLineOverlay.getStyleClass().add("committed-line-overlay");
+
+            // Position line on top of the plot area
+            double plotX = plotArea.localToScene(0, 0).getX() - analyticsStackPane.localToScene(0, 0).getX();
+            double plotY = plotArea.localToScene(0, 0).getY() - analyticsStackPane.localToScene(0, 0).getY();
+
+            committedLineOverlay.setLayoutX(plotX);
+            committedLineOverlay.setLayoutY(plotY + y100);
+            committedLineOverlay.setStartX(0);
+            committedLineOverlay.setEndX(plotWidth);
+            committedLineOverlay.setStartY(0);
+            committedLineOverlay.setEndY(0);
+
+            analyticsStackPane.getChildren().add(committedLineOverlay);
+
+            // Add resize listener once to ensure the line updates on layout changes
+            plotArea.layoutBoundsProperty().removeListener((obs, oldVal, newVal) -> {});
+            plotArea.layoutBoundsProperty().addListener((obs, oldVal, newVal) -> {
+                javafx.application.Platform.runLater(this::drawCommittedLine);
+            });
         }
     }
 
