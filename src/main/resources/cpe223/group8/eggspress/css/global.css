@@ -247,12 +247,12 @@
 }
 
 .table-view .table-row-cell:filled:hover {
-    -fx-background-color: rgba(57, 181, 74, 0.04);
+    -fx-background-color: -fx-table-hover-color;
 }
 
 .table-view .table-row-cell:filled:selected {
-    -fx-background-color: rgba(57, 181, 74, 0.08);
-    -fx-text-fill: -fx-brand-primary;
+    -fx-background-color: -fx-table-selection-color;
+    -fx-text-fill: -fx-text-primary-color;
 }
 
 .table-view .table-row-cell:filled:selected .text {
@@ -271,7 +271,7 @@
 }
 
 .table-view .table-row-cell:filled:selected .table-cell {
-    -fx-text-fill: -fx-brand-primary;
+    -fx-text-fill: -fx-text-primary-color;
 }
 
 .table-view:focused .table-row-cell:focused .table-cell {
